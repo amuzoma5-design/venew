@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Event, formatDate } from "@/lib/events";
+import { formatDate } from "@/lib/events";
 
 const categoryColors: Record<string, string> = {
   Conference: "#F59E0B",
@@ -10,79 +10,142 @@ const categoryColors: Record<string, string> = {
 
 const tagColors: Record<string, { bg: string; color: string }> = {
   FEATURED: { bg: "#F5A623", color: "#0D0D0D" },
-  FREE: { bg: "#10B981", color: "#ffffff" },
-  NEW: { bg: "#06B6D4", color: "#ffffff" },
-  HOT: { bg: "#F43F5E", color: "#ffffff" },
+  FREE:     { bg: "#10B981", color: "#ffffff" },
+  NEW:      { bg: "#06B6D4", color: "#ffffff" },
+  HOT:      { bg: "#F43F5E", color: "#ffffff" },
 };
 
-interface EventCardProps {
-  event: Event;
-  index?: number;
-}
-
-export default function EventCard({ event, index = 0 }: EventCardProps) {
+export default function EventCard({ event, index = 0 }: { event: any; index?: number }) {
   const catColor = categoryColors[event.category] ?? "#F5A623";
   const tagStyle = event.tag ? tagColors[event.tag] : null;
-  const delay = `${(index + 1) * 0.05}s`;
 
   return (
-    <Link href={`/event/${event.id}`} className="block group">
+    <Link href={`/event/${event.id}`} style={{ textDecoration: "none", display: "block" }}>
       <article
-        className="event-card animate-fade-up rounded-2xl overflow-hidden h-full flex flex-col"
+        className="event-card"
         style={{
-          opacity: 0,
-          animationDelay: delay,
           backgroundColor: "#1A1A1A",
           border: "1px solid #2A2A2A",
+          borderRadius: "16px",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          animationDelay: `${(index + 1) * 0.05}s`,
         }}
       >
         {/* Card header */}
-        <div
-          className="relative h-36 flex items-end p-4"
-          style={{ background: `linear-gradient(135deg, ${catColor}99, #0D0D0D)` }}
-        >
-          <span
-            className="text-xs font-semibold px-2.5 py-1 rounded-full"
-            style={{ color: catColor, backgroundColor: `${catColor}20` }}
-          >
+        <div style={{
+          height: "160px",
+          background: event.image_url
+            ? `url(${event.image_url}) center/cover no-repeat`
+            : `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
+          position: "relative",
+          display: "flex",
+          alignItems: "flex-end",
+          padding: "16px",
+        }}>
+          {/* Dark overlay when image is present */}
+          {event.image_url && (
+            <div style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)",
+            }} />
+          )}
+
+          {/* Category badge */}
+          <span style={{
+            position: "relative",
+            zIndex: 1,
+            fontSize: "11px",
+            fontWeight: 600,
+            padding: "4px 10px",
+            borderRadius: "999px",
+            color: catColor,
+            backgroundColor: `${catColor}25`,
+          }}>
             {event.category}
           </span>
 
+          {/* Tag badge */}
           {event.tag && tagStyle && (
-            <span
-              className="absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full"
-              style={{ backgroundColor: tagStyle.bg, color: tagStyle.color }}
-            >
+            <span style={{
+              position: "absolute",
+              top: "12px",
+              right: "12px",
+              zIndex: 1,
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "4px 10px",
+              borderRadius: "999px",
+              backgroundColor: tagStyle.bg,
+              color: tagStyle.color,
+            }}>
               {event.tag}
             </span>
           )}
         </div>
 
         {/* Card body */}
-        <div className="p-5 flex flex-col flex-1">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-2"
-            style={{ color: "#F5A623" }}>
+        <div style={{
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+        }}>
+          <p style={{
+            color: "#F5A623",
+            fontSize: "11px",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.15em",
+            marginBottom: "8px",
+          }}>
             {formatDate(event.date)}
           </p>
 
-          <h2 className="text-xl font-bold leading-snug mb-3 group-hover:opacity-80 transition-opacity"
-            style={{ color: "#E8E8E8", fontFamily: "Georgia, serif" }}>
+          <h2 style={{
+            fontFamily: "Georgia, serif",
+            fontSize: "20px",
+            fontWeight: 700,
+            color: "#E8E8E8",
+            lineHeight: 1.3,
+            marginBottom: "12px",
+          }}>
             {event.title}
           </h2>
 
-          <p className="text-sm leading-relaxed flex-1 line-clamp-2"
-            style={{ color: "#6B6B6B" }}>
+          <p style={{
+            color: "#6B6B6B",
+            fontSize: "14px",
+            lineHeight: 1.6,
+            flex: 1,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}>
             {event.description}
           </p>
 
           {/* Footer */}
-          <div className="mt-4 pt-4 flex items-center justify-between"
-            style={{ borderTop: "1px solid #2A2A2A" }}>
-            <span className="text-xs" style={{ color: "#6B6B6B" }}>
-              📍 {event.venue.split(",")[0]}
+          <div style={{
+            marginTop: "20px",
+            paddingTop: "16px",
+            borderTop: "1px solid #2A2A2A",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+            <span style={{ color: "#6B6B6B", fontSize: "12px" }}>
+              📍 {event.venue?.split(",")[0] ?? event.location}
             </span>
-            <span className="text-sm font-bold"
-              style={{ color: event.price === "FREE" ? "#10B981" : "#F5A623" }}>
+            <span style={{
+              color: event.price === "FREE" ? "#10B981" : "#F5A623",
+              fontSize: "15px",
+              fontWeight: 700,
+            }}>
               {event.price}
             </span>
           </div>

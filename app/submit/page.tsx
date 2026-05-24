@@ -13,6 +13,8 @@ export default function SubmitEventPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     category: "",
@@ -42,6 +44,14 @@ export default function SubmitEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  }
+
   async function handleSubmit() {
     if (!form.title || !form.category || !form.date || !form.location) {
       setError("Please fill in Title, Category, Date and Location.");
@@ -55,6 +65,28 @@ export default function SubmitEventPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
+
+    // Upload image if provided
+    let imageUrl = null;
+    if (image) {
+      const fileExt = image.name.split(".").pop();
+      const fileName = `${id}-${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("event-images")
+        .upload(fileName, image);
+
+      if (uploadError) {
+        setError("Image upload failed: " + uploadError.message);
+        setLoading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("event-images")
+        .getPublicUrl(fileName);
+
+      imageUrl = urlData.publicUrl;
+    }
 
     const { error: sbError } = await supabase.from("events").insert([
       {
@@ -71,6 +103,7 @@ export default function SubmitEventPage() {
         speaker_title: form.speakerTitle,
         highlights: [],
         image_color: "from-amber-600 to-orange-800",
+        image_url: imageUrl,
         tag: null,
       },
     ]);
@@ -209,6 +242,59 @@ export default function SubmitEventPage() {
           flexDirection: "column",
           gap: "24px",
         }}>
+
+          {/* Image upload */}
+          <div>
+            <label style={{
+              display: "block",
+              color: "#E8E8E8",
+              fontSize: "13px",
+              fontWeight: 600,
+              marginBottom: "8px",
+            }}>
+              Event Image
+            </label>
+
+            {imagePreview && (
+              <div style={{ marginBottom: "12px" }}>
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    objectFit: "cover",
+                    borderRadius: "10px",
+                    border: "1px solid #2A2A2A",
+                  }}
+                />
+              </div>
+            )}
+
+            <label style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              backgroundColor: "#111",
+              border: "1px dashed #2A2A2A",
+              borderRadius: "10px",
+              padding: "20px",
+              cursor: "pointer",
+              color: "#6B6B6B",
+              fontSize: "14px",
+            }}>
+              📷 {image ? image.name : "Click to upload image"}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
+
+          {/* Text fields */}
           {[
             { label: "Event Title *", name: "title", type: "text", placeholder: "e.g. Leadership Summit 2026" },
             { label: "Location / City *", name: "location", type: "text", placeholder: "e.g. Lagos" },
@@ -250,6 +336,7 @@ export default function SubmitEventPage() {
             </div>
           ))}
 
+          {/* Category */}
           <div>
             <label style={{
               display: "block",
@@ -283,6 +370,7 @@ export default function SubmitEventPage() {
             </select>
           </div>
 
+          {/* Description */}
           <div>
             <label style={{
               display: "block",
