@@ -1,0 +1,315 @@
+import { supabase } from "@/lib/supabase";
+import { formatDate } from "@/lib/events";
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+const categoryColors: Record<string, string> = {
+  Conference: "#F59E0B",
+  Church: "#A78BFA",
+  Seminar: "#22D3EE",
+  Workshop: "#FB7185",
+};
+
+export default async function EventDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const { data: event, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !event) notFound();
+
+  const catColor = categoryColors[event.category] ?? "#F5A623";
+
+  return (
+    <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
+      <Navbar />
+
+      <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 24px 80px" }}>
+
+        {/* Back link */}
+        <Link href="/" style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          color: "#6B6B6B",
+          fontSize: "14px",
+          textDecoration: "none",
+          marginBottom: "32px",
+        }}>
+          ← Back to all events
+        </Link>
+
+        {/* Hero banner */}
+        <div style={{
+          background: `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
+          borderRadius: "20px",
+          padding: "48px",
+          marginBottom: "32px",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          <div style={{
+            position: "absolute",
+            top: "-40px",
+            right: "-40px",
+            width: "220px",
+            height: "220px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(255,255,255,0.05)",
+          }} />
+
+          {/* Badges */}
+          <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+            <span style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              padding: "6px 14px",
+              borderRadius: "999px",
+              color: catColor,
+              border: `1px solid ${catColor}50`,
+              backgroundColor: `${catColor}20`,
+            }}>
+              {event.category}
+            </span>
+            {event.tag && (
+              <span style={{
+                fontSize: "12px",
+                fontWeight: 700,
+                padding: "6px 14px",
+                borderRadius: "999px",
+                backgroundColor: "rgba(255,255,255,0.2)",
+                color: "white",
+              }}>
+                {event.tag}
+              </span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h1 style={{
+            fontFamily: "Georgia, serif",
+            fontSize: "clamp(28px, 5vw, 48px)",
+            fontWeight: 900,
+            color: "white",
+            lineHeight: 1.2,
+            marginBottom: "20px",
+          }}>
+            {event.title}
+          </h1>
+
+          {/* Meta row */}
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            color: "rgba(255,255,255,0.75)",
+            fontSize: "14px",
+          }}>
+            <span>📅 {formatDate(event.date)}</span>
+            <span>🕐 {event.time}</span>
+            <span>📍 {event.location}</span>
+          </div>
+        </div>
+
+        {/* Two column layout */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 320px",
+          gap: "24px",
+          alignItems: "start",
+        }}>
+
+          {/* LEFT */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+            {/* About */}
+            <div style={{
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
+              borderRadius: "16px",
+              padding: "28px",
+            }}>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#E8E8E8",
+                marginBottom: "14px",
+              }}>
+                About this Event
+              </h2>
+              <p style={{ color: "#6B6B6B", fontSize: "15px", lineHeight: 1.8 }}>
+                {event.description || "No description provided."}
+              </p>
+            </div>
+
+            {/* Highlights */}
+            {event.highlights && event.highlights.length > 0 && (
+              <div style={{
+                backgroundColor: "#1A1A1A",
+                border: "1px solid #2A2A2A",
+                borderRadius: "16px",
+                padding: "28px",
+              }}>
+                <h2 style={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#E8E8E8",
+                  marginBottom: "16px",
+                }}>
+                  What to Expect
+                </h2>
+                <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {event.highlights.map((item: string) => (
+                    <li key={item} style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+                      <span style={{ color: "#F5A623", fontSize: "16px", lineHeight: 1.4 }}>✦</span>
+                      <span style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Speaker */}
+            {event.speaker && (
+              <div style={{
+                backgroundColor: "#1A1A1A",
+                border: "1px solid #2A2A2A",
+                borderRadius: "16px",
+                padding: "28px",
+              }}>
+                <h2 style={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#E8E8E8",
+                  marginBottom: "16px",
+                }}>
+                  Featured Speaker
+                </h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "50%",
+                    background: `linear-gradient(135deg, ${catColor}, #0D0D0D)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontFamily: "Georgia, serif",
+                    fontSize: "22px",
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}>
+                    {event.speaker.charAt(0)}
+                  </div>
+                  <div>
+                    <p style={{ color: "#E8E8E8", fontWeight: 600, fontSize: "15px" }}>
+                      {event.speaker}
+                    </p>
+                    <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "2px" }}>
+                      {event.speaker_title}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT sidebar */}
+          <div style={{
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #2A2A2A",
+            borderRadius: "16px",
+            padding: "28px",
+            position: "sticky",
+            top: "88px",
+          }}>
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <p style={{ color: "#6B6B6B", fontSize: "13px", marginBottom: "4px" }}>Price</p>
+              <p style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "40px",
+                fontWeight: 900,
+                color: event.price === "FREE" ? "#10B981" : "#F5A623",
+              }}>
+                {event.price || "FREE"}
+              </p>
+            </div>
+
+            <button style={{
+              width: "100%",
+              backgroundColor: "#F5A623",
+              color: "#0D0D0D",
+              fontWeight: 700,
+              fontSize: "14px",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              cursor: "pointer",
+              marginBottom: "10px",
+            }}>
+              Register Now
+            </button>
+            <button style={{
+              width: "100%",
+              backgroundColor: "transparent",
+              color: "#6B6B6B",
+              fontWeight: 500,
+              fontSize: "14px",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "1px solid #2A2A2A",
+              cursor: "pointer",
+            }}>
+              Save Event
+            </button>
+
+            <div style={{
+              marginTop: "24px",
+              paddingTop: "20px",
+              borderTop: "1px solid #2A2A2A",
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+            }}>
+              {[
+                { icon: "📅", label: "Date", value: formatDate(event.date) },
+                { icon: "🕐", label: "Time", value: event.time || "TBC" },
+                { icon: "📍", label: "Venue", value: event.venue || "TBC" },
+                { icon: "🏙️", label: "City", value: event.location },
+              ].map(({ icon, label, value }) => (
+                <div key={label} style={{ display: "flex", gap: "12px" }}>
+                  <span style={{ fontSize: "16px", lineHeight: 1 }}>{icon}</span>
+                  <div>
+                    <p style={{
+                      color: "#6B6B6B",
+                      fontSize: "11px",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                    }}>
+                      {label}
+                    </p>
+                    <p style={{ color: "#E8E8E8", fontSize: "13px", marginTop: "2px" }}>
+                      {value}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
