@@ -1,15 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { categories } from "@/lib/events";
 import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function SubmitEventPage() {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push("/auth/login");
+      } else {
+        setChecking(false);
+      }
+    });
+  }, [router]);
+
+  if (checking) {
+    return (
+      <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
+        <Navbar />
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "60vh",
+        }}>
+          <p style={{ color: "#6B6B6B", fontSize: "16px" }}>Checking login...</p>
+        </div>
+      </main>
+    );
+  }
   const [form, setForm] = useState({
     title: "",
     category: "",

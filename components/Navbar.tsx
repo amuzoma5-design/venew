@@ -1,10 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/");
+  }
 
   return (
     <nav style={{
@@ -35,16 +55,13 @@ export default function Navbar() {
             letterSpacing: "0.2em",
             textTransform: "uppercase",
             marginLeft: "10px",
-            display: "none",
-          }}
-            className="nav-tagline"
-          >
+          }}>
             Event Discovery
           </span>
         </Link>
 
-        {/* Desktop links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+        {/* Right side */}
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <Link href="/" style={{
             color: "#6B6B6B",
             fontSize: "14px",
@@ -52,48 +69,77 @@ export default function Navbar() {
           }}>
             Browse
           </Link>
-          <Link href="/submit" style={{
-            backgroundColor: "#F5A623",
-            color: "#0D0D0D",
-            fontWeight: 700,
-            fontSize: "14px",
-            padding: "8px 18px",
-            borderRadius: "999px",
-            textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}>
-            Submit Event
-          </Link>
+
+          {user ? (
+            <>
+              {/* User email */}
+              <span style={{
+                color: "#6B6B6B",
+                fontSize: "13px",
+                maxWidth: "160px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}>
+                {user.email}
+              </span>
+
+              {/* Submit button */}
+              <Link href="/submit" style={{
+                backgroundColor: "#F5A623",
+                color: "#0D0D0D",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "8px 18px",
+                borderRadius: "999px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}>
+                Submit Event
+              </Link>
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "1px solid #2A2A2A",
+                  color: "#6B6B6B",
+                  fontSize: "13px",
+                  padding: "7px 14px",
+                  borderRadius: "999px",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" style={{
+                color: "#6B6B6B",
+                fontSize: "14px",
+                textDecoration: "none",
+              }}>
+                Log in
+              </Link>
+              <Link href="/auth/signup" style={{
+                backgroundColor: "#F5A623",
+                color: "#0D0D0D",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "8px 18px",
+                borderRadius: "999px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}>
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div style={{
-          backgroundColor: "#141414",
-          borderTop: "1px solid #2A2A2A",
-          padding: "16px 24px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-        }}>
-          <Link href="/" onClick={() => setMenuOpen(false)} style={{
-            color: "#E8E8E8",
-            fontSize: "16px",
-            textDecoration: "none",
-          }}>
-            Browse Events
-          </Link>
-          <Link href="/submit" onClick={() => setMenuOpen(false)} style={{
-            color: "#F5A623",
-            fontSize: "16px",
-            textDecoration: "none",
-            fontWeight: 700,
-          }}>
-            Submit Event
-          </Link>
-        </div>
-      )}
     </nav>
   );
 }
