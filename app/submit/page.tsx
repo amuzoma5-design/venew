@@ -13,32 +13,6 @@ export default function SubmitEventPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.push("/auth/login");
-      } else {
-        setChecking(false);
-      }
-    });
-  }, [router]);
-
-  if (checking) {
-    return (
-      <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
-        <Navbar />
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "60vh",
-        }}>
-          <p style={{ color: "#6B6B6B", fontSize: "16px" }}>Checking login...</p>
-        </div>
-      </main>
-    );
-  }
   const [form, setForm] = useState({
     title: "",
     category: "",
@@ -51,6 +25,16 @@ export default function SubmitEventPage() {
     speaker: "",
     speakerTitle: "",
   });
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.push("/auth/login");
+      } else {
+        setChecking(false);
+      }
+    });
+  }, [router]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -98,6 +82,22 @@ export default function SubmitEventPage() {
     } else {
       setSubmitted(true);
     }
+  }
+
+  if (checking) {
+    return (
+      <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
+        <Navbar />
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "60vh",
+        }}>
+          <p style={{ color: "#6B6B6B", fontSize: "16px" }}>Checking login...</p>
+        </div>
+      </main>
+    );
   }
 
   if (submitted) {
@@ -152,7 +152,6 @@ export default function SubmitEventPage() {
 
       <div style={{ maxWidth: "680px", margin: "0 auto", padding: "40px 24px 80px" }}>
 
-        {/* Back link */}
         <Link href="/" style={{
           display: "inline-flex",
           alignItems: "center",
@@ -165,7 +164,6 @@ export default function SubmitEventPage() {
           ← Back to all events
         </Link>
 
-        {/* Header */}
         <div style={{ marginBottom: "40px" }}>
           <p style={{
             color: "#F5A623",
@@ -188,7 +186,6 @@ export default function SubmitEventPage() {
           </h1>
         </div>
 
-        {/* Error message */}
         {error && (
           <div style={{
             backgroundColor: "#2A0A0A",
@@ -203,7 +200,6 @@ export default function SubmitEventPage() {
           </div>
         )}
 
-        {/* Form card */}
         <div style={{
           backgroundColor: "#1A1A1A",
           border: "1px solid #2A2A2A",
@@ -254,7 +250,6 @@ export default function SubmitEventPage() {
             </div>
           ))}
 
-          {/* Category */}
           <div>
             <label style={{
               display: "block",
@@ -288,7 +283,6 @@ export default function SubmitEventPage() {
             </select>
           </div>
 
-          {/* Description */}
           <div>
             <label style={{
               display: "block",
@@ -320,7 +314,6 @@ export default function SubmitEventPage() {
             />
           </div>
 
-          {/* Submit button */}
           <button
             onClick={handleSubmit}
             disabled={loading}
