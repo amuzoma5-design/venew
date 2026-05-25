@@ -57,7 +57,7 @@ export default async function EventDetailPage({
           marginBottom: "32px",
           position: "relative",
           overflow: "hidden",
-          minHeight: "260px",
+          minHeight: "420px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
