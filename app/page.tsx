@@ -8,6 +8,7 @@ export default async function HomePage() {
   const { data: events, error } = await supabase
     .from("events")
     .select("*")
+    .eq("approved", true)
     .order("date", { ascending: true });
 
   if (error) {
