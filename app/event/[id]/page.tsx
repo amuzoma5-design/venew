@@ -49,73 +49,95 @@ export default async function EventDetailPage({
 
         {/* Hero banner */}
         <div style={{
-          background: `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
+          background: event.image_url
+            ? `url(${event.image_url}) center/cover no-repeat`
+            : `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
           borderRadius: "20px",
           padding: "48px",
           marginBottom: "32px",
           position: "relative",
           overflow: "hidden",
+          minHeight: "260px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
         }}>
+          {/* Dark overlay */}
           <div style={{
             position: "absolute",
-            top: "-40px",
-            right: "-40px",
-            width: "220px",
-            height: "220px",
-            borderRadius: "50%",
-            backgroundColor: "rgba(255,255,255,0.05)",
+            inset: 0,
+            background: event.image_url
+              ? "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))"
+              : "none",
+            borderRadius: "20px",
           }} />
 
-          {/* Badges */}
-          <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
-            <span style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              padding: "6px 14px",
-              borderRadius: "999px",
-              color: catColor,
-              border: `1px solid ${catColor}50`,
-              backgroundColor: `${catColor}20`,
-            }}>
-              {event.category}
-            </span>
-            {event.tag && (
+          {/* Decorative circle (no image only) */}
+          {!event.image_url && (
+            <div style={{
+              position: "absolute",
+              top: "-40px",
+              right: "-40px",
+              width: "220px",
+              height: "220px",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255,255,255,0.05)",
+            }} />
+          )}
+
+          {/* Content */}
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {/* Badges */}
+            <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
               <span style={{
                 fontSize: "12px",
-                fontWeight: 700,
+                fontWeight: 600,
                 padding: "6px 14px",
                 borderRadius: "999px",
-                backgroundColor: "rgba(255,255,255,0.2)",
-                color: "white",
+                color: catColor,
+                border: `1px solid ${catColor}50`,
+                backgroundColor: `${catColor}20`,
               }}>
-                {event.tag}
+                {event.category}
               </span>
-            )}
-          </div>
+              {event.tag && (
+                <span style={{
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  padding: "6px 14px",
+                  borderRadius: "999px",
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                  color: "white",
+                }}>
+                  {event.tag}
+                </span>
+              )}
+            </div>
 
-          {/* Title */}
-          <h1 style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(28px, 5vw, 48px)",
-            fontWeight: 900,
-            color: "white",
-            lineHeight: 1.2,
-            marginBottom: "20px",
-          }}>
-            {event.title}
-          </h1>
+            {/* Title */}
+            <h1 style={{
+              fontFamily: "Georgia, serif",
+              fontSize: "clamp(28px, 5vw, 48px)",
+              fontWeight: 900,
+              color: "white",
+              lineHeight: 1.2,
+              marginBottom: "20px",
+            }}>
+              {event.title}
+            </h1>
 
-          {/* Meta row */}
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "20px",
-            color: "rgba(255,255,255,0.75)",
-            fontSize: "14px",
-          }}>
-            <span>📅 {formatDate(event.date)}</span>
-            <span>🕐 {event.time}</span>
-            <span>📍 {event.location}</span>
+            {/* Meta row */}
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "20px",
+              color: "rgba(255,255,255,0.75)",
+              fontSize: "14px",
+            }}>
+              <span>📅 {formatDate(event.date)}</span>
+              <span>🕐 {event.time}</span>
+              <span>📍 {event.location}</span>
+            </div>
           </div>
         </div>
 
