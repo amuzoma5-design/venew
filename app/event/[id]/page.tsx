@@ -283,20 +283,82 @@ export default async function EventDetailPage({
             }}>
               Register Now
             </button>
-            <button style={{
-              width: "100%",
-              backgroundColor: "transparent",
-              color: "#6B6B6B",
-              fontWeight: 500,
-              fontSize: "14px",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "1px solid #2A2A2A",
-              cursor: "pointer",
-            }}>
-              Save Event
-            </button>
 
+            {/* WhatsApp share */}
+            
+              href={`https://wa.me/?text=Check out this event: ${event.title} on VENEW! https://venew-two.vercel.app/event/${event.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                width: "100%",
+                backgroundColor: "#25D366",
+                color: "white",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "14px",
+                borderRadius: "12px",
+                textDecoration: "none",
+                marginBottom: "10px",
+                boxSizing: "border-box",
+              }}
+            >
+              <span>📱</span> Share on WhatsApp
+            </a>
+
+            {/* Twitter/X share */}
+            
+              href={`https://twitter.com/intent/tweet?text=Check out this event: ${event.title}&url=https://venew-two.vercel.app/event/${event.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                width: "100%",
+                backgroundColor: "#000",
+                color: "white",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "14px",
+                borderRadius: "12px",
+                textDecoration: "none",
+                marginBottom: "10px",
+                boxSizing: "border-box",
+              }}
+            >
+              <span>🐦</span> Share on X
+            </a>
+
+            {/* Copy link */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(`https://venew-two.vercel.app/event/${event.id}`);
+                alert("Link copied!");
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                width: "100%",
+                backgroundColor: "transparent",
+                color: "#6B6B6B",
+                fontWeight: 600,
+                fontSize: "14px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "1px solid #2A2A2A",
+                cursor: "pointer",
+                boxSizing: "border-box",
+              }}
+            >
+              🔗 Copy Link
+            </button>
             <div style={{
               marginTop: "24px",
               paddingTop: "20px",
