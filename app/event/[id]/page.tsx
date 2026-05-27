@@ -3,6 +3,7 @@ import { formatDate } from "@/lib/events";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ShareButtons from "@/components/ShareButtons";
 
 const categoryColors: Record<string, string> = {
   Conference: "#F59E0B",
@@ -72,7 +73,6 @@ export default async function EventDetailPage({
             borderRadius: "20px",
           }} />
 
-          {/* Decorative circle (no image only) */}
           {!event.image_url && (
             <div style={{
               position: "absolute",
@@ -87,7 +87,6 @@ export default async function EventDetailPage({
 
           {/* Content */}
           <div style={{ position: "relative", zIndex: 1 }}>
-            {/* Badges */}
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
               <span style={{
                 fontSize: "12px",
@@ -114,7 +113,6 @@ export default async function EventDetailPage({
               )}
             </div>
 
-            {/* Title */}
             <h1 style={{
               fontFamily: "Georgia, serif",
               fontSize: "clamp(28px, 5vw, 48px)",
@@ -126,7 +124,6 @@ export default async function EventDetailPage({
               {event.title}
             </h1>
 
-            {/* Meta row */}
             <div style={{
               display: "flex",
               flexWrap: "wrap",
@@ -284,81 +281,9 @@ export default async function EventDetailPage({
               Register Now
             </button>
 
-            {/* WhatsApp share */}
-            
-              href={`https://wa.me/?text=Check out this event: ${event.title} on VENEW! https://venew-two.vercel.app/event/${event.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                width: "100%",
-                backgroundColor: "#25D366",
-                color: "white",
-                fontWeight: 700,
-                fontSize: "14px",
-                padding: "14px",
-                borderRadius: "12px",
-                textDecoration: "none",
-                marginBottom: "10px",
-                boxSizing: "border-box",
-              }}
-            >
-              <span>📱</span> Share on WhatsApp
-            </a>
+            {/* Share buttons - client component */}
+            <ShareButtons eventId={event.id} eventTitle={event.title} />
 
-            {/* Twitter/X share */}
-            
-              href={`https://twitter.com/intent/tweet?text=Check out this event: ${event.title}&url=https://venew-two.vercel.app/event/${event.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                width: "100%",
-                backgroundColor: "#000",
-                color: "white",
-                fontWeight: 700,
-                fontSize: "14px",
-                padding: "14px",
-                borderRadius: "12px",
-                textDecoration: "none",
-                marginBottom: "10px",
-                boxSizing: "border-box",
-              }}
-            >
-              <span>🐦</span> Share on X
-            </a>
-
-            {/* Copy link */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(`https://venew-two.vercel.app/event/${event.id}`);
-                alert("Link copied!");
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                width: "100%",
-                backgroundColor: "transparent",
-                color: "#6B6B6B",
-                fontWeight: 600,
-                fontSize: "14px",
-                padding: "14px",
-                borderRadius: "12px",
-                border: "1px solid #2A2A2A",
-                cursor: "pointer",
-                boxSizing: "border-box",
-              }}
-            >
-              🔗 Copy Link
-            </button>
             <div style={{
               marginTop: "24px",
               paddingTop: "20px",
