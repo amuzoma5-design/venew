@@ -4,7 +4,7 @@ const content = [
   '"use client";',
   '',
   'export default function ShareButtons({ eventId, eventTitle }: { eventId: string; eventTitle: string }) {',
-  '  const url = "https://venew-two.vercel.app/event/" + eventId;',
+  '  const url = "https://venew-ng.vercel.app/event/" + eventId;',
   '  const text = "Check out: " + eventTitle + " on VENEW! ";',
   '  function copyLink() {',
   '    navigator.clipboard.writeText(url);',
