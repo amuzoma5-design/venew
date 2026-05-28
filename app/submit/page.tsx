@@ -26,6 +26,7 @@ export default function SubmitEventPage() {
     description: "",
     speaker: "",
     speakerTitle: "",
+    registrationUrl: "",
   });
 
   useEffect(() => {
@@ -66,7 +67,6 @@ export default function SubmitEventPage() {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    // Upload image if provided
     let imageUrl = null;
     if (image) {
       const fileExt = image.name.split(".").pop();
@@ -101,6 +101,7 @@ export default function SubmitEventPage() {
         description: form.description,
         speaker: form.speaker,
         speaker_title: form.speakerTitle,
+        registration_url: form.registrationUrl,
         highlights: [],
         image_color: "from-amber-600 to-orange-800",
         image_url: imageUrl,
@@ -304,6 +305,7 @@ export default function SubmitEventPage() {
             { label: "Price", name: "price", type: "text", placeholder: "e.g. ₦5,000 or FREE" },
             { label: "Speaker Name", name: "speaker", type: "text", placeholder: "e.g. Dr. Amaka Obi" },
             { label: "Speaker Title", name: "speakerTitle", type: "text", placeholder: "e.g. CEO, TechNaija" },
+            { label: "Registration Link", name: "registrationUrl", type: "text", placeholder: "e.g. https://forms.gle/yourform" },
           ].map(({ label, name, type, placeholder }) => (
             <div key={name}>
               <label style={{
