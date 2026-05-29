@@ -29,6 +29,10 @@ export default async function EventDetailPage({
 
   const catColor = categoryColors[event.category] ?? "#F5A623";
 
+  const registerButton = event.registration_url
+    ? { type: "link", href: event.registration_url }
+    : { type: "button" };
+
   return (
     <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
       <Navbar />
@@ -255,9 +259,9 @@ export default async function EventDetailPage({
               </p>
             </div>
 
-            {event.registration_url ? (
-              
-                href={event.registration_url}
+            {registerButton.type === "link" ? (
+              <Link
+                href={registerButton.href as string}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -276,7 +280,7 @@ export default async function EventDetailPage({
                 }}
               >
                 Register Now →
-              </a>
+              </Link>
             ) : (
               <button style={{
                 width: "100%",
