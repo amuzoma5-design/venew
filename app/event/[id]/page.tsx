@@ -35,7 +35,6 @@ export default async function EventDetailPage({
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 24px 80px" }}>
 
-        {/* Back link */}
         <Link href="/" style={{
           display: "inline-flex",
           alignItems: "center",
@@ -48,7 +47,6 @@ export default async function EventDetailPage({
           ← Back to all events
         </Link>
 
-        {/* Hero banner */}
         <div style={{
           background: event.image_url
             ? `url(${event.image_url}) center/cover no-repeat`
@@ -63,7 +61,6 @@ export default async function EventDetailPage({
           flexDirection: "column",
           justifyContent: "flex-end",
         }}>
-          {/* Dark overlay */}
           <div style={{
             position: "absolute",
             inset: 0,
@@ -85,7 +82,6 @@ export default async function EventDetailPage({
             }} />
           )}
 
-          {/* Content */}
           <div style={{ position: "relative", zIndex: 1 }}>
             <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
               <span style={{
@@ -138,18 +134,14 @@ export default async function EventDetailPage({
           </div>
         </div>
 
-        {/* Two column layout */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "1fr 320px",
           gap: "24px",
           alignItems: "start",
         }}>
-
-          {/* LEFT */}
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
-            {/* About */}
             <div style={{
               backgroundColor: "#1A1A1A",
               border: "1px solid #2A2A2A",
@@ -170,7 +162,6 @@ export default async function EventDetailPage({
               </p>
             </div>
 
-            {/* Highlights */}
             {event.highlights && event.highlights.length > 0 && (
               <div style={{
                 backgroundColor: "#1A1A1A",
@@ -198,7 +189,6 @@ export default async function EventDetailPage({
               </div>
             )}
 
-            {/* Speaker */}
             {event.speaker && (
               <div style={{
                 backgroundColor: "#1A1A1A",
@@ -245,7 +235,6 @@ export default async function EventDetailPage({
             )}
           </div>
 
-          {/* RIGHT sidebar */}
           <div style={{
             backgroundColor: "#1A1A1A",
             border: "1px solid #2A2A2A",
@@ -266,22 +255,45 @@ export default async function EventDetailPage({
               </p>
             </div>
 
-            <button style={{
-              width: "100%",
-              backgroundColor: "#F5A623",
-              color: "#0D0D0D",
-              fontWeight: 700,
-              fontSize: "14px",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              cursor: "pointer",
-              marginBottom: "10px",
-            }}>
-              Register Now
-            </button>
+            {event.registration_url ? (
+              
+                href={event.registration_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  backgroundColor: "#F5A623",
+                  color: "#0D0D0D",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                  padding: "14px",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  textAlign: "center",
+                  marginBottom: "10px",
+                  boxSizing: "border-box",
+                }}
+              >
+                Register Now →
+              </a>
+            ) : (
+              <button style={{
+                width: "100%",
+                backgroundColor: "#2A2A2A",
+                color: "#6B6B6B",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                cursor: "not-allowed",
+                marginBottom: "10px",
+              }}>
+                Registration Coming Soon
+              </button>
+            )}
 
-            {/* Share buttons - client component */}
             <ShareButtons eventId={event.id} eventTitle={event.title} />
 
             <div style={{
