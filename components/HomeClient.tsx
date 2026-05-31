@@ -20,6 +20,7 @@ interface Event {
   price: string;
   image_color: string;
   tag?: string;
+  featured?: boolean;
 }
 
 export default function HomeClient({ events }: { events: Event[] }) {
@@ -36,6 +37,9 @@ export default function HomeClient({ events }: { events: Event[] }) {
       e.description?.toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const featuredEvents = filtered.filter((e) => e.featured);
+  const regularEvents = filtered.filter((e) => !e.featured);
 
   return (
     <>
@@ -80,7 +84,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
           </p>
 
           {/* Stats */}
-          <div style={{ display: "flex", gap: "48px", marginBottom: "48px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "48px", marginBottom: "32px", flexWrap: "wrap" }}>
             {[
               { label: "Events", value: `${events.length}` },
               { label: "Cities", value: "3" },
@@ -107,6 +111,41 @@ export default function HomeClient({ events }: { events: Event[] }) {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Feature Your Event CTA */}
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "12px",
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #F5A623",
+            borderRadius: "12px",
+            padding: "12px 20px",
+            marginBottom: "32px",
+            flexWrap: "wrap",
+          }}>
+            <span style={{ fontSize: "20px" }}>⭐</span>
+            <p style={{ color: "#E8E8E8", fontSize: "14px" }}>
+              Want your event featured at the top?
+            </p>
+            
+              href="https://wa.me/2349044209650?text=Hi, I want to feature my event on VENEW"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                backgroundColor: "#F5A623",
+                color: "#0D0D0D",
+                fontWeight: 700,
+                fontSize: "13px",
+                padding: "8px 16px",
+                borderRadius: "999px",
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Feature My Event
+            </a>
           </div>
 
           {/* Search bar */}
@@ -204,18 +243,45 @@ export default function HomeClient({ events }: { events: Event[] }) {
             <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
           </div>
 
-          {/* Card grid */}
-          {filtered.length > 0 ? (
+          {/* Featured events */}
+          {featuredEvents.length > 0 && (
+            <div style={{ marginBottom: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+                <span style={{ fontSize: "18px" }}>⭐</span>
+                <h3 style={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#F5A623",
+                }}>
+                  Featured Events
+                </h3>
+              </div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                gap: "24px",
+              }}>
+                {featuredEvents.map((event, i) => (
+                  <EventCard key={event.id} event={event as any} index={i} />
+                ))}
+              </div>
+              <div style={{ height: "1px", backgroundColor: "#2A2A2A", margin: "40px 0" }} />
+            </div>
+          )}
+
+          {/* Regular events */}
+          {regularEvents.length > 0 ? (
             <div style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
               gap: "24px",
             }}>
-              {filtered.map((event, i) => (
+              {regularEvents.map((event, i) => (
                 <EventCard key={event.id} event={event as any} index={i} />
               ))}
             </div>
-          ) : (
+          ) : filtered.length === 0 ? (
             <div style={{
               display: "flex",
               flexDirection: "column",
@@ -253,7 +319,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
                 Clear filters
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </section>
     </>

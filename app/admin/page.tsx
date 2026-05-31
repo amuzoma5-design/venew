@@ -37,6 +37,11 @@ export default function AdminPage() {
     setEvents(events.map(e => e.id === id ? { ...e, approved: true } : e));
   }
 
+  async function featureEvent(id: string, featured: boolean) {
+    await supabase.from("events").update({ featured }).eq("id", id);
+    setEvents(events.map(e => e.id === id ? { ...e, featured } : e));
+  }
+
   async function rejectEvent(id: string) {
     if (!confirm("Delete this event permanently?")) return;
     await supabase.from("events").delete().eq("id", id);
@@ -258,7 +263,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Action buttons */}
-                <div style={{ display: "flex", gap: "10px" }}>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                   {!event.approved && (
                     <button
                       onClick={() => approveEvent(event.id)}
@@ -290,6 +295,21 @@ export default function AdminPage() {
                     }}
                   >
                     ✕ Delete
+                  </button>
+                  <button
+                    onClick={() => featureEvent(event.id, !event.featured)}
+                    style={{
+                      backgroundColor: event.featured ? "#F5A623" : "transparent",
+                      color: event.featured ? "#0D0D0D" : "#F5A623",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      padding: "8px 18px",
+                      borderRadius: "999px",
+                      border: "1px solid #F5A623",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {event.featured ? "⭐ Featured" : "Feature"}
                   </button>
                   <Link
                     href={`/event/${event.id}`}

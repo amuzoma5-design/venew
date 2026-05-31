@@ -17,6 +17,7 @@ export default async function HomePage() {
     .select("*")
     .eq("approved", true)
     .eq("status", "upcoming")
+    .order("featured", { ascending: false })
     .order("date", { ascending: true });
 
   if (error) {
