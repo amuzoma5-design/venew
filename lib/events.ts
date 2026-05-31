@@ -1,4 +1,13 @@
-export type Category = "Conference" | "Church" | "Seminar" | "Workshop";
+export type Category =
+  | "Conference"
+  | "Church"
+  | "Seminar"
+  | "Workshop"
+  | "Business"
+  | "Music & Entertainment"
+  | "Technology"
+  | "Real Estate"
+  | "Education";
 
 export interface Event {
   id: string;
@@ -118,7 +127,17 @@ export function getEventById(id: string): Event | undefined {
   return events.find((e) => e.id === id);
 }
 
-export const categories: Category[] = ["Conference", "Church", "Seminar", "Workshop"];
+export const categories: Category[] = [
+  "Conference",
+  "Church",
+  "Seminar",
+  "Workshop",
+  "Business",
+  "Music & Entertainment",
+  "Technology",
+  "Real Estate",
+  "Education",
+];
 
 export function formatDate(dateStr: string): string {
   const date = new Date(dateStr);

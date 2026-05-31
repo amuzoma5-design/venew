@@ -7,6 +7,11 @@ const categoryIcons: Record<Category, string> = {
   Church: "⛪",
   Seminar: "📚",
   Workshop: "🛠️",
+  Business: "💼",
+  "Music & Entertainment": "🎵",
+  Technology: "💻",
+  "Real Estate": "🏠",
+  Education: "🎓",
 };
 
 interface CategoryFilterProps {

@@ -10,6 +10,11 @@ const categoryColors: Record<string, string> = {
   Church: "#A78BFA",
   Seminar: "#22D3EE",
   Workshop: "#FB7185",
+  Business: "#10B981",
+  "Music & Entertainment": "#F43F5E",
+  Technology: "#3B82F6",
+  "Real Estate": "#8B5CF6",
+  Education: "#F97316",
 };
 
 export default async function EventDetailPage({
