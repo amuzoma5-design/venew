@@ -32,8 +32,8 @@ export default async function EventDetailPage({
 
   if (error || !event) notFound();
 
+  const isArchived = event.status === "archived";
   const catColor = categoryColors[event.category] ?? "#F5A623";
-
   const registerButton = event.registration_url
     ? { type: "link", href: event.registration_url }
     : { type: "button" };
@@ -55,6 +55,43 @@ export default async function EventDetailPage({
         }}>
           ← Back to all events
         </Link>
+
+        {/* Archived banner */}
+        {isArchived && (
+          <div style={{
+            backgroundColor: "#2A1A00",
+            border: "1px solid #F5A623",
+            borderRadius: "12px",
+            padding: "16px 20px",
+            marginBottom: "24px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+          }}>
+            <span style={{ fontSize: "24px" }}>⏰</span>
+            <div>
+              <p style={{ color: "#F5A623", fontWeight: 700, fontSize: "15px" }}>
+                This event has ended
+              </p>
+              <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "2px" }}>
+                You are viewing an archived event. Browse upcoming events below.
+              </p>
+            </div>
+            <a href="/" style={{
+              marginLeft: "auto",
+              backgroundColor: "#F5A623",
+              color: "#0D0D0D",
+              fontWeight: 700,
+              fontSize: "13px",
+              padding: "8px 16px",
+              borderRadius: "999px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}>
+              Browse Events
+            </a>
+          </div>
+        )}
 
         <div style={{
           background: event.image_url
@@ -114,6 +151,18 @@ export default async function EventDetailPage({
                   color: "white",
                 }}>
                   {event.tag}
+                </span>
+              )}
+              {isArchived && (
+                <span style={{
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  padding: "6px 14px",
+                  borderRadius: "999px",
+                  backgroundColor: "rgba(255,255,255,0.15)",
+                  color: "rgba(255,255,255,0.7)",
+                }}>
+                  ENDED
                 </span>
               )}
             </div>
@@ -264,7 +313,22 @@ export default async function EventDetailPage({
               </p>
             </div>
 
-            {registerButton.type === "link" ? (
+            {isArchived ? (
+              <button style={{
+                width: "100%",
+                backgroundColor: "#2A2A2A",
+                color: "#6B6B6B",
+                fontWeight: 700,
+                fontSize: "14px",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                cursor: "not-allowed",
+                marginBottom: "10px",
+              }}>
+                Event Has Ended
+              </button>
+            ) : registerButton.type === "link" ? (
               <Link
                 href={registerButton.href as string}
                 target="_blank"
