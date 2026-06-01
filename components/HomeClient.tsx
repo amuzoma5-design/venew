@@ -27,6 +27,8 @@ export default function HomeClient({ events }: { events: Event[] }) {
   const [activeCategory, setActiveCategory] = useState<Category | "All">("All");
   const [search, setSearch] = useState("");
 
+  const waLink = "https://wa.me/2349044209650?text=Hi, I want to feature my event on VENEW";
+
   const filtered = events.filter((e) => {
     const matchesCategory =
       activeCategory === "All" || e.category === activeCategory;
@@ -129,8 +131,8 @@ export default function HomeClient({ events }: { events: Event[] }) {
             <p style={{ color: "#E8E8E8", fontSize: "14px" }}>
               Want your event featured at the top?
             </p>
-            
-              href="https://wa.me/2349044209650?text=Hi, I want to feature my event on VENEW"
+            <a
+              href={waLink}
               target="_blank"
               rel="noopener noreferrer"
               style={{

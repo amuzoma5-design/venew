@@ -1,30 +1,38 @@
 const fs = require('fs');
 
-const content = [
-  '"use client";',
-  '',
-  'export default function ShareButtons({ eventId, eventTitle }: { eventId: string; eventTitle: string }) {',
- '  const url = "https://venew.ng/event/" + eventId;',
-  '  const text = "Check out: " + eventTitle + " on VENEW! ";',
-  '  function copyLink() {',
-  '    navigator.clipboard.writeText(url);',
-  '    alert("Link copied!");',
-  '  }',
-  '  return (',
-  '    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>',
-  '      <a href={"https://wa.me/?text=" + encodeURIComponent(text + url)} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", backgroundColor: "#25D366", color: "white", fontWeight: 700, fontSize: "14px", padding: "14px", borderRadius: "12px", textDecoration: "none", boxSizing: "border-box" }}>',
-  '        Share on WhatsApp',
-  '      </a>',
-  '      <a href={"https://twitter.com/intent/tweet?text=" + encodeURIComponent(text) + "&url=" + encodeURIComponent(url)} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", backgroundColor: "#000", color: "white", fontWeight: 700, fontSize: "14px", padding: "14px", borderRadius: "12px", textDecoration: "none", boxSizing: "border-box" }}>',
-  '        Share on X',
-  '      </a>',
-  '      <button onClick={copyLink} style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 600, fontSize: "14px", padding: "14px", borderRadius: "12px", border: "1px solid #2A2A2A", cursor: "pointer", boxSizing: "border-box" }}>',
-  '        Copy Link',
-  '      </button>',
-  '    </div>',
-  '  );',
-  '}',
-].join('\n');
+let content = fs.readFileSync('components/HomeClient.tsx', 'utf8');
 
-fs.writeFileSync('components/ShareButtons.tsx', content);
-console.log('Done!');
+content = content.replace(
+  '            }}\n            >\n              Feature My Event\n            </a>',
+  '            }}\n            >\n              Feature My Event\n            </a>'
+);
+
+// Find the broken spot and fix it
+const broken = '              }}\n            >\n              Feature My Event';
+const fixed = '              }}\n            >\n              Feature My Event';
+
+// Direct replacement approach
+content = content.replace(
+  'padding: "8px 16px",\n                borderRadius: "999px",\n                textDecoration: "none",\n                whiteSpace: "nowrap",\n              }}\n            >\n              Feature My Event\n            </a>',
+  'padding: "8px 16px",\n                borderRadius: "999px",\n                textDecoration: "none",\n                whiteSpace: "nowrap",\n              }}\n            >\n              Feature My Event\n            </a>'
+);
+
+const oldText = `            <p style={{ color: "#E8E8E8", fontSize: "14px" }}>
+              Want your event featured at the top?
+            </p>
+            
+              href={waLink}`;
+
+const newText = `            <p style={{ color: "#E8E8E8", fontSize: "14px" }}>
+              Want your event featured at the top?
+            </p>
+            
+              href={waLink}`;
+
+content = content.replace(oldText, newText);
+
+fs.writeFileSync('components/HomeClient.tsx', content);
+console.log('Done! Lines around fix:');
+const lines = content.split('\n');
+const idx = lines.findIndex(l => l.includes('Feature My Event'));
+console.log(lines.slice(idx-8, idx+3).join('\n'));
