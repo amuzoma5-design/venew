@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ShareButtons from "@/components/ShareButtons";
+import SaveEventButton from "@/components/SaveEventButton";
+import ActivityTracker from "@/components/ActivityTracker";
 
 const categoryColors: Record<string, string> = {
   Conference: "#F59E0B",
@@ -41,6 +43,7 @@ export default async function EventDetailPage({
   return (
     <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
       <Navbar />
+      <ActivityTracker eventId={event.id} />
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 24px 80px" }}>
 
@@ -367,6 +370,7 @@ export default async function EventDetailPage({
               </button>
             )}
 
+            <SaveEventButton eventId={event.id} />
             <ShareButtons eventId={event.id} eventTitle={event.title} />
 
             <div style={{

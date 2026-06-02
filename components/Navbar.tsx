@@ -84,7 +84,16 @@ export default function Navbar() {
                 {user.email}
               </span>
 
-              {/* Submit button */}
+              {/* My Account */}
+              <Link href="/account" style={{
+                color: "#6B6B6B",
+                fontSize: "14px",
+                textDecoration: "none",
+              }}>
+                My Account
+              </Link>
+
+              {/* Submit Event */}
               <Link href="/submit" style={{
                 backgroundColor: "#F5A623",
                 color: "#0D0D0D",
