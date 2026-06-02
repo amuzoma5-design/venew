@@ -4,31 +4,164 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
+type Tab = "events" | "users" | "analytics";
+
 export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<Tab>("events");
 
   const ADMIN_PASSWORD = "venew2026";
 
   function handleLogin() {
     if (password === ADMIN_PASSWORD) {
       setAuthed(true);
-      loadEvents();
+      loadAll();
     } else {
       setError("Wrong password.");
     }
   }
 
-  async function loadEvents() {
+  async function loadAll() {
     setLoading(true);
-    const { data } = await supabase
+
+    // Load events
+    const { data: eventsData } = await supabase
       .from("events")
       .select("*")
       .order("created_at", { ascending: false });
-    setEvents(data ?? []);
+    setEvents(eventsData ?? []);
+
+    // Load profiles with user info
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setUsers(profilesData ?? []);
+
+    // Load analytics
+    const { count: totalViews } = await supabase
+      .from("user_activity")
+      .select("*", { count: "exact", head: true })
+      .eq("action_type", "viewed");
+
+    const { count: totalSaves } = await supabase
+      .from("saved_events")
+      .select("*", { count: "exact", head: true });
+
+    const { count: totalUsers } = await supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
+
+    const { count: totalEvents } = await supabase
+      .from("events")
+      .select("*", { count: "exact", head: true });
+
+    const { count: approvedEvents } = await supabase
+      .from("events")
+      .select("*", { count: "exact", head: true })
+      .eq("approved", true);
+
+    const { count: pendingEvents } = await supabase
+      .from("events")
+      .select("*", { count: "exact", head: true })
+      .eq("approved", false);
+
+    // Most viewed events
+    const { data: viewsData } = await supabase
+      .from("user_activity")
+      .select("event_id")
+      .eq("action_type", "viewed");
+
+    const viewCounts: Record<string, number> = {};
+    viewsData?.forEach(({ event_id }) => {
+      if (event_id) viewCounts[event_id] = (viewCounts[event_id] || 0) + 1;
+    });
+
+    const topEventIds = Object.entries(viewCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id]) => id);
+
+    let topEvents: any[] = [];
+    if (topEventIds.length > 0) {
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, category")
+        .in("id", topEventIds);
+      topEvents = (data || []).map((e) => ({
+        ...e,
+        views: viewCounts[e.id] || 0,
+      })).sort((a, b) => b.views - a.views);
+    }
+
+    // Most saved events
+    const { data: savesData } = await supabase
+      .from("saved_events")
+      .select("event_id");
+
+    const saveCounts: Record<string, number> = {};
+    savesData?.forEach(({ event_id }) => {
+      if (event_id) saveCounts[event_id] = (saveCounts[event_id] || 0) + 1;
+    });
+
+    const topSavedIds = Object.entries(saveCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id]) => id);
+
+    let topSaved: any[] = [];
+    if (topSavedIds.length > 0) {
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, category")
+        .in("id", topSavedIds);
+      topSaved = (data || []).map((e) => ({
+        ...e,
+        saves: saveCounts[e.id] || 0,
+      })).sort((a, b) => b.saves - a.saves);
+    }
+
+    // Cities breakdown
+    const { data: citiesData } = await supabase
+      .from("profiles")
+      .select("city");
+
+    const cityCounts: Record<string, number> = {};
+    citiesData?.forEach(({ city }) => {
+      if (city) cityCounts[city] = (cityCounts[city] || 0) + 1;
+    });
+
+    // Interests breakdown
+    const { data: interestsData } = await supabase
+      .from("profiles")
+      .select("interests");
+
+    const interestCounts: Record<string, number> = {};
+    interestsData?.forEach(({ interests }) => {
+      interests?.forEach((i: string) => {
+        interestCounts[i] = (interestCounts[i] || 0) + 1;
+      });
+    });
+
+    setAnalytics({
+      totalViews: totalViews || 0,
+      totalSaves: totalSaves || 0,
+      totalUsers: totalUsers || 0,
+      totalEvents: totalEvents || 0,
+      approvedEvents: approvedEvents || 0,
+      pendingEvents: pendingEvents || 0,
+      topEvents,
+      topSaved,
+      cityCounts,
+      interestCounts,
+    });
+
     setLoading(false);
   }
 
@@ -171,165 +304,444 @@ export default function AdminPage() {
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
 
-        {/* Stats */}
+        {/* Top stats */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
           gap: "16px",
-          marginBottom: "40px",
+          marginBottom: "32px",
         }}>
           {[
-            { label: "Total Events", value: events.length, color: "#E8E8E8" },
-            { label: "Approved", value: events.filter(e => e.approved).length, color: "#10B981" },
-            { label: "Pending", value: events.filter(e => !e.approved).length, color: "#F5A623" },
+            { label: "Total Events", value: analytics.totalEvents, color: "#E8E8E8" },
+            { label: "Approved", value: analytics.approvedEvents, color: "#10B981" },
+            { label: "Pending", value: analytics.pendingEvents, color: "#F5A623" },
+            { label: "Registered Users", value: analytics.totalUsers, color: "#3B82F6" },
+            { label: "Total Views", value: analytics.totalViews, color: "#A78BFA" },
+            { label: "Total Saves", value: analytics.totalSaves, color: "#F43F5E" },
           ].map(({ label, value, color }) => (
             <div key={label} style={{
               backgroundColor: "#1A1A1A",
               border: "1px solid #2A2A2A",
               borderRadius: "16px",
-              padding: "24px",
+              padding: "20px",
               textAlign: "center",
             }}>
               <p style={{
                 fontFamily: "Georgia, serif",
-                fontSize: "40px",
+                fontSize: "32px",
                 fontWeight: 900,
                 color,
                 lineHeight: 1,
               }}>
-                {value}
+                {loading ? "..." : value ?? 0}
               </p>
-              <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "8px" }}>
+              <p style={{ color: "#6B6B6B", fontSize: "12px", marginTop: "8px" }}>
                 {label}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Events table */}
-        <h2 style={{
-          fontFamily: "Georgia, serif",
-          fontSize: "24px",
-          fontWeight: 700,
-          color: "#E8E8E8",
-          marginBottom: "20px",
-        }}>
-          All Submitted Events
-        </h2>
+        {/* Tabs */}
+        <div style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
+          {(["events", "users", "analytics"] as Tab[]).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                backgroundColor: activeTab === tab ? "#F5A623" : "#1A1A1A",
+                color: activeTab === tab ? "#0D0D0D" : "#6B6B6B",
+                fontWeight: 700,
+                fontSize: "13px",
+                padding: "8px 20px",
+                borderRadius: "999px",
+                border: activeTab === tab ? "none" : "1px solid #2A2A2A",
+                cursor: "pointer",
+                textTransform: "capitalize",
+              }}
+            >
+              {tab === "events" ? "📋 Events" : tab === "users" ? "👥 Users" : "📊 Analytics"}
+            </button>
+          ))}
+        </div>
 
-        {loading ? (
-          <p style={{ color: "#6B6B6B" }}>Loading events...</p>
-        ) : events.length === 0 ? (
-          <p style={{ color: "#6B6B6B" }}>No events yet.</p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {events.map((event) => (
-              <div key={event.id} style={{
-                backgroundColor: "#1A1A1A",
-                border: `1px solid ${event.approved ? "#10B98130" : "#F5A62330"}`,
-                borderRadius: "16px",
-                padding: "20px 24px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: "16px",
-              }}>
-                {/* Event info */}
-                <div style={{ flex: 1, minWidth: "200px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                    <h3 style={{
-                      color: "#E8E8E8",
-                      fontWeight: 700,
-                      fontSize: "16px",
-                      fontFamily: "Georgia, serif",
-                    }}>
-                      {event.title}
-                    </h3>
-                    <span style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      padding: "2px 8px",
-                      borderRadius: "999px",
-                      backgroundColor: event.approved ? "#10B98120" : "#F5A62320",
-                      color: event.approved ? "#10B981" : "#F5A623",
-                    }}>
-                      {event.approved ? "Approved" : "Pending"}
-                    </span>
+        {/* Events tab */}
+        {activeTab === "events" && (
+          <div>
+            <h2 style={{
+              fontFamily: "Georgia, serif",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#E8E8E8",
+              marginBottom: "20px",
+            }}>
+              All Submitted Events
+            </h2>
+
+            {loading ? (
+              <p style={{ color: "#6B6B6B" }}>Loading events...</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {events.map((event) => (
+                  <div key={event.id} style={{
+                    backgroundColor: "#1A1A1A",
+                    border: `1px solid ${event.approved ? "#10B98130" : "#F5A62330"}`,
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "16px",
+                  }}>
+                    <div style={{ flex: 1, minWidth: "200px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
+                        <h3 style={{
+                          color: "#E8E8E8",
+                          fontWeight: 700,
+                          fontSize: "16px",
+                          fontFamily: "Georgia, serif",
+                        }}>
+                          {event.title}
+                        </h3>
+                        <span style={{
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          padding: "2px 8px",
+                          borderRadius: "999px",
+                          backgroundColor: event.approved ? "#10B98120" : "#F5A62320",
+                          color: event.approved ? "#10B981" : "#F5A623",
+                        }}>
+                          {event.approved ? "Approved" : "Pending"}
+                        </span>
+                        {event.featured && (
+                          <span style={{
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            padding: "2px 8px",
+                            borderRadius: "999px",
+                            backgroundColor: "#F5A62320",
+                            color: "#F5A623",
+                          }}>
+                            ⭐ Featured
+                          </span>
+                        )}
+                      </div>
+                      <p style={{ color: "#6B6B6B", fontSize: "13px" }}>
+                        {event.category} · {event.location} · {event.date}
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                      {!event.approved && (
+                        <button
+                          onClick={() => approveEvent(event.id)}
+                          style={{
+                            backgroundColor: "#10B981",
+                            color: "white",
+                            fontWeight: 700,
+                            fontSize: "13px",
+                            padding: "8px 18px",
+                            borderRadius: "999px",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                        >
+                          ✓ Approve
+                        </button>
+                      )}
+                      <button
+                        onClick={() => featureEvent(event.id, !event.featured)}
+                        style={{
+                          backgroundColor: event.featured ? "#F5A623" : "transparent",
+                          color: event.featured ? "#0D0D0D" : "#F5A623",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                          padding: "8px 18px",
+                          borderRadius: "999px",
+                          border: "1px solid #F5A623",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {event.featured ? "⭐ Featured" : "Feature"}
+                      </button>
+                      <button
+                        onClick={() => rejectEvent(event.id)}
+                        style={{
+                          backgroundColor: "transparent",
+                          color: "#F43F5E",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                          padding: "8px 18px",
+                          borderRadius: "999px",
+                          border: "1px solid #F43F5E30",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ✕ Delete
+                      </button>
+                      <Link
+                        href={`/event/${event.id}`}
+                        target="_blank"
+                        style={{
+                          backgroundColor: "transparent",
+                          color: "#6B6B6B",
+                          fontWeight: 600,
+                          fontSize: "13px",
+                          padding: "8px 18px",
+                          borderRadius: "999px",
+                          border: "1px solid #2A2A2A",
+                          textDecoration: "none",
+                        }}
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
-                  <p style={{ color: "#6B6B6B", fontSize: "13px" }}>
-                    {event.category} · {event.location} · {event.date}
-                  </p>
-                </div>
-
-                {/* Action buttons */}
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                  {!event.approved && (
-                    <button
-                      onClick={() => approveEvent(event.id)}
-                      style={{
-                        backgroundColor: "#10B981",
-                        color: "white",
-                        fontWeight: 700,
-                        fontSize: "13px",
-                        padding: "8px 18px",
-                        borderRadius: "999px",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      ✓ Approve
-                    </button>
-                  )}
-                  <button
-                    onClick={() => rejectEvent(event.id)}
-                    style={{
-                      backgroundColor: "transparent",
-                      color: "#F43F5E",
-                      fontWeight: 700,
-                      fontSize: "13px",
-                      padding: "8px 18px",
-                      borderRadius: "999px",
-                      border: "1px solid #F43F5E30",
-                      cursor: "pointer",
-                    }}
-                  >
-                    ✕ Delete
-                  </button>
-                  <button
-                    onClick={() => featureEvent(event.id, !event.featured)}
-                    style={{
-                      backgroundColor: event.featured ? "#F5A623" : "transparent",
-                      color: event.featured ? "#0D0D0D" : "#F5A623",
-                      fontWeight: 700,
-                      fontSize: "13px",
-                      padding: "8px 18px",
-                      borderRadius: "999px",
-                      border: "1px solid #F5A623",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {event.featured ? "⭐ Featured" : "Feature"}
-                  </button>
-                  <Link
-                    href={`/event/${event.id}`}
-                    target="_blank"
-                    style={{
-                      backgroundColor: "transparent",
-                      color: "#6B6B6B",
-                      fontWeight: 600,
-                      fontSize: "13px",
-                      padding: "8px 18px",
-                      borderRadius: "999px",
-                      border: "1px solid #2A2A2A",
-                      textDecoration: "none",
-                    }}
-                  >
-                    View
-                  </Link>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
+          </div>
+        )}
+
+        {/* Users tab */}
+        {activeTab === "users" && (
+          <div>
+            <h2 style={{
+              fontFamily: "Georgia, serif",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#E8E8E8",
+              marginBottom: "20px",
+            }}>
+              Registered Users
+            </h2>
+
+            {loading ? (
+              <p style={{ color: "#6B6B6B" }}>Loading users...</p>
+            ) : users.length === 0 ? (
+              <p style={{ color: "#6B6B6B" }}>No users yet.</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {users.map((user) => (
+                  <div key={user.id} style={{
+                    backgroundColor: "#1A1A1A",
+                    border: "1px solid #2A2A2A",
+                    borderRadius: "16px",
+                    padding: "20px 24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: "16px",
+                  }}>
+                    <div>
+                      <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px", fontFamily: "Georgia, serif" }}>
+                        {user.display_name || "No name set"}
+                      </p>
+                      <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "4px" }}>
+                        📍 {user.city || "City not set"} · Joined {new Date(user.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                      {user.interests && user.interests.length > 0 && (
+                        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "8px" }}>
+                          {user.interests.map((interest: string) => (
+                            <span key={interest} style={{
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              padding: "2px 8px",
+                              borderRadius: "999px",
+                              backgroundColor: "#F5A62315",
+                              color: "#F5A623",
+                            }}>
+                              {interest}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Analytics tab */}
+        {activeTab === "analytics" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+
+            {/* Most viewed events */}
+            <div style={{
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
+              borderRadius: "16px",
+              padding: "28px",
+            }}>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#E8E8E8",
+                marginBottom: "20px",
+              }}>
+                👁️ Most Viewed Events
+              </h2>
+              {analytics.topEvents?.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {analytics.topEvents.map((event: any, i: number) => (
+                    <div key={event.id} style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "12px 16px",
+                      backgroundColor: "#111",
+                      borderRadius: "10px",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span style={{ color: "#F5A623", fontWeight: 900, fontSize: "18px", fontFamily: "Georgia, serif", minWidth: "24px" }}>
+                          {i + 1}
+                        </span>
+                        <div>
+                          <p style={{ color: "#E8E8E8", fontSize: "14px", fontWeight: 600 }}>{event.title}</p>
+                          <p style={{ color: "#6B6B6B", fontSize: "12px" }}>{event.category}</p>
+                        </div>
+                      </div>
+                      <span style={{ color: "#A78BFA", fontWeight: 700, fontSize: "14px" }}>
+                        {event.views} views
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No view data yet.</p>
+              )}
+            </div>
+
+            {/* Most saved events */}
+            <div style={{
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
+              borderRadius: "16px",
+              padding: "28px",
+            }}>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#E8E8E8",
+                marginBottom: "20px",
+              }}>
+                ❤️ Most Saved Events
+              </h2>
+              {analytics.topSaved?.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {analytics.topSaved.map((event: any, i: number) => (
+                    <div key={event.id} style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "12px 16px",
+                      backgroundColor: "#111",
+                      borderRadius: "10px",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <span style={{ color: "#F5A623", fontWeight: 900, fontSize: "18px", fontFamily: "Georgia, serif", minWidth: "24px" }}>
+                          {i + 1}
+                        </span>
+                        <div>
+                          <p style={{ color: "#E8E8E8", fontSize: "14px", fontWeight: 600 }}>{event.title}</p>
+                          <p style={{ color: "#6B6B6B", fontSize: "12px" }}>{event.category}</p>
+                        </div>
+                      </div>
+                      <span style={{ color: "#F43F5E", fontWeight: 700, fontSize: "14px" }}>
+                        {event.saves} saves
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No save data yet.</p>
+              )}
+            </div>
+
+            {/* Users by city */}
+            <div style={{
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
+              borderRadius: "16px",
+              padding: "28px",
+            }}>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#E8E8E8",
+                marginBottom: "20px",
+              }}>
+                🏙️ Users by City
+              </h2>
+              {Object.keys(analytics.cityCounts || {}).length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {Object.entries(analytics.cityCounts || {})
+                    .sort((a: any, b: any) => b[1] - a[1])
+                    .map(([city, count]: any) => (
+                      <div key={city} style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "10px 16px",
+                        backgroundColor: "#111",
+                        borderRadius: "10px",
+                      }}>
+                        <span style={{ color: "#E8E8E8", fontSize: "14px" }}>📍 {city}</span>
+                        <span style={{ color: "#3B82F6", fontWeight: 700, fontSize: "14px" }}>{count} users</span>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No city data yet.</p>
+              )}
+            </div>
+
+            {/* Popular interests */}
+            <div style={{
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
+              borderRadius: "16px",
+              padding: "28px",
+            }}>
+              <h2 style={{
+                fontFamily: "Georgia, serif",
+                fontSize: "20px",
+                fontWeight: 700,
+                color: "#E8E8E8",
+                marginBottom: "20px",
+              }}>
+                ⭐ Popular Interests
+              </h2>
+              {Object.keys(analytics.interestCounts || {}).length > 0 ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {Object.entries(analytics.interestCounts || {})
+                    .sort((a: any, b: any) => b[1] - a[1])
+                    .map(([interest, count]: any) => (
+                      <div key={interest} style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#111",
+                        borderRadius: "999px",
+                        border: "1px solid #2A2A2A",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}>
+                        <span style={{ color: "#F5A623", fontSize: "13px", fontWeight: 600 }}>{interest}</span>
+                        <span style={{ color: "#6B6B6B", fontSize: "12px" }}>{count}</span>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No interest data yet.</p>
+              )}
+            </div>
           </div>
         )}
       </div>
