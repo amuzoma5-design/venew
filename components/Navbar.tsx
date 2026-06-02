@@ -62,13 +62,13 @@ export default function Navbar() {
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <Link href="/" style={{
-            color: "#6B6B6B",
-            fontSize: "14px",
-            textDecoration: "none",
-          }}>
-            Browse
-          </Link>
+         <Link href="/events" style={{
+  color: "#6B6B6B",
+  fontSize: "14px",
+  textDecoration: "none",
+}}>
+  Browse Events
+</Link>
 
           {user ? (
             <>
