@@ -49,10 +49,11 @@ export default function LandingPage() {
             maxWidth: "600px",
             margin: "0 auto 40px",
           }}>
-            Venew helps you turn every event into a beautiful, shareable page
+           Venew helps you turn every event into a beautiful, shareable page
             so more people can find, understand, and attend what you are
-            organizing — from church programs to conferences, trainings, and
-            community gatherings.
+            organizing — from church programs, conferences and seminars to
+            workshops, business networking, tech meetups, music events,
+            real estate expos, and educational gatherings.
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
