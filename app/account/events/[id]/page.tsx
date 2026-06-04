@@ -4,15 +4,19 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { categories } from "@/lib/events";
 
-export default function EditEventPage({ params }: { params: { id: string } }) {
+export default function EditEventPage() {
   const router = useRouter();
+  const params = useParams();
+  const eventId = params.id as string;
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -32,13 +36,21 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function load() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.push("/auth/login"); return; }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        router.push("/auth/login");
+        return;
+      }
+
+      setUserId(session.user.id);
 
       const { data: event, error } = await supabase
         .from("events")
         .select("*")
-        .eq("id", params.id)
+        .eq("id", eventId)
         .eq("user_id", session.user.id)
         .single();
 
@@ -62,11 +74,14 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
         imageUrl: event.image_url || "",
       });
 
-      if (event.image_url) setImagePreview(event.image_url);
+      setImagePreview(event.image_url || null);
       setLoading(false);
     }
-    load();
-  }, [params.id, router]);
+
+    if (eventId) {
+      load();
+    }
+  }, [eventId, router]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -76,6 +91,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+
     if (file) {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
@@ -88,14 +104,20 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
       return;
     }
 
+    if (!userId) {
+      setError("Please log in again before saving.");
+      return;
+    }
+
     setSaving(true);
+    setSuccess(false);
     setError("");
 
     let imageUrl = form.imageUrl;
 
     if (image) {
       const fileExt = image.name.split(".").pop();
-      const fileName = `${params.id}-${Date.now()}.${fileExt}`;
+      const fileName = `${eventId}-${Date.now()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
         .from("event-images")
         .upload(fileName, image);
@@ -129,23 +151,34 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
         registration_url: form.registrationUrl,
         image_url: imageUrl,
       })
-      .eq("id", params.id);
+      .eq("id", eventId)
+      .eq("user_id", userId);
 
     setSaving(false);
 
     if (sbError) {
       setError("Something went wrong: " + sbError.message);
-    } else {
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      return;
     }
+
+    setImage(null);
+    setForm((prev) => ({ ...prev, imageUrl }));
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 3000);
   }
 
   if (loading) {
     return (
       <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
         <Navbar />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "60vh",
+          }}
+        >
           <p style={{ color: "#6B6B6B" }}>Loading event...</p>
         </div>
       </main>
@@ -157,88 +190,101 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
       <Navbar />
 
       <div style={{ maxWidth: "680px", margin: "0 auto", padding: "40px 24px 80px" }}>
-
-        <Link href="/account" style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "8px",
-          color: "#6B6B6B",
-          fontSize: "14px",
-          textDecoration: "none",
-          marginBottom: "32px",
-        }}>
-          ← Back to Profile
+        <Link
+          href="/account"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            color: "#6B6B6B",
+            fontSize: "14px",
+            textDecoration: "none",
+            marginBottom: "32px",
+          }}
+        >
+          Back to Profile
         </Link>
 
         <div style={{ marginBottom: "40px" }}>
-          <p style={{
-            color: "#F5A623",
-            fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "0.3em",
-            textTransform: "uppercase",
-            marginBottom: "12px",
-          }}>
+          <p
+            style={{
+              color: "#F5A623",
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              marginBottom: "12px",
+            }}
+          >
             Edit Event
           </p>
-          <h1 style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "36px",
-            fontWeight: 900,
-            color: "#E8E8E8",
-            lineHeight: 1.1,
-          }}>
+          <h1
+            style={{
+              fontFamily: "Georgia, serif",
+              fontSize: "36px",
+              fontWeight: 900,
+              color: "#E8E8E8",
+              lineHeight: 1.1,
+            }}
+          >
             {form.title || "Edit Event"}
           </h1>
         </div>
 
         {error && (
-          <div style={{
-            backgroundColor: "#2A0A0A",
-            border: "1px solid #F43F5E",
-            borderRadius: "10px",
-            padding: "14px 16px",
-            color: "#F43F5E",
-            fontSize: "14px",
-            marginBottom: "24px",
-          }}>
+          <div
+            style={{
+              backgroundColor: "#2A0A0A",
+              border: "1px solid #F43F5E",
+              borderRadius: "10px",
+              padding: "14px 16px",
+              color: "#F43F5E",
+              fontSize: "14px",
+              marginBottom: "24px",
+            }}
+          >
             {error}
           </div>
         )}
 
         {success && (
-          <div style={{
-            backgroundColor: "#0A2A1A",
-            border: "1px solid #10B981",
-            borderRadius: "10px",
-            padding: "14px 16px",
-            color: "#10B981",
-            fontSize: "14px",
-            marginBottom: "24px",
-          }}>
-            ✅ Event updated successfully!
+          <div
+            style={{
+              backgroundColor: "#0A2A1A",
+              border: "1px solid #10B981",
+              borderRadius: "10px",
+              padding: "14px 16px",
+              color: "#10B981",
+              fontSize: "14px",
+              marginBottom: "24px",
+            }}
+          >
+            Event updated successfully.
           </div>
         )}
 
-        <div style={{
-          backgroundColor: "#1A1A1A",
-          border: "1px solid #2A2A2A",
-          borderRadius: "20px",
-          padding: "36px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "24px",
-        }}>
-
+        <div
+          style={{
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #2A2A2A",
+            borderRadius: "20px",
+            padding: "36px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+          }}
+        >
           {/* Image upload */}
           <div>
-            <label style={{
-              display: "block",
-              color: "#E8E8E8",
-              fontSize: "13px",
-              fontWeight: 600,
-              marginBottom: "8px",
-            }}>
+            <label
+              style={{
+                display: "block",
+                color: "#E8E8E8",
+                fontSize: "13px",
+                fontWeight: 600,
+                marginBottom: "8px",
+              }}
+            >
               Event Image
             </label>
 
@@ -258,20 +304,22 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
               </div>
             )}
 
-            <label style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              backgroundColor: "#111",
-              border: "1px dashed #2A2A2A",
-              borderRadius: "10px",
-              padding: "20px",
-              cursor: "pointer",
-              color: "#6B6B6B",
-              fontSize: "14px",
-            }}>
-              📷 {image ? image.name : "Click to change image"}
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                backgroundColor: "#111",
+                border: "1px dashed #2A2A2A",
+                borderRadius: "10px",
+                padding: "20px",
+                cursor: "pointer",
+                color: "#6B6B6B",
+                fontSize: "14px",
+              }}
+            >
+              {image ? image.name : "Click to change image"}
               <input
                 type="file"
                 accept="image/*"
@@ -287,20 +335,22 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
             { label: "Location / City *", name: "location", type: "text", placeholder: "e.g. Lagos" },
             { label: "Venue", name: "venue", type: "text", placeholder: "e.g. Eko Hotel, Victoria Island" },
             { label: "Date *", name: "date", type: "date", placeholder: "" },
-            { label: "Time", name: "time", type: "text", placeholder: "e.g. 9:00 AM – 5:00 PM" },
-            { label: "Price", name: "price", type: "text", placeholder: "e.g. ₦5,000 or FREE" },
+            { label: "Time", name: "time", type: "text", placeholder: "e.g. 9:00 AM - 5:00 PM" },
+            { label: "Price", name: "price", type: "text", placeholder: "e.g. 5000 or FREE" },
             { label: "Speaker Name", name: "speaker", type: "text", placeholder: "e.g. Dr. Amaka Obi" },
             { label: "Speaker Title", name: "speakerTitle", type: "text", placeholder: "e.g. CEO, TechNaija" },
             { label: "Registration Link", name: "registrationUrl", type: "text", placeholder: "e.g. https://forms.gle/yourform" },
           ].map(({ label, name, type, placeholder }) => (
             <div key={name}>
-              <label style={{
-                display: "block",
-                color: "#E8E8E8",
-                fontSize: "13px",
-                fontWeight: 600,
-                marginBottom: "8px",
-              }}>
+              <label
+                style={{
+                  display: "block",
+                  color: "#E8E8E8",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  marginBottom: "8px",
+                }}
+              >
                 {label}
               </label>
               <input
@@ -326,13 +376,15 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
 
           {/* Category */}
           <div>
-            <label style={{
-              display: "block",
-              color: "#E8E8E8",
-              fontSize: "13px",
-              fontWeight: 600,
-              marginBottom: "8px",
-            }}>
+            <label
+              style={{
+                display: "block",
+                color: "#E8E8E8",
+                fontSize: "13px",
+                fontWeight: 600,
+                marginBottom: "8px",
+              }}
+            >
               Category *
             </label>
             <select
@@ -353,20 +405,24 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
 
           {/* Description */}
           <div>
-            <label style={{
-              display: "block",
-              color: "#E8E8E8",
-              fontSize: "13px",
-              fontWeight: 600,
-              marginBottom: "8px",
-            }}>
+            <label
+              style={{
+                display: "block",
+                color: "#E8E8E8",
+                fontSize: "13px",
+                fontWeight: 600,
+                marginBottom: "8px",
+              }}
+            >
               Description
             </label>
             <textarea
@@ -406,11 +462,11 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
               marginTop: "8px",
             }}
           >
-            {saving ? "Saving..." : "Save Changes →"}
+            {saving ? "Saving..." : "Save Changes"}
           </button>
 
           <Link
-            href={`/event/${params.id}`}
+            href={`/event/${eventId}`}
             target="_blank"
             style={{
               display: "block",
@@ -420,7 +476,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
               textDecoration: "none",
             }}
           >
-            View event page →
+            View event page
           </Link>
         </div>
       </div>
