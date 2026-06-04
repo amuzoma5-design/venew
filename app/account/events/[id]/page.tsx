@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
-import { categories } from "@/lib/events";
-import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { categories } from "@/lib/events";
 
-export default function SubmitEventPage() {
+export default function EditEventPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [form, setForm] = useState({
@@ -27,17 +27,46 @@ export default function SubmitEventPage() {
     speaker: "",
     speakerTitle: "",
     registrationUrl: "",
+    imageUrl: "",
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.push("/auth/login");
-      } else {
-        setChecking(false);
+    async function load() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) { router.push("/auth/login"); return; }
+
+      const { data: event, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", params.id)
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (error || !event) {
+        router.push("/account");
+        return;
       }
-    });
-  }, [router]);
+
+      setForm({
+        title: event.title || "",
+        category: event.category || "",
+        date: event.date || "",
+        time: event.time || "",
+        location: event.location || "",
+        venue: event.venue || "",
+        price: event.price || "",
+        description: event.description || "",
+        speaker: event.speaker || "",
+        speakerTitle: event.speaker_title || "",
+        registrationUrl: event.registration_url || "",
+        imageUrl: event.image_url || "",
+      });
+
+      if (event.image_url) setImagePreview(event.image_url);
+      setLoading(false);
+    }
+    load();
+  }, [params.id, router]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -53,31 +82,27 @@ export default function SubmitEventPage() {
     }
   }
 
-  async function handleSubmit() {
+  async function handleSave() {
     if (!form.title || !form.category || !form.date || !form.location) {
       setError("Please fill in Title, Category, Date and Location.");
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
     setError("");
 
-    const id = form.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    let imageUrl = form.imageUrl;
 
-    let imageUrl = null;
     if (image) {
       const fileExt = image.name.split(".").pop();
-      const fileName = `${id}-${Date.now()}.${fileExt}`;
+      const fileName = `${params.id}-${Date.now()}.${fileExt}`;
       const { error: uploadError } = await supabase.storage
         .from("event-images")
         .upload(fileName, image);
 
       if (uploadError) {
         setError("Image upload failed: " + uploadError.message);
-        setLoading(false);
+        setSaving(false);
         return;
       }
 
@@ -88,9 +113,9 @@ export default function SubmitEventPage() {
       imageUrl = urlData.publicUrl;
     }
 
-    const { error: sbError } = await supabase.from("events").insert([
-      {
-        id,
+    const { error: sbError } = await supabase
+      .from("events")
+      .update({
         title: form.title,
         category: form.category,
         date: form.date,
@@ -102,97 +127,26 @@ export default function SubmitEventPage() {
         speaker: form.speaker,
         speaker_title: form.speakerTitle,
         registration_url: form.registrationUrl,
-        highlights: [],
-        image_color: "from-amber-600 to-orange-800",
         image_url: imageUrl,
-        tag: null,
-        user_id: (await supabase.auth.getSession()).data.session?.user.id,
-      },
-    ]);
+      })
+      .eq("id", params.id);
 
-    setLoading(false);
+    setSaving(false);
 
     if (sbError) {
       setError("Something went wrong: " + sbError.message);
     } else {
-      // Send email notification
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        await fetch("/api/notify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: form.title,
-            category: form.category,
-            location: form.location,
-            date: form.date,
-            submitterEmail: session?.user.email,
-          }),
-        });
-      } catch (e) {
-        console.error("Notification failed:", e);
-      }
-      setSubmitted(true);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
     }
   }
 
-  if (checking) {
+  if (loading) {
     return (
       <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
         <Navbar />
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "60vh",
-        }}>
-          <p style={{ color: "#6B6B6B", fontSize: "16px" }}>Checking login...</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (submitted) {
-    return (
-      <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
-        <Navbar />
-        <div style={{
-          maxWidth: "560px",
-          margin: "0 auto",
-          padding: "80px 24px",
-          textAlign: "center",
-        }}>
-          <p style={{ fontSize: "64px", marginBottom: "24px" }}>🎉</p>
-          <h1 style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "36px",
-            fontWeight: 900,
-            color: "#E8E8E8",
-            marginBottom: "16px",
-          }}>
-            Event Submitted!
-          </h1>
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "16px",
-            lineHeight: 1.7,
-            marginBottom: "40px",
-          }}>
-            <strong style={{ color: "#F5A623" }}>{form.title}</strong> has been
-            submitted and is pending review. We will publish it shortly!
-          </p>
-          <Link href="/events" style={{
-            display: "inline-block",
-            backgroundColor: "#F5A623",
-            color: "#0D0D0D",
-            fontWeight: 700,
-            fontSize: "14px",
-            padding: "14px 32px",
-            borderRadius: "12px",
-            textDecoration: "none",
-          }}>
-            Browse Events
-          </Link>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
+          <p style={{ color: "#6B6B6B" }}>Loading event...</p>
         </div>
       </main>
     );
@@ -204,7 +158,7 @@ export default function SubmitEventPage() {
 
       <div style={{ maxWidth: "680px", margin: "0 auto", padding: "40px 24px 80px" }}>
 
-        <Link href="/" style={{
+        <Link href="/account" style={{
           display: "inline-flex",
           alignItems: "center",
           gap: "8px",
@@ -213,7 +167,7 @@ export default function SubmitEventPage() {
           textDecoration: "none",
           marginBottom: "32px",
         }}>
-          ← Back to home
+          ← Back to Profile
         </Link>
 
         <div style={{ marginBottom: "40px" }}>
@@ -225,16 +179,16 @@ export default function SubmitEventPage() {
             textTransform: "uppercase",
             marginBottom: "12px",
           }}>
-            Share with the Community
+            Edit Event
           </p>
           <h1 style={{
             fontFamily: "Georgia, serif",
-            fontSize: "40px",
+            fontSize: "36px",
             fontWeight: 900,
             color: "#E8E8E8",
             lineHeight: 1.1,
           }}>
-            Submit an Event
+            {form.title || "Edit Event"}
           </h1>
         </div>
 
@@ -249,6 +203,20 @@ export default function SubmitEventPage() {
             marginBottom: "24px",
           }}>
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div style={{
+            backgroundColor: "#0A2A1A",
+            border: "1px solid #10B981",
+            borderRadius: "10px",
+            padding: "14px 16px",
+            color: "#10B981",
+            fontSize: "14px",
+            marginBottom: "24px",
+          }}>
+            ✅ Event updated successfully!
           </div>
         )}
 
@@ -303,7 +271,7 @@ export default function SubmitEventPage() {
               color: "#6B6B6B",
               fontSize: "14px",
             }}>
-              📷 {image ? image.name : "Click to upload image"}
+              📷 {image ? image.name : "Click to change image"}
               <input
                 type="file"
                 accept="image/*"
@@ -423,27 +391,37 @@ export default function SubmitEventPage() {
           </div>
 
           <button
-            onClick={handleSubmit}
-            disabled={loading}
+            onClick={handleSave}
+            disabled={saving}
             style={{
               width: "100%",
-              backgroundColor: loading ? "#6B6B6B" : "#F5A623",
+              backgroundColor: saving ? "#6B6B6B" : "#F5A623",
               color: "#0D0D0D",
               fontWeight: 700,
               fontSize: "15px",
               padding: "16px",
               borderRadius: "12px",
               border: "none",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: saving ? "not-allowed" : "pointer",
               marginTop: "8px",
             }}
           >
-            {loading ? "Submitting..." : "Submit Event →"}
+            {saving ? "Saving..." : "Save Changes →"}
           </button>
 
-          <p style={{ color: "#6B6B6B", fontSize: "12px", textAlign: "center" }}>
-            Fields marked * are required. Event will be reviewed before going live.
-          </p>
+          <Link
+            href={`/event/${params.id}`}
+            target="_blank"
+            style={{
+              display: "block",
+              textAlign: "center",
+              color: "#6B6B6B",
+              fontSize: "13px",
+              textDecoration: "none",
+            }}
+          >
+            View event page →
+          </Link>
         </div>
       </div>
     </main>
