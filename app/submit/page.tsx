@@ -114,6 +114,23 @@ export default function SubmitEventPage() {
     if (sbError) {
       setError("Something went wrong: " + sbError.message);
     } else {
+      // Send email notification
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        await fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: form.title,
+            category: form.category,
+            location: form.location,
+            date: form.date,
+            submitterEmail: session?.user.email,
+          }),
+        });
+      } catch (e) {
+        console.error("Notification failed:", e);
+      }
       setSubmitted(true);
     }
   }
@@ -161,9 +178,9 @@ export default function SubmitEventPage() {
             marginBottom: "40px",
           }}>
             <strong style={{ color: "#F5A623" }}>{form.title}</strong> has been
-            added to VENEW and is now live!
+            submitted and is pending review. We will publish it shortly!
           </p>
-          <Link href="/" style={{
+          <Link href="/events" style={{
             display: "inline-block",
             backgroundColor: "#F5A623",
             color: "#0D0D0D",
@@ -173,7 +190,7 @@ export default function SubmitEventPage() {
             borderRadius: "12px",
             textDecoration: "none",
           }}>
-            View All Events
+            Browse Events
           </Link>
         </div>
       </main>
@@ -195,7 +212,7 @@ export default function SubmitEventPage() {
           textDecoration: "none",
           marginBottom: "32px",
         }}>
-          ← Back to all events
+          ← Back to home
         </Link>
 
         <div style={{ marginBottom: "40px" }}>
@@ -424,7 +441,7 @@ export default function SubmitEventPage() {
           </button>
 
           <p style={{ color: "#6B6B6B", fontSize: "12px", textAlign: "center" }}>
-            Fields marked * are required. Event goes live immediately.
+            Fields marked * are required. Event will be reviewed before going live.
           </p>
         </div>
       </div>
