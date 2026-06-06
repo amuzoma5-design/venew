@@ -4,6 +4,7 @@ import { useState } from "react";
 import { categories, Category } from "@/lib/events";
 import EventCard from "@/components/EventCard";
 import CategoryFilter from "@/components/CategoryFilter";
+import RecommendedEvents from "@/components/RecommendedEvents";
 
 interface Event {
   id: string;
@@ -215,6 +216,11 @@ export default function HomeClient({ events }: { events: Event[] }) {
 
       {/* Divider */}
       <div style={{ height: "1px", backgroundColor: "#2A2A2A", margin: "0 24px" }} />
+
+      {/* Recommended events */}
+      <div style={{ paddingTop: "48px" }}>
+        <RecommendedEvents events={events} />
+      </div>
 
       {/* Events section */}
       <section style={{ padding: "48px 24px 80px" }}>
