@@ -25,35 +25,36 @@ export default function LandingPage() {
           }}>
             <span style={{ fontSize: "14px" }}>🇳🇬</span>
             <span style={{ color: "#F5A623", fontSize: "12px", fontWeight: 600 }}>
-              Built for Nigerian Event Organisers
+              Nigeria&apos;s Discovery Platform
             </span>
           </div>
 
           <h1 style={{
             fontFamily: "Georgia, serif",
-            fontSize: "clamp(36px, 6vw, 72px)",
+            fontSize: "clamp(32px, 6vw, 68px)",
             fontWeight: 900,
             color: "#E8E8E8",
             lineHeight: 1.1,
             marginBottom: "24px",
           }}>
-            Make Your Events Easy to
+            Discover Events, Opportunities,
             <br />
-            <span style={{ color: "#F5A623" }}>Discover, Share & Attend</span>
+            <span style={{ color: "#F5A623" }}>Communities & Experiences</span>
+            <br />
+            That Help You Grow
           </h1>
 
           <p style={{
             color: "#6B6B6B",
             fontSize: "18px",
             lineHeight: 1.8,
-            maxWidth: "600px",
+            maxWidth: "640px",
             margin: "0 auto 40px",
           }}>
-           Venew helps you turn every event into a beautiful, shareable page
-            so more people can find, understand, and attend what you are
-            organizing — from church programs, conferences and seminars to
-            workshops, business networking, tech meetups, music events,
-            real estate expos, and educational gatherings.
+            Venew helps people discover meaningful events and opportunities
+            across Nigeria — while helping organizers reach exactly the right
+            audience. From church programs to career opportunities, conferences
+            to communities — it all starts here.
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
@@ -93,9 +94,91 @@ export default function LandingPage() {
             fontSize: "13px",
             marginTop: "20px",
           }}>
-            Built for organisers creating impactful events across churches,
-            communities, and businesses in Nigeria and beyond.
+            Built for organisers, seekers, and communities across Nigeria and beyond.
           </p>
+        </div>
+      </section>
+
+      {/* Discover More Than Events Section */}
+      <section style={{
+        padding: "80px 24px",
+        borderBottom: "1px solid #2A2A2A",
+        background: "radial-gradient(ellipse at top left, rgba(245,166,35,0.05), transparent 60%)",
+      }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+          <span style={{
+            display: "inline-block",
+            backgroundColor: "#F5A62315",
+            color: "#F5A623",
+            fontSize: "12px",
+            fontWeight: 700,
+            padding: "4px 14px",
+            borderRadius: "999px",
+            marginBottom: "24px",
+            textTransform: "uppercase",
+            letterSpacing: "0.1em",
+          }}>
+            Expanding Beyond Events
+          </span>
+
+          <h2 style={{
+            fontFamily: "Georgia, serif",
+            fontSize: "clamp(28px, 4vw, 48px)",
+            fontWeight: 900,
+            color: "#E8E8E8",
+            marginBottom: "24px",
+          }}>
+            Discover More Than
+            <span style={{ color: "#F5A623" }}> Events</span>
+          </h2>
+
+          <p style={{
+            color: "#6B6B6B",
+            fontSize: "16px",
+            lineHeight: 1.8,
+            maxWidth: "640px",
+            margin: "0 auto 48px",
+          }}>
+            Venew is expanding beyond event discovery to help people find
+            opportunities, communities, and experiences that can improve their
+            personal, professional, spiritual, and business lives.
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: "20px",
+          }}>
+            {[
+              { icon: "🎓", title: "Scholarships & Fellowships", text: "Discover funding opportunities, grants, and fellowships that can change your trajectory" },
+              { icon: "💼", title: "Internships & Careers", text: "Find internship programs, job fairs, and career development opportunities near you" },
+              { icon: "🎤", title: "Conferences & Workshops", text: "Attend world-class conferences, seminars, and hands-on workshops in your city" },
+              { icon: "🤝", title: "Communities & Networks", text: "Connect with professional networks, interest groups, and communities that share your vision" },
+              { icon: "🚀", title: "Competitions & Startups", text: "Enter pitch competitions, hackathons, and startup programs designed to accelerate your growth" },
+              { icon: "⛪", title: "Church & Spiritual Programs", text: "Discover revivals, conferences, retreats, and spiritual gatherings across Nigeria" },
+            ].map(({ icon, title, text }) => (
+              <div key={title} style={{
+                backgroundColor: "#1A1A1A",
+                border: "1px solid #2A2A2A",
+                borderRadius: "16px",
+                padding: "28px",
+                textAlign: "left",
+                transition: "border-color 0.2s",
+              }}>
+                <p style={{ fontSize: "32px", marginBottom: "16px" }}>{icon}</p>
+                <h3 style={{
+                  fontFamily: "Georgia, serif",
+                  fontSize: "17px",
+                  fontWeight: 700,
+                  color: "#E8E8E8",
+                  marginBottom: "10px",
+                }}>
+                  {title}
+                </h3>
+                <p style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -109,8 +192,8 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Your event deserves more than
-            <span style={{ color: "#F5A623" }}> WhatsApp flyers.</span>
+            Too many opportunities are
+            <span style={{ color: "#F5A623" }}> hidden in plain sight.</span>
           </h2>
           <p style={{
             color: "#6B6B6B",
@@ -118,10 +201,12 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "48px",
           }}>
-            Many powerful events never reach the people who need them.
-            They are shared only in WhatsApp groups, lost inside Instagram
-            posts, poorly communicated with blurry flyers, and hard to track.
-            As a result, attendance stays limited — even when the message is powerful.
+            Every day, life-changing events and opportunities happen across
+            Nigeria — but most people never hear about them in time. They are
+            buried in WhatsApp groups, lost in Instagram posts, poorly
+            communicated on blurry flyers, and almost impossible to discover
+            unless you already know someone. As a result, attendance stays
+            limited and impact stays small — even when the message is powerful.
           </p>
 
           <div style={{
@@ -133,7 +218,7 @@ export default function LandingPage() {
               { icon: "📱", text: "Shared only in WhatsApp groups" },
               { icon: "📸", text: "Lost inside Instagram posts" },
               { icon: "🖼️", text: "Blurry flyers with missing info" },
-              { icon: "📉", text: "Low attendance despite great content" },
+              { icon: "📉", text: "Low reach despite great content" },
             ].map(({ icon, text }) => (
               <div key={text} style={{
                 backgroundColor: "#1A1A1A",
@@ -164,8 +249,8 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Venew gives your event a
-            <span style={{ color: "#F5A623" }}> home on the internet.</span>
+            Venew gives every opportunity
+            <span style={{ color: "#F5A623" }}> a home on the internet.</span>
           </h2>
           <p style={{
             color: "#6B6B6B",
@@ -173,9 +258,10 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "48px",
           }}>
-            With Venew, you instantly create a clean, structured event page
-            that includes everything attendees need to know — and one
-            powerful link you can share anywhere.
+            Whether you are organising a church program, business conference,
+            youth seminar, or community gathering — Venew helps you create a
+            clean, structured page that communicates everything clearly and
+            makes it easy for the right people to find, share, and attend.
           </p>
 
           <div style={{
@@ -216,8 +302,8 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "48px",
           }}>
-            Why organisers use
-            <span style={{ color: "#F5A623" }}> Venew</span>
+            Why organisers and seekers
+            <span style={{ color: "#F5A623" }}> choose Venew</span>
           </h2>
 
           <div style={{
@@ -226,12 +312,12 @@ export default function LandingPage() {
             gap: "20px",
           }}>
             {[
-              { icon: "📣", title: "More Visibility", text: "Your event becomes discoverable by people actively looking for events in your city" },
+              { icon: "📣", title: "More Visibility", text: "Your event or opportunity becomes discoverable by people actively looking in your city" },
               { icon: "🔗", title: "One Shareable Link", text: "No more messy flyers. Share one clean link on WhatsApp, Instagram, and everywhere" },
-              { icon: "🎯", title: "Clear Communication", text: "Attendees instantly understand your event — date, venue, speaker, price, everything" },
-              { icon: "🧭", title: "Professional Presence", text: "Your event looks credible, organized, and worth attending" },
-              { icon: "📊", title: "Track Interest", text: "See how many people viewed and saved your event" },
-              { icon: "💰", title: "Sell Tickets", text: "Add your registration or payment link directly to your event page" },
+              { icon: "🎯", title: "Reach the Right People", text: "Venew recommends events based on interests, location, and activity — so your audience finds you" },
+              { icon: "🧭", title: "Professional Presence", text: "Your event or opportunity looks credible, organised, and worth attending" },
+              { icon: "📊", title: "Track Interest", text: "See how many people viewed, saved, and engaged with your event page" },
+              { icon: "💰", title: "Drive Registrations", text: "Add your registration or payment link directly — and convert interest into attendance" },
             ].map(({ icon, title, text }) => (
               <div key={title} style={{
                 backgroundColor: "#1A1A1A",
@@ -286,7 +372,7 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Be a Founding Event Partner
+            Founding Organizer Program
           </h2>
 
           <p style={{
@@ -295,9 +381,11 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "40px",
           }}>
-            We are currently inviting early organisers to shape Venew from
-            the beginning. As a founding partner, you get exclusive benefits
-            that will never be available again.
+            We are inviting a select group of early organisers to shape the
+            future of Venew from the very beginning. As a founding organiser,
+            you will not just use the platform — you will help define what it
+            becomes. Your events, your feedback, and your presence will help
+            build Nigeria&apos;s most important discovery platform.
           </p>
 
           <div style={{
@@ -309,9 +397,11 @@ export default function LandingPage() {
           }}>
             {[
               { icon: "⭐", text: "Priority feature placement on homepage" },
-              { icon: "✅", text: "Early Verified Event badge" },
+              { icon: "✅", text: "Founding Organiser verified badge" },
               { icon: "🆓", text: "Free event listings during launch phase" },
               { icon: "🤝", text: "Direct access to Venew founding team" },
+              { icon: "📊", text: "Early access to organiser analytics" },
+              { icon: "🚀", text: "Shape the future direction of Venew" },
             ].map(({ icon, text }) => (
               <div key={text} style={{
                 backgroundColor: "#1A1A1A",
@@ -338,7 +428,7 @@ export default function LandingPage() {
             textDecoration: "none",
             display: "inline-block",
           }}>
-            👉 Become a Founding Partner
+            👉 Join the Founding Organizer Program
           </Link>
         </div>
       </section>
@@ -359,9 +449,9 @@ export default function LandingPage() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {[
-              { step: "01", title: "Create your event page on Venew", text: "Fill in your event details — title, date, venue, speaker, price, image. Takes less than 5 minutes." },
-              { step: "02", title: "Add your event details", text: "Include everything your attendees need to know. Add your registration or payment link." },
-              { step: "03", title: "Share your unique link everywhere", text: "Copy your Venew link and share on WhatsApp groups, Instagram bio, church announcements, and flyers." },
+              { step: "01", title: "Create your event or opportunity page", text: "Fill in your details — title, date, venue, speaker, price, image. Takes less than 5 minutes." },
+              { step: "02", title: "Add everything your audience needs", text: "Include all the information people need to understand, register, and attend your event or opportunity." },
+              { step: "03", title: "Share your unique Venew link everywhere", text: "Copy your link and share on WhatsApp groups, Instagram bio, church announcements, flyers, and more." },
             ].map(({ step, title, text }) => (
               <div key={step} style={{
                 backgroundColor: "#1A1A1A",
@@ -421,9 +511,10 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "40px",
           }}>
-            Whether you are hosting a church program, seminar, training, or
-            community gathering — Venew helps you present it better and
-            reach more people.
+            Whether you are hosting a church program, business seminar,
+            career fair, startup competition, or community gathering —
+            Venew helps you present it better, reach more people, and
+            create real impact.
           </p>
 
           <Link href="/submit" style={{
@@ -445,7 +536,7 @@ export default function LandingPage() {
             fontSize: "13px",
             marginTop: "16px",
           }}>
-            Venew — where meaningful events become discoverable.
+            Venew — Discover Events. Discover Opportunities.
           </p>
         </div>
       </section>
@@ -477,7 +568,7 @@ export default function LandingPage() {
           ))}
         </div>
         <p style={{ color: "#6B6B6B", fontSize: "12px" }}>
-          © 2026 Venew.ng — Nigeria&apos;s Event Discovery Platform
+          © 2026 Venew.ng — Nigeria&apos;s Discovery Platform for Events and Opportunities
         </p>
       </footer>
     </main>
