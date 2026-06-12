@@ -85,6 +85,14 @@ export default function Navbar() {
               </span>
 
               {/* My Account */}
+             <Link href="/dashboard" style={{
+                color: "#6B6B6B",
+                fontSize: "14px",
+                textDecoration: "none",
+              }}>
+                Dashboard
+              </Link>
+
               <Link href="/account" style={{
                 color: "#6B6B6B",
                 fontSize: "14px",
