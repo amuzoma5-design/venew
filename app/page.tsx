@@ -25,7 +25,7 @@ export default function LandingPage() {
           }}>
             <span style={{ fontSize: "14px" }}>🇳🇬</span>
             <span style={{ color: "#F5A623", fontSize: "12px", fontWeight: 600 }}>
-              Nigeria&apos;s Discovery Platform
+              Nigeria&apos;s Discovery Platform for Events & Opportunities
             </span>
           </div>
 

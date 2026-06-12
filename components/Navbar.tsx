@@ -48,7 +48,7 @@ export default function Navbar() {
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "2px" }}>
           <span style={{ color: "#F5A623", fontSize: "24px", fontWeight: 900, fontFamily: "Georgia, serif" }}>VE</span>
           <span style={{ color: "#E8E8E8", fontSize: "24px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
-          <span style={{
+         <span style={{
             color: "#6B6B6B",
             fontSize: "11px",
             fontWeight: 500,
@@ -56,7 +56,7 @@ export default function Navbar() {
             textTransform: "uppercase",
             marginLeft: "10px",
           }}>
-            Event Discovery
+            Events & Opportunities
           </span>
         </Link>
 

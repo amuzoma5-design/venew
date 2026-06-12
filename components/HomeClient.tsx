@@ -52,7 +52,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
         background: "radial-gradient(ellipse at top right, rgba(245,166,35,0.08), transparent 60%)",
       }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <p style={{
+         <p style={{
             color: "#F5A623",
             fontSize: "11px",
             fontWeight: 600,
@@ -60,7 +60,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
             textTransform: "uppercase",
             marginBottom: "16px",
           }}>
-            Nigeria&apos;s Event Hub
+            Events & Opportunities
           </p>
 
           <h1 style={{
