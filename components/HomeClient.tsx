@@ -85,13 +85,13 @@ export default function HomeClient({ events }: { events: Event[] }) {
               </div>
             ))}
           </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "12px", padding: "12px 20px", marginBottom: "32px", flexWrap: "wrap" }}>
+          {user && <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "12px", padding: "12px 20px", marginBottom: "32px", flexWrap: "wrap" }}>
             <span style={{ fontSize: "20px" }}>⭐</span>
             <p style={{ color: "#374151", fontSize: "14px" }}>Want your event featured at the top?</p>
             <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "8px 16px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>
               Feature My Event
             </a>
-          </div>
+          </div>}
           <div style={{ position: "relative", maxWidth: "600px" }}>
             <span style={{ position: "absolute", left: "18px", top: "50%", transform: "translateY(-50%)", fontSize: "18px", pointerEvents: "none" }}>🔍</span>
             <input
