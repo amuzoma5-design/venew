@@ -16,6 +16,7 @@ const categoryColors: Record<string, string> = {
   Technology: "#3B82F6",
   "Real Estate": "#8B5CF6",
   Education: "#F97316",
+  Opportunities: "#14B8A6",
 };
 
 const INTERESTS = [

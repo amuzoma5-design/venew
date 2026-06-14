@@ -7,7 +7,8 @@ export type Category =
   | "Music & Entertainment"
   | "Technology"
   | "Real Estate"
-  | "Education";
+  | "Education"
+  | "Opportunities";
 
 export interface Event {
   id: string;
@@ -137,6 +138,7 @@ export const categories: Category[] = [
   "Technology",
   "Real Estate",
   "Education",
+  "Opportunities",
 ];
 
 export function formatDate(dateStr: string): string {
