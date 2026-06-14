@@ -28,11 +28,12 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      backgroundColor: "#141414",
-      borderBottom: "1px solid #2A2A2A",
+      backgroundColor: "#FFFFFF",
+      borderBottom: "1px solid #E5E7EB",
       position: "sticky",
       top: 0,
       zIndex: 50,
+      boxShadow: "0 1px 12px rgba(0,0,0,0.06)",
     }}>
       <div style={{
         maxWidth: "1100px",
@@ -47,9 +48,9 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "2px" }}>
           <span style={{ color: "#F5A623", fontSize: "24px", fontWeight: 900, fontFamily: "Georgia, serif" }}>VE</span>
-          <span style={{ color: "#E8E8E8", fontSize: "24px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
-         <span style={{
-            color: "#6B6B6B",
+          <span style={{ color: "#111827", fontSize: "24px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
+          <span style={{
+            color: "#9CA3AF",
             fontSize: "11px",
             fontWeight: 500,
             letterSpacing: "0.2em",
@@ -62,19 +63,19 @@ export default function Navbar() {
 
         {/* Right side */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-         <Link href="/events" style={{
-  color: "#6B6B6B",
-  fontSize: "14px",
-  textDecoration: "none",
-}}>
-  Browse Events
-</Link>
+          <Link href="/events" style={{
+            color: "#6B7280",
+            fontSize: "14px",
+            textDecoration: "none",
+          }}>
+            Browse Events
+          </Link>
 
           {user ? (
             <>
               {/* User email */}
               <span style={{
-                color: "#6B6B6B",
+                color: "#9CA3AF",
                 fontSize: "13px",
                 maxWidth: "160px",
                 overflow: "hidden",
@@ -84,17 +85,18 @@ export default function Navbar() {
                 {user.email}
               </span>
 
-              {/* My Account */}
-             <Link href="/dashboard" style={{
-                color: "#6B6B6B",
+              {/* Dashboard */}
+              <Link href="/dashboard" style={{
+                color: "#6B7280",
                 fontSize: "14px",
                 textDecoration: "none",
               }}>
                 Dashboard
               </Link>
 
+              {/* My Account */}
               <Link href="/account" style={{
-                color: "#6B6B6B",
+                color: "#6B7280",
                 fontSize: "14px",
                 textDecoration: "none",
               }}>
@@ -104,7 +106,7 @@ export default function Navbar() {
               {/* Submit Event */}
               <Link href="/submit" style={{
                 backgroundColor: "#F5A623",
-                color: "#0D0D0D",
+                color: "#FFFFFF",
                 fontWeight: 700,
                 fontSize: "14px",
                 padding: "8px 18px",
@@ -120,8 +122,8 @@ export default function Navbar() {
                 onClick={handleLogout}
                 style={{
                   backgroundColor: "transparent",
-                  border: "1px solid #2A2A2A",
-                  color: "#6B6B6B",
+                  border: "1px solid #E5E7EB",
+                  color: "#6B7280",
                   fontSize: "13px",
                   padding: "7px 14px",
                   borderRadius: "999px",
@@ -135,7 +137,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/auth/login" style={{
-                color: "#6B6B6B",
+                color: "#6B7280",
                 fontSize: "14px",
                 textDecoration: "none",
               }}>
@@ -143,7 +145,7 @@ export default function Navbar() {
               </Link>
               <Link href="/auth/signup" style={{
                 backgroundColor: "#F5A623",
-                color: "#0D0D0D",
+                color: "#FFFFFF",
                 fontWeight: 700,
                 fontSize: "14px",
                 padding: "8px 18px",
