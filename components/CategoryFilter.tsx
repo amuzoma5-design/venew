@@ -22,28 +22,41 @@ interface CategoryFilterProps {
 
 export default function CategoryFilter({ active, onChange }: CategoryFilterProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
       <button
         onClick={() => onChange("All")}
-        className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
         style={{
-          backgroundColor: active === "All" ? "#F5A623" : "#1A1A1A",
-          color: active === "All" ? "#0D0D0D" : "#6B6B6B",
-          border: active === "All" ? "1px solid #F5A623" : "1px solid #2A2A2A",
+          backgroundColor: active === "All" ? "#F5A623" : "#FFFFFF",
+          color: active === "All" ? "#FFFFFF" : "#6B7280",
+          border: active === "All" ? "1.5px solid #F5A623" : "1.5px solid #E5E7EB",
+          borderRadius: "999px",
+          padding: "8px 16px",
+          fontSize: "13px",
+          fontWeight: active === "All" ? 700 : 500,
+          cursor: "pointer",
+          transition: "all 0.2s",
         }}
       >
-        All Events
+        All
       </button>
 
       {categories.map((cat) => (
         <button
           key={cat}
           onClick={() => onChange(cat)}
-          className="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-1.5"
           style={{
-            backgroundColor: active === cat ? "#F5A623" : "#1A1A1A",
-            color: active === cat ? "#0D0D0D" : "#6B6B6B",
-            border: active === cat ? "1px solid #F5A623" : "1px solid #2A2A2A",
+            backgroundColor: active === cat ? "#F5A623" : "#FFFFFF",
+            color: active === cat ? "#FFFFFF" : "#6B7280",
+            border: active === cat ? "1.5px solid #F5A623" : "1.5px solid #E5E7EB",
+            borderRadius: "999px",
+            padding: "8px 16px",
+            fontSize: "13px",
+            fontWeight: active === cat ? 700 : 500,
+            cursor: "pointer",
+            transition: "all 0.2s",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
           }}
         >
           <span>{categoryIcons[cat]}</span>

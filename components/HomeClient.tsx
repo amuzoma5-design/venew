@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { categories, Category } from "@/lib/events";
 import EventCard from "@/components/EventCard";
 import CategoryFilter from "@/components/CategoryFilter";
@@ -29,6 +30,13 @@ export default function HomeClient({ events }: { events: Event[] }) {
   const [search, setSearch] = useState("");
 
   const waLink = "https://wa.me/2349044209650?text=Hi, I want to feature my event on VENEW";
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  }, []);
 
   const filtered = events.filter((e) => {
     const matchesCategory = activeCategory === "All" || e.category === activeCategory;
@@ -68,7 +76,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
           <div style={{ display: "flex", gap: "48px", marginBottom: "32px", flexWrap: "wrap" }}>
             {[
               { label: "Listings", value: String(events.length) },
-              { label: "Cities", value: "3" },
+              { label: "Country", value: "🇳🇬" },
               { label: "Categories", value: String(categories.length) },
             ].map(({ label, value }) => (
               <div key={label}>
