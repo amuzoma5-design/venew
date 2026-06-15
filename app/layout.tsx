@@ -3,14 +3,13 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "VENEW — Discover Events in Nigeria",
+  title: "VENEW — Discover Events & Opportunities in Nigeria",
   description:
-    "Find conferences, church events, seminars, and workshops happening near you.",
+    "Find events, opportunities, conferences, church programs, seminars, workshops and more happening near you across Nigeria.",
   manifest: "/manifest.json",
-  themeColor: "#F5A623",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "VENEW",
   },
   icons: {
@@ -30,10 +29,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#F5A623" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="VENEW" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>
-      <body style={{ backgroundColor: "#0d0d0d", minHeight: "100vh" }}>
+      <body style={{ backgroundColor: "#FFFFFF", minHeight: "100vh", margin: 0, padding: 0 }}>
         {children}
         <Analytics />
       </body>

@@ -52,3 +52,29 @@ body {
     display: inline !important;
   }
 }
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  nav div {
+    gap: 8px !important;
+  }
+
+  nav span[style*="maxWidth"] {
+    display: none !important;
+  }
+
+  h1 {
+    font-size: clamp(32px, 10vw, 60px) !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}

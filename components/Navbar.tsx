@@ -77,7 +77,7 @@ export default function Navbar() {
               <span style={{
                 color: "#9CA3AF",
                 fontSize: "13px",
-                maxWidth: "160px",
+                maxWidth: "120px",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",

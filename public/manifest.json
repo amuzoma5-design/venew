@@ -1,10 +1,10 @@
 {
-  "name": "VENEW - Event Discovery",
+  "name": "VENEW — Events & Opportunities",
   "short_name": "VENEW",
-  "description": "Discover conferences, church events, seminars and workshops in Nigeria",
+  "description": "Discover events, opportunities, communities and experiences in Nigeria",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0D0D0D",
+  "background_color": "#FFFFFF",
   "theme_color": "#F5A623",
   "orientation": "portrait",
   "icons": [
