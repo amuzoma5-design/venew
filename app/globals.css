@@ -1,3 +1,76 @@
+
+/* ===== GLOBAL MOBILE PROTECTION ===== */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== RESPONSIVE GRID UTILITY ===== */
+@media (max-width: 767px) {
+  /* Force single column grids on mobile */
+  [style*="minmax(300px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [style*="minmax(280px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [style*="minmax(220px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [style*="minmax(200px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  [style*="minmax(160px"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Fix padding on mobile */
+  [style*="padding: \"40px 24px\""] {
+    padding: 24px 16px !important;
+  }
+
+  [style*="padding: \"80px 24px\""] {
+    padding: 48px 16px !important;
+  }
+
+  [style*="padding: \"48px 24px\""] {
+    padding: 32px 16px !important;
+  }
+}
+
+/* ===== NAVBAR MOBILE ===== */
+@media (max-width: 767px) {
+  .venew-nav-email {
+    display: none !important;
+  }
+
+  .venew-nav-dashboard {
+    display: none !important;
+  }
+
+  .venew-nav-tagline {
+    display: none !important;
+  }
+}
+
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
 
@@ -77,4 +150,36 @@ body {
 
 img {
   max-width: 100%;
+}
+
+/* ===== NAVBAR RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .venew-mobile-menu-btn {
+    display: none !important;
+  }
+  .venew-mobile-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .venew-desktop-nav {
+    display: none !important;
+  }
+  .venew-mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+/* ===== CARD MOBILE FIX ===== */
+@media (max-width: 767px) {
+  .venew-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .venew-stats {
+    gap: 24px !important;
+  }
+  .venew-hero-padding {
+    padding: 48px 16px 40px !important;
+  }
 }
