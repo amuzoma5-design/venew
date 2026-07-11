@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-type Tab = "events" | "users" | "analytics";
+type Tab = "events" | "users" | "analytics" | "blog";
 
 export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -344,7 +344,7 @@ export default function AdminPage() {
 
         {/* Tabs */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "32px" }}>
-          {(["events", "users", "analytics"] as Tab[]).map((tab) => (
+         {(["events", "users", "analytics", "blog"] as Tab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -360,7 +360,7 @@ export default function AdminPage() {
                 textTransform: "capitalize",
               }}
             >
-              {tab === "events" ? "📋 Events" : tab === "users" ? "👥 Users" : "📊 Analytics"}
+              {tab === "events" ? "📋 Events" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : "✍️ Blog"}
             </button>
           ))}
         </div>
@@ -745,6 +745,147 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+      {/* Blog tab */}
+        {activeTab === "blog" && (
+          <BlogAdmin />
+        )}
     </main>
+  );
+}
+function BlogAdmin() {
+  const [form, setForm] = useState({
+    title: "",
+    slug: "",
+    excerpt: "",
+    content: "",
+    category: "Opportunities",
+    cover_image: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const val = e.target.value;
+    const name = e.target.name;
+    setForm((prev) => ({
+      ...prev,
+      [name]: val,
+      ...(name === "title" ? {
+        slug: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+      } : {}),
+    }));
+  }
+
+  async function handlePublish() {
+    if (!form.title || !form.content) {
+      setError("Title and content are required.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const { error: sbError } = await supabase.from("blog_posts").insert([{
+      title: form.title,
+      slug: form.slug,
+      excerpt: form.excerpt,
+      content: form.content,
+      category: form.category,
+      cover_image: form.cover_image || null,
+      published: true,
+    }]);
+    setSaving(false);
+    if (sbError) {
+      setError("Error: " + sbError.message);
+    } else {
+      setSuccess(true);
+      setForm({ title: "", slug: "", excerpt: "", content: "", category: "Opportunities", cover_image: "" });
+      setTimeout(() => setSuccess(false), 3000);
+    }
+  }
+
+  const inputStyle = {
+    width: "100%",
+    backgroundColor: "#111",
+    border: "1px solid #2A2A2A",
+    borderRadius: "10px",
+    padding: "12px 16px",
+    color: "#E8E8E8",
+    fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box" as const,
+  };
+
+  return (
+    <div>
+      <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8", marginBottom: "24px" }}>
+        ✍️ Write Blog Post
+      </h2>
+
+      {error && (
+        <div style={{ backgroundColor: "#2A0A0A", border: "1px solid #F43F5E", borderRadius: "10px", padding: "12px 16px", color: "#F43F5E", fontSize: "14px", marginBottom: "20px" }}>
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div style={{ backgroundColor: "#0A2A1A", border: "1px solid #10B981", borderRadius: "10px", padding: "12px 16px", color: "#10B981", fontSize: "14px", marginBottom: "20px" }}>
+          ✅ Blog post published successfully!
+        </div>
+      )}
+
+      <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "20px", padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Title *</label>
+          <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. Top 10 Scholarships for Nigerians in 2026" style={inputStyle} />
+        </div>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Slug (auto-generated)</label>
+          <input name="slug" value={form.slug} onChange={handleChange} placeholder="top-10-scholarships-nigerians-2026" style={{ ...inputStyle, color: "#6B6B6B" }} />
+        </div>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Category</label>
+          <select name="category" value={form.category} onChange={handleChange} style={inputStyle}>
+            {["Opportunities", "Events", "Communities", "Career", "Startup", "Church", "General"].map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Cover Image URL (optional)</label>
+          <input name="cover_image" value={form.cover_image} onChange={handleChange} placeholder="https://..." style={inputStyle} />
+        </div>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Excerpt (short summary)</label>
+          <textarea name="excerpt" value={form.excerpt} onChange={handleChange} rows={2} placeholder="A short description that appears on the blog listing page..." style={{ ...inputStyle, resize: "vertical" }} />
+        </div>
+
+        <div>
+          <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Content *</label>
+          <textarea name="content" value={form.content} onChange={handleChange} rows={15} placeholder="Write your full article here..." style={{ ...inputStyle, resize: "vertical" }} />
+        </div>
+
+        <button
+          onClick={handlePublish}
+          disabled={saving}
+          style={{
+            backgroundColor: saving ? "#6B6B6B" : "#F5A623",
+            color: "#0D0D0D",
+            fontWeight: 700,
+            fontSize: "15px",
+            padding: "16px",
+            borderRadius: "12px",
+            border: "none",
+            cursor: saving ? "not-allowed" : "pointer",
+          }}
+        >
+          {saving ? "Publishing..." : "Publish Blog Post →"}
+        </button>
+      </div>
+    </div>
   );
 }

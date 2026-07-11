@@ -1,99 +1,108 @@
 const fs = require('fs');
 
-const content = `"use client";
+const lines = [
+'import Navbar from "@/components/Navbar";',
+'import Link from "next/link";',
+'import { supabase } from "@/lib/supabase";',
+'import { notFound } from "next/navigation";',
+'',
+'export default async function BlogPostPage({',
+'  params,',
+'}: {',
+'  params: Promise<{ slug: string }>;',
+'}) {',
+'  const { slug } = await params;',
+'',
+'  const { data: post, error } = await supabase',
+'    .from("blog_posts")',
+'    .select("*")',
+'    .eq("slug", slug)',
+'    .eq("published", true)',
+'    .single();',
+'',
+'  if (error || !post) notFound();',
+'',
+'  const categoryColors: Record<string, string> = {',
+'    Opportunities: "#14B8A6",',
+'    Events: "#F59E0B",',
+'    Communities: "#A78BFA",',
+'    Career: "#10B981",',
+'    Startup: "#3B82F6",',
+'    Church: "#F43F5E",',
+'    General: "#6B7280",',
+'  };',
+'',
+'  const catColor = categoryColors[post.category] ?? "#6B7280";',
+'  const shareUrl = `https://venew.ng/blog/${post.slug}`;',
+'  const shareText = `${post.title} — Read on VENEW 👉 ${shareUrl}`;',
+'',
+'  return (',
+'    <main style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>',
+'      <Navbar />',
+'',
+'      <div style={{ height: "300px", background: post.cover_image ? `url(${post.cover_image}) center/cover no-repeat` : `linear-gradient(135deg, ${catColor}60, ${catColor}20)`, position: "relative" }}>',
+'        <div style={{ position: "absolute", inset: 0, background: post.cover_image ? "linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1))" : "none" }} />',
+'      </div>',
+'',
+'      <div style={{ maxWidth: "720px", margin: "0 auto", padding: "40px 24px 80px" }}>',
+'',
+'        <Link href="/blog" style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "#6B7280", fontSize: "14px", textDecoration: "none", marginBottom: "32px" }}>',
+'          ← Back to Blog',
+'        </Link>',
+'',
+'        <span style={{ display: "inline-block", fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: "999px", color: catColor, backgroundColor: `${catColor}15`, marginBottom: "16px" }}>',
+'          {post.category}',
+'        </span>',
+'',
+'        <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 900, color: "#111827", lineHeight: 1.2, marginBottom: "16px" }}>',
+'          {post.title}',
+'        </h1>',
+'',
+'        <p style={{ color: "#9CA3AF", fontSize: "13px", marginBottom: "32px" }}>',
+'          Published {new Date(post.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}',
+'        </p>',
+'',
+'        <div style={{ height: "1px", backgroundColor: "#F0F0F0", marginBottom: "32px" }} />',
+'',
+'        <div style={{ color: "#374151", fontSize: "16px", lineHeight: 1.9, whiteSpace: "pre-wrap" }}>',
+'          {post.content}',
+'        </div>',
+'',
+'        <div style={{ height: "1px", backgroundColor: "#F0F0F0", margin: "40px 0" }} />',
+'',
+'        <div>',
+'          <p style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 700, color: "#111827", marginBottom: "16px" }}>',
+'            Share this article',
+'          </p>',
+'          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>',
+'            <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#25D366", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", textDecoration: "none" }}>',
+'              📱 Share on WhatsApp',
+'            </a>',
+'            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#000000", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", textDecoration: "none" }}>',
+'              🐦 Share on X',
+'            </a>',
+'            <button onClick={() => navigator.clipboard.writeText(shareUrl)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#F3F4F6", color: "#374151", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", border: "none", cursor: "pointer" }}>',
+'              🔗 Copy Link',
+'            </button>',
+'          </div>',
+'        </div>',
+'',
+'        <div style={{ marginTop: "48px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "32px", textAlign: "center" }}>',
+'          <p style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 900, color: "#111827", marginBottom: "8px" }}>',
+'            Discover Events & Opportunities on VENEW',
+'          </p>',
+'          <p style={{ color: "#6B7280", fontSize: "14px", marginBottom: "20px" }}>',
+'            Find conferences, scholarships, church programs, and more happening near you.',
+'          </p>',
+'          <Link href="/events" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "15px", padding: "14px 32px", borderRadius: "12px", textDecoration: "none" }}>',
+'            Browse Events & Opportunities →',
+'          </Link>',
+'        </div>',
+'      </div>',
+'    </main>',
+'  );',
+'}',
+].join('\n');
 
-import Link from "next/link";
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
-
-export default function Navbar() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    setMenuOpen(false);
-    router.push("/");
-  }
-
-  return (
-    <nav style={{ backgroundColor: "#FFFFFF", borderBottom: "1px solid #E5E7EB", position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 12px rgba(0,0,0,0.06)" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 16px", height: "64px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-
-        {/* Logo */}
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "2px", flexShrink: 0 }}>
-          <span style={{ color: "#F5A623", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>VE</span>
-          <span style={{ color: "#111827", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
-          <span className="venew-nav-tagline" style={{ color: "#9CA3AF", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", marginLeft: "8px" }}>
-            Events & Opportunities
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }} className="venew-desktop-nav">
-          <Link href="/events" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Browse</Link>
-          {user ? (
-            <>
-              <Link href="/dashboard" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Dashboard</Link>
-              <Link href="/account" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Account</Link>
-              <Link href="/submit" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "8px 18px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>Submit Event</Link>
-              <button onClick={handleLogout} style={{ backgroundColor: "transparent", border: "1px solid #E5E7EB", color: "#6B7280", fontSize: "13px", padding: "7px 14px", borderRadius: "999px", cursor: "pointer" }}>Log out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Log in</Link>
-              <Link href="/auth/signup" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "8px 18px", borderRadius: "999px", textDecoration: "none" }}>Sign up</Link>
-            </>
-          )}
-        </div>
-
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="venew-mobile-menu-btn"
-          style={{ backgroundColor: "transparent", border: "none", cursor: "pointer", padding: "8px", display: "none", flexDirection: "column", gap: "5px" }}
-        >
-          <span style={{ display: "block", width: "22px", height: "2px", backgroundColor: menuOpen ? "#F5A623" : "#111827", transition: "all 0.2s", transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "none" }} />
-          <span style={{ display: "block", width: "22px", height: "2px", backgroundColor: menuOpen ? "#F5A623" : "#111827", transition: "all 0.2s", opacity: menuOpen ? 0 : 1 }} />
-          <span style={{ display: "block", width: "22px", height: "2px", backgroundColor: menuOpen ? "#F5A623" : "#111827", transition: "all 0.2s", transform: menuOpen ? "rotate(-45deg) translate(5px, -5px)" : "none" }} />
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {menuOpen && (
-        <div style={{ backgroundColor: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }} className="venew-mobile-menu">
-          <Link href="/events" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Browse Events</Link>
-          {user ? (
-            <>
-              <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Dashboard</Link>
-              <Link href="/account" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>My Account</Link>
-              <Link href="/submit" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Submit Event</Link>
-              <button onClick={handleLogout} style={{ backgroundColor: "transparent", border: "none", color: "#F43F5E", fontSize: "15px", padding: "10px 0", textAlign: "left", cursor: "pointer" }}>Log out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Log in</Link>
-              <Link href="/auth/signup" onClick={() => setMenuOpen(false)} style={{ display: "block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "15px", padding: "12px 16px", borderRadius: "12px", textDecoration: "none", textAlign: "center" }}>Sign up</Link>
-            </>
-          )}
-        </div>
-      )}
-    </nav>
-  );
-}
-`;
-
-require('fs').writeFileSync('components/Navbar.tsx', content);
-console.log('Navbar written!');
+require('fs').writeFileSync('app/blog/[slug]/page.tsx', lines);
+console.log('Done! Blog post page written successfully.');

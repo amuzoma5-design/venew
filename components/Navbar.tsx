@@ -41,7 +41,8 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }} className="venew-desktop-nav">
-          <Link href="/events" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Browse</Link>
+         <Link href="/events" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Browse</Link>
+          <Link href="/blog" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Blog</Link>
           {user ? (
             <>
               <Link href="/dashboard" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Dashboard</Link>
@@ -73,6 +74,7 @@ export default function Navbar() {
       {menuOpen && (
         <div style={{ backgroundColor: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }} className="venew-mobile-menu">
           <Link href="/events" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Browse Events</Link>
+          <Link href="/blog" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Blog</Link>
           {user ? (
             <>
               <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Dashboard</Link>
