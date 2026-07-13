@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+import BlogShareButtons from "@/components/BlogShareButtons";
 
 export default async function BlogPostPage({
   params,
@@ -30,15 +31,15 @@ export default async function BlogPostPage({
   };
 
   const catColor = categoryColors[post.category] ?? "#6B7280";
-  const shareUrl = `https://venew.ng/blog/${post.slug}`;
-  const shareText = `${post.title} — Read on VENEW 👉 ${shareUrl}`;
+  const shareUrl = "https://venew.ng/blog/" + post.slug;
+  const shareText = post.title + " — Read on VENEW 👉 " + shareUrl;
 
   return (
     <main style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>
       <Navbar />
 
-      <div style={{ height: "300px", background: post.cover_image ? `url(${post.cover_image}) center/cover no-repeat` : `linear-gradient(135deg, ${catColor}60, ${catColor}20)`, position: "relative" }}>
-        <div style={{ position: "absolute", inset: 0, background: post.cover_image ? "linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1))" : "none" }} />
+      <div style={{ height: "320px", background: post.cover_image ? "url(" + post.cover_image + ") center/cover no-repeat" : "linear-gradient(135deg, " + catColor + "60, " + catColor + "20)", position: "relative" }}>
+        <div style={{ position: "absolute", inset: 0, background: post.cover_image ? "linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.1))" : "none" }} />
       </div>
 
       <div style={{ maxWidth: "720px", margin: "0 auto", padding: "40px 24px 80px" }}>
@@ -47,7 +48,7 @@ export default async function BlogPostPage({
           ← Back to Blog
         </Link>
 
-        <span style={{ display: "inline-block", fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: "999px", color: catColor, backgroundColor: `${catColor}15`, marginBottom: "16px" }}>
+        <span style={{ display: "inline-block", fontSize: "11px", fontWeight: 700, padding: "4px 12px", borderRadius: "999px", color: catColor, backgroundColor: catColor + "15", marginBottom: "16px" }}>
           {post.category}
         </span>
 
@@ -71,17 +72,7 @@ export default async function BlogPostPage({
           <p style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 700, color: "#111827", marginBottom: "16px" }}>
             Share this article
           </p>
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <a href={`https://wa.me/?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#25D366", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", textDecoration: "none" }}>
-              📱 Share on WhatsApp
-            </a>
-            <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#000000", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", textDecoration: "none" }}>
-              🐦 Share on X
-            </a>
-            <button onClick={() => navigator.clipboard.writeText(shareUrl)} style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#F3F4F6", color: "#374151", fontWeight: 700, fontSize: "14px", padding: "12px 20px", borderRadius: "12px", border: "none", cursor: "pointer" }}>
-              🔗 Copy Link
-            </button>
-          </div>
+          <BlogShareButtons shareUrl={shareUrl} shareText={shareText} />
         </div>
 
         <div style={{ marginTop: "48px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "32px", textAlign: "center" }}>
