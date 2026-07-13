@@ -290,6 +290,7 @@ function BlogAdmin() {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [view, setView] = useState<"list" | "write">("list");
   const [blogImage, setBlogImage] = useState<File | null>(null);
+  const [editingPost, setEditingPost] = useState<any>(null);
 
   useEffect(() => { loadPosts(); }, []);
 
@@ -329,7 +330,7 @@ function BlogAdmin() {
     if (!form.title || !form.content) { setError("Title and content are required."); return; }
     setSaving(true);
     setError("");
-    let coverImageUrl = null;
+    let coverImageUrl = editingPost ? form.cover_image : null;
     if (blogImage) {
       const fileExt = blogImage.name.split(".").pop();
       const fileName = "blog-" + Date.now() + "." + fileExt;
@@ -338,13 +339,21 @@ function BlogAdmin() {
       const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(fileName);
       coverImageUrl = urlData.publicUrl;
     }
-    const { error: sbError } = await supabase.from("blog_posts").insert([{ title: form.title, slug: form.slug, excerpt: form.excerpt, content: form.content, category: form.category, cover_image: coverImageUrl, published: true }]);
+    let sbError = null;
+    if (editingPost) {
+      const { error } = await supabase.from("blog_posts").update({ title: form.title, slug: form.slug, excerpt: form.excerpt, content: form.content, category: form.category, cover_image: coverImageUrl }).eq("id", editingPost.id);
+      sbError = error;
+    } else {
+      const { error } = await supabase.from("blog_posts").insert([{ title: form.title, slug: form.slug, excerpt: form.excerpt, content: form.content, category: form.category, cover_image: coverImageUrl, published: true }]);
+      sbError = error;
+    }
     setSaving(false);
     if (sbError) { setError("Error: " + sbError.message); }
     else {
       setSuccess(true);
       setForm({ title: "", slug: "", excerpt: "", content: "", category: "Opportunities", cover_image: "" });
       setBlogImage(null);
+      setEditingPost(null);
       loadPosts();
       setTimeout(() => { setSuccess(false); setView("list"); }, 2000);
     }
@@ -384,6 +393,7 @@ function BlogAdmin() {
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                     <a href={"/blog/" + post.slug} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #2A2A2A", textDecoration: "none" }}>View</a>
                     <button onClick={() => togglePublish(post.id, post.published)} style={{ backgroundColor: "transparent", color: post.published ? "#F5A623" : "#10B981", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid " + (post.published ? "#F5A62330" : "#10B98130"), cursor: "pointer" }}>{post.published ? "Unpublish" : "Publish"}</button>
+                    <button onClick={() => { setEditingPost(post); setForm({ title: post.title, slug: post.slug, excerpt: post.excerpt || "", content: post.content || "", category: post.category, cover_image: post.cover_image || "" }); setView("write"); }} style={{ backgroundColor: "#3B82F6", color: "#FFFFFF", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "none", cursor: "pointer" }}>Edit</button>
                     <button onClick={() => deletePost(post.id)} style={{ backgroundColor: "transparent", color: "#F43F5E", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #F43F5E30", cursor: "pointer" }}>Delete</button>
                   </div>
                 </div>
@@ -431,8 +441,11 @@ function BlogAdmin() {
               <textarea name="content" value={form.content} onChange={handleChange} rows={15} placeholder="Write your full article here..." style={{ ...inputStyle, resize: "vertical" }} />
             </div>
             <button onClick={handlePublish} disabled={saving} style={{ backgroundColor: saving ? "#6B6B6B" : "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "none", cursor: saving ? "not-allowed" : "pointer" }}>
-              {saving ? "Publishing..." : "Publish Blog Post →"}
+              {saving ? "Saving..." : editingPost ? "Save Changes →" : "Publish Blog Post →"}
             </button>
+            {editingPost && (
+              <button onClick={() => { setEditingPost(null); setForm({ title: "", slug: "", excerpt: "", content: "", category: "Opportunities", cover_image: "" }); setView("list"); }} style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "1px solid #2A2A2A", cursor: "pointer" }}>Cancel</button>
+            )}
           </div>
         </div>
       )}
