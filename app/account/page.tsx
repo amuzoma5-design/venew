@@ -18,7 +18,10 @@ const categoryColors: Record<string, string> = {
   Education: "#F97316",
   Opportunities: "#14B8A6",
 };
-
+const AVAILABILITY_OPTIONS = [
+  { value: "open", label: "🟢 Open to opportunities" },
+  { value: "closed", label: "⚫ Not available" },
+];
 const INTERESTS = [
   "Church",
   "Business",
@@ -45,6 +48,15 @@ export default function AccountPage() {
     display_name: "",
     city: "",
     interests: [] as string[],
+    username: "",
+    title: "",
+    bio: "",
+    skills: "",
+    availability: "open",
+    linkedin: "",
+    twitter: "",
+    whatsapp: "",
+    website: "",
   });
 
   useEffect(() => {
@@ -68,10 +80,20 @@ export default function AccountPage() {
 
       if (profile) {
         setProfile(profile);
+        const links = profile.social_links || {};
         setForm({
           display_name: profile.display_name || "",
           city: profile.city || "",
           interests: profile.interests || [],
+          username: profile.username || "",
+          title: profile.title || "",
+          bio: profile.bio || "",
+          skills: (profile.skills || []).join(", "),
+          availability: profile.availability || "open",
+          linkedin: links.linkedin || "",
+          twitter: links.twitter || "",
+          whatsapp: links.whatsapp || "",
+          website: links.website || "",
         });
       }
 
@@ -111,18 +133,28 @@ export default function AccountPage() {
     }));
   }
 
-  async function handleSave() {
+ async function handleSave() {
     setSaving(true);
-
+    const skillsArray = form.skills.split(",").map((s) => s.trim()).filter(Boolean);
     await supabase.from("profiles").upsert({
       id: user.id,
       display_name: form.display_name,
       city: form.city,
       interests: form.interests,
+      username: form.username.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+      title: form.title,
+      bio: form.bio,
+      skills: skillsArray,
+      availability: form.availability,
+      social_links: {
+        linkedin: form.linkedin,
+        twitter: form.twitter,
+        whatsapp: form.whatsapp,
+        website: form.website,
+      },
       updated_at: new Date().toISOString(),
     });
-
-    setProfile({ ...profile, ...form });
+    setProfile({ ...profile, ...form, skills: skillsArray });
     setEditing(false);
     setSaving(false);
   }
@@ -545,7 +577,106 @@ export default function AccountPage() {
                       }}
                     />
                   </div>
+{/* Username */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                  Username (your public profile URL)
+                </label>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ color: "#6B6B6B", fontSize: "14px" }}>venew.ng/@</span>
+                  <input
+                    type="text"
+                    value={form.username}
+                    onChange={(e) => setForm({ ...form, username: e.target.value })}
+                    placeholder="yourname"
+                    style={{ flex: 1, backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none" }}
+                  />
+                </div>
+              </div>
 
+              {/* Title */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                  Professional Title
+                </label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  placeholder="e.g. Product Designer | Entrepreneur"
+                  style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Bio */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                  Bio
+                </label>
+                <textarea
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
+                  placeholder="Tell people about yourself..."
+                  rows={4}
+                  style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Skills */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                  Skills (comma separated)
+                </label>
+                <input
+                  type="text"
+                  value={form.skills}
+                  onChange={(e) => setForm({ ...form, skills: e.target.value })}
+                  placeholder="e.g. Next.js, Design, Marketing"
+                  style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Availability */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                  Availability
+                </label>
+                <select
+                  value={form.availability}
+                  onChange={(e) => setForm({ ...form, availability: e.target.value })}
+                  style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
+                >
+                  {AVAILABILITY_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Social links */}
+              <div>
+                <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "12px" }}>
+                  Social Links
+                </label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {[
+                    { key: "linkedin", placeholder: "https://linkedin.com/in/yourname", label: "💼 LinkedIn" },
+                    { key: "twitter", placeholder: "https://twitter.com/yourname", label: "🐦 Twitter/X" },
+                    { key: "whatsapp", placeholder: "2348012345678", label: "📱 WhatsApp number" },
+                    { key: "website", placeholder: "https://yourwebsite.com", label: "🌍 Website" },
+                  ].map(({ key, placeholder, label }) => (
+                    <div key={key} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ color: "#6B6B6B", fontSize: "13px", minWidth: "120px" }}>{label}</span>
+                      <input
+                        type="text"
+                        value={form[key as keyof typeof form] as string}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                        placeholder={placeholder}
+                        style={{ flex: 1, backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "10px 14px", color: "#E8E8E8", fontSize: "13px", outline: "none" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
                   {/* Save button */}
                   <button
                     onClick={handleSave}
