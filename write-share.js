@@ -2,31 +2,64 @@ const fs = require('fs');
 
 let c = fs.readFileSync('app/account/page.tsx', 'utf8');
 
-// Add profile link card after the stats section
+// Add avatar state
 c = c.replace(
-  '        {/* Profile card */}',
-  `        {/* Public Profile Link */}
-        {profile?.username && (
-          <div style={{ backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "20px 24px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-            <div>
-              <p style={{ color: "#D97706", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "4px" }}>Your Public Profile</p>
-              <p style={{ color: "#111827", fontSize: "15px", fontWeight: 700 }}>venew.ng/profile/{profile.username}</p>
-            </div>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              <a href={"/profile/" + profile.username} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "10px 16px", borderRadius: "999px", textDecoration: "none" }}>
-                👤 View Profile
-              </a>
-              <button onClick={() => { navigator.clipboard.writeText("https://venew.ng/profile/" + profile.username); alert("Profile link copied!"); }} style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#FFFFFF", color: "#374151", fontWeight: 700, fontSize: "13px", padding: "10px 16px", borderRadius: "999px", border: "1px solid #E5E7EB", cursor: "pointer" }}>
-                🔗 Copy Link
-              </button>
-              <a href={"https://wa.me/?text=Check out my profile on VENEW 👉 https://venew.ng/profile/" + profile.username} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", backgroundColor: "#25D366", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "10px 16px", borderRadius: "999px", textDecoration: "none" }}>
-                📱 Share
-              </a>
-            </div>
-          </div>
-        )}
+  "  const [saving, setSaving] = useState(false);",
+  "  const [saving, setSaving] = useState(false);\n  const [avatarFile, setAvatarFile] = useState(null);\n  const [avatarPreview, setAvatarPreview] = useState(null);"
+);
 
-        {/* Profile card */}`
+// Add avatar upload handler after toggleInterest function
+c = c.replace(
+  "  async function handleSave() {",
+  `  function handleAvatarChange(e) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  }
+
+  async function handleSave() {`
+);
+
+// Upload avatar in handleSave before upsert
+c = c.replace(
+  "    setSaving(true);",
+  `    setSaving(true);
+    let avatarUrl = profile?.avatar_url || null;
+    if (avatarFile) {
+      const fileExt = avatarFile.name.split(".").pop();
+      const fileName = "avatar-" + user.id + "-" + Date.now() + "." + fileExt;
+      const { error: uploadError } = await supabase.storage.from("event-images").upload(fileName, avatarFile);
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(fileName);
+        avatarUrl = urlData.publicUrl;
+      }
+    }`
+);
+
+// Add avatar_url to upsert
+c = c.replace(
+  "      updated_at: new Date().toISOString(),",
+  "      avatar_url: avatarUrl,\n      updated_at: new Date().toISOString(),"
+);
+
+// Add avatar upload UI before Display Name field in editing form
+c = c.replace(
+  "            {/* Display name */}\n              <div>",
+  `            {/* Avatar upload */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                <div style={{ width: "100px", height: "100px", borderRadius: "50%", border: "3px solid #F5A623", background: (avatarPreview || profile?.avatar_url) ? "url(" + (avatarPreview || profile?.avatar_url) + ") center/cover no-repeat" : "linear-gradient(135deg, #F5A623, #D97706)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Georgia, serif", fontSize: "36px", fontWeight: 900, color: "white" }}>
+                  {!(avatarPreview || profile?.avatar_url) && (profile?.display_name?.[0] ?? "V")}
+                </div>
+                <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#1A1A1A", border: "1px dashed #F5A623", borderRadius: "10px", padding: "10px 20px", cursor: "pointer", color: "#F5A623", fontSize: "13px", fontWeight: 600 }}>
+                  📷 {avatarFile ? avatarFile.name : "Upload Profile Photo"}
+                  <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
+                </label>
+              </div>
+
+            {/* Display name */}
+              <div>`
 );
 
 fs.writeFileSync('app/account/page.tsx', c);

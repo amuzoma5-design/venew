@@ -39,6 +39,8 @@ export default function AccountPage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
   const [viewedCount, setViewedCount] = useState(0);
@@ -135,6 +137,16 @@ export default function AccountPage() {
 
  async function handleSave() {
     setSaving(true);
+    let avatarUrl = profile?.avatar_url || null;
+    if (avatarFile) {
+      const fileExt = avatarFile.name.split(".").pop();
+      const fileName = "avatar-" + user.id + "-" + Date.now() + "." + fileExt;
+      const { error: uploadError } = await supabase.storage.from("event-images").upload(fileName, avatarFile);
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(fileName);
+        avatarUrl = urlData.publicUrl;
+      }
+    }
     const skillsArray = form.skills.split(",").map((s) => s.trim()).filter(Boolean);
     await supabase.from("profiles").upsert({
       id: user.id,
@@ -152,6 +164,7 @@ export default function AccountPage() {
         whatsapp: form.whatsapp,
         website: form.website,
       },
+      avatar_url: avatarUrl,
       updated_at: new Date().toISOString(),
     });
     setProfile({ ...profile, ...form, skills: skillsArray });
