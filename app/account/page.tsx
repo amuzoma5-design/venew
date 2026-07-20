@@ -135,7 +135,16 @@ export default function AccountPage() {
     }));
   }
 
- async function handleSave() {
+
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  }
+
+  async function handleSave() {
     setSaving(true);
     let avatarUrl = profile?.avatar_url || null;
     if (avatarFile) {
@@ -548,7 +557,42 @@ export default function AccountPage() {
 
               {editing ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                  {/* Display name */}
+                                {/* Avatar upload */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+                <div style={{
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "50%",
+                  border: "3px solid #F5A623",
+                  background: (avatarPreview || profile?.avatar_url)
+                    ? "url(" + (avatarPreview || profile?.avatar_url) + ") center/cover no-repeat"
+                    : "linear-gradient(135deg, #F5A623, #D97706)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "36px",
+                  color: "white",
+                }}>
+                  {!(avatarPreview || profile?.avatar_url) && (profile?.display_name?.[0] ?? "V")}
+                </div>
+                <label style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  backgroundColor: "#1A1A1A",
+                  border: "1px dashed #F5A623",
+                  borderRadius: "10px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  color: "#F5A623",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                }}>
+                  📷 {avatarFile ? avatarFile.name : "Upload Profile Photo"}
+                  <input type="file" accept="image/*" onChange={handleAvatarChange} style={{ display: "none" }} />
+                </label>
+              </div>
+              {/* Display name */}
                   <div>
                     <label
                       style={{
