@@ -65,7 +65,7 @@ export default async function PublicProfilePage({
 
       <div style={{ height: "200px", background: profile.cover_url ? "url(" + profile.cover_url + ") center/cover no-repeat" : "linear-gradient(135deg, #FFF8E7 0%, #F5A62320 100%)", borderBottom: "1px solid #F0F0F0" }} />
 
-      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "0 16px" }}>
 
         <div style={{ marginTop: "-60px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
           <div style={{ width: "120px", height: "120px", borderRadius: "50%", border: "4px solid #FFFFFF", background: profile.avatar_url ? "url(" + profile.avatar_url + ") center/cover no-repeat" : "linear-gradient(135deg, #F5A623, #D97706)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Georgia, serif", fontSize: "40px", fontWeight: 900, color: "white", flexShrink: 0, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
@@ -98,7 +98,7 @@ export default async function PublicProfilePage({
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 260px", gap: "24px", alignItems: "start", paddingBottom: "80px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "24px", alignItems: "start", paddingBottom: "80px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             {profile.bio && (
@@ -141,7 +141,7 @@ export default async function PublicProfilePage({
             )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", position: "sticky", top: "88px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div style={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: "16px", padding: "20px" }}>
               <h3 style={{ fontFamily: "Georgia, serif", fontSize: "16px", fontWeight: 700, color: "#111827", marginBottom: "12px" }}>Profile Completeness</h3>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
