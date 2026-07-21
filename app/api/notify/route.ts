@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const { title, category, location, date, submitterEmail } = await request.json();
 
     await resend.emails.send({
-      from: "VENEW <onboarding@resend.dev>",
+      from: "VENEW <noreply@venew.ng>",
       to: "venew100@gmail.com", // replace with your real email
       subject: `New Event Submitted: ${title}`,
       html: `
