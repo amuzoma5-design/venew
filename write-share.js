@@ -1,24 +1,23 @@
 const fs = require('fs');
 
-let c = fs.readFileSync('app/profile/[username]/page.tsx', 'utf8');
-
-// Fix the two column grid to be single column on mobile
+// Fix blog post page
+let c = fs.readFileSync('app/blog/[slug]/page.tsx', 'utf8');
 c = c.replace(
-  'display: "grid", gridTemplateColumns: "1fr 260px", gap: "24px", alignItems: "start", paddingBottom: "80px"',
-  'display: "grid", gridTemplateColumns: "1fr", gap: "24px", alignItems: "start", paddingBottom: "80px"'
+  'import BlogShareButtons from "@/components/BlogShareButtons";',
+  'import BlogShareButtons from "@/components/BlogShareButtons";\nimport BlogViewTracker from "@/components/BlogViewTracker";'
 );
-
-// Fix padding on mobile
 c = c.replace(
-  'maxWidth: "800px", margin: "0 auto", padding: "0 24px"',
-  'maxWidth: "800px", margin: "0 auto", padding: "0 16px"'
+  '      <Navbar />',
+  '      <Navbar />\n      <BlogViewTracker postId={post.id} />'
 );
+fs.writeFileSync('app/blog/[slug]/page.tsx', c);
+console.log(c.includes('BlogViewTracker') ? 'Blog page updated!' : 'FAILED');
 
-// Remove sticky positioning from sidebar on mobile
-c = c.replace(
-  'display: "flex", flexDirection: "column", gap: "16px", position: "sticky", top: "88px"',
-  'display: "flex", flexDirection: "column", gap: "16px"'
+// Fix admin page
+let a = fs.readFileSync('app/admin/page.tsx', 'utf8');
+a = a.replace(
+  '                    <p style={{ color: "#6B6B6B", fontSize: "12px" }}>{new Date(post.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}</p>',
+  '                    <p style={{ color: "#6B6B6B", fontSize: "12px" }}>{new Date(post.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}</p>\n                    <p style={{ color: "#A78BFA", fontSize: "12px", marginTop: "4px" }}>👁️ {post.views || 0} views</p>'
 );
-
-fs.writeFileSync('app/profile/[username]/page.tsx', c);
-console.log('Done!');
+fs.writeFileSync('app/admin/page.tsx', a);
+console.log(a.includes('post.views') ? 'Admin page updated!' : 'FAILED');

@@ -389,6 +389,7 @@ function BlogAdmin() {
                     </div>
                     <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px", fontFamily: "Georgia, serif", marginBottom: "4px" }}>{post.title}</p>
                     <p style={{ color: "#6B6B6B", fontSize: "12px" }}>{new Date(post.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" })}</p>
+                    <p style={{ color: "#A78BFA", fontSize: "12px", marginTop: "4px" }}>👁️ {post.views || 0} views</p>
                   </div>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                     <a href={"/blog/" + post.slug} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #2A2A2A", textDecoration: "none" }}>View</a>

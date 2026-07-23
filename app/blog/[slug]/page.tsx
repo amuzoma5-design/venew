@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import BlogShareButtons from "@/components/BlogShareButtons";
+import BlogViewTracker from "@/components/BlogViewTracker";
 
 export default async function BlogPostPage({
   params,
@@ -37,6 +38,7 @@ export default async function BlogPostPage({
   return (
     <main style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>
       <Navbar />
+      <BlogViewTracker postId={post.id} />
 
       <div style={{ height: "320px", background: post.cover_image ? "url(" + post.cover_image + ") center/cover no-repeat" : "linear-gradient(135deg, " + catColor + "60, " + catColor + "20)", position: "relative" }}>
         <div style={{ position: "absolute", inset: 0, background: post.cover_image ? "linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.1))" : "none" }} />
