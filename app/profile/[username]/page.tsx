@@ -169,8 +169,8 @@ export default async function PublicProfilePage({
             )}
 
             <div style={{ backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "20px", textAlign: "center" }}>
-              <p style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Discover Events & Opportunities</p>
-              <p style={{ color: "#6B7280", fontSize: "12px", marginBottom: "12px" }}>Find events near you on VENEW</p>
+              <p style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Discover Opportunities on VENEW</p>
+              <p style={{ color: "#6B7280", fontSize: "12px", marginBottom: "12px" }}>Find scholarships, grants, fellowships, events, communities and more — all in one place.</p>
               <Link href="/events" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "10px 20px", borderRadius: "10px", textDecoration: "none" }}>Explore Discoveries →</Link>
             </div>
           </div>
