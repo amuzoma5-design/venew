@@ -138,7 +138,7 @@ export default function DashboardPage() {
             textTransform: "uppercase",
             marginBottom: "12px",
           }}>
-            Organizer Command Center
+            Discovery Command Center
           </p>
           <h1 style={{
             fontFamily: "Georgia, serif",
@@ -194,10 +194,10 @@ export default function DashboardPage() {
               marginBottom: "32px",
             }}>
               {[
-                { label: "Total Events", value: totalEvents, icon: "📋", color: "#E8E8E8" },
+                { label: "Total Discoveries", value: totalEvents, icon: "📋", color: "#E8E8E8" },
                 { label: "Total Views", value: totalViews, icon: "👁️", color: "#A78BFA" },
                 { label: "Total Saves", value: totalSaves, icon: "❤️", color: "#F43F5E" },
-                { label: "Upcoming Events", value: upcomingEvents, icon: "📅", color: "#10B981" },
+                { label: "Active Discoveries", value: upcomingEvents, icon: "📅", color: "#10B981" },
                 { label: "Engagement Rate", value: `${engagementRate}%`, icon: "📈", color: "#F5A623" },
               ].map(({ label, value, icon, color }) => (
                 <div key={label} style={{
@@ -232,7 +232,7 @@ export default function DashboardPage() {
               marginBottom: "32px",
             }}>
               {[
-                { label: "➕ Create New Event", href: "/submit" },
+                { label: "➕ Submit a Discovery", href: "/submit" },
                 { label: "⭐ Feature My Event", href: "/feature" },
                 { label: "📊 View Analytics", href: "#performance" },
               ].map(({ label, href }) => (
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 color: "#E8E8E8",
                 marginBottom: "16px",
               }}>
-                📊 Event Performance
+                📊 Discovery Performance
               </h2>
               <div style={{
                 display: "grid",
@@ -275,7 +275,7 @@ export default function DashboardPage() {
                   padding: "24px",
                 }}>
                   <p style={{ color: "#6B6B6B", fontSize: "12px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    👁️ Most Viewed Event
+                    👁️ Most Viewed Discovery
                   </p>
                   <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "16px", marginBottom: "4px" }}>
                     {mostViewed && mostViewed.views > 0 ? mostViewed.title : "No views yet"}
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                   padding: "24px",
                 }}>
                   <p style={{ color: "#6B6B6B", fontSize: "12px", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    ❤️ Most Saved Event
+                    ❤️ Most Saved Discovery
                   </p>
                   <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "16px", marginBottom: "4px" }}>
                     {mostSaved && mostSaved.saves > 0 ? mostSaved.title : "No saves yet"}
@@ -318,7 +318,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* My Events */}
+            {/* My Discoveries */}
             <div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "16px" }}>
                 <h2 style={{
@@ -348,7 +348,7 @@ export default function DashboardPage() {
                         textTransform: "capitalize",
                       }}
                     >
-                      {tab === "upcoming" ? "Upcoming Events" : "Past Events"}
+                      {tab === "upcoming" ? "Active Discoveries" : "Past Discoveries"}
                     </button>
                   ))}
                 </div>
@@ -363,7 +363,7 @@ export default function DashboardPage() {
                   borderRadius: "16px",
                 }}>
                   <p style={{ color: "#6B6B6B", fontSize: "14px" }}>
-                    {activeTab === "upcoming" ? "No upcoming events." : "No past events yet."}
+                    {activeTab === "upcoming" ? "No active discoveries." : "No past discoveries yet."}
                   </p>
                 </div>
               ) : (
