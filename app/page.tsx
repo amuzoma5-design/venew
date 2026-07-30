@@ -23,25 +23,23 @@ export default function LandingPage() {
             padding: "6px 16px",
             marginBottom: "32px",
           }}>
-            <span style={{ fontSize: "14px" }}>🇳🇬</span>
+            <span style={{ fontSize: "14px" }}>🌍</span>
             <span style={{ color: "#F5A623", fontSize: "12px", fontWeight: 600 }}>
-              Nigeria&apos;s Discovery Platform for Events & Opportunities
+              Africa&apos;s Discovery Platform
             </span>
           </div>
 
           <h1 style={{
             fontFamily: "Georgia, serif",
-            fontSize: "clamp(32px, 6vw, 68px)",
+            fontSize: "clamp(36px, 6vw, 72px)",
             fontWeight: 900,
             color: "#E8E8E8",
             lineHeight: 1.1,
             marginBottom: "24px",
           }}>
-            Discover Events, Opportunities,
+            Discover What Can
             <br />
-            <span style={{ color: "#F5A623" }}>Communities & Experiences</span>
-            <br />
-            That Help You Grow
+            <span style={{ color: "#F5A623" }}>Move You Forward</span>
           </h1>
 
           <p style={{
@@ -51,14 +49,13 @@ export default function LandingPage() {
             maxWidth: "640px",
             margin: "0 auto 40px",
           }}>
-            Venew helps people discover meaningful events and opportunities
-            across Nigeria — while helping organizers reach exactly the right
-            audience. From church programs to career opportunities, conferences
-            to communities — it all starts here.
+            Discover opportunities, scholarships, grants, fellowships, internships,
+            jobs, events, competitions, communities, and learning resources —
+            all in one trusted place.
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/submit" style={{
+            <Link href="/events" style={{
               backgroundColor: "#F5A623",
               color: "#0D0D0D",
               fontWeight: 700,
@@ -70,9 +67,9 @@ export default function LandingPage() {
               alignItems: "center",
               gap: "8px",
             }}>
-              👉 List Your First Event — Free
+              🔍 Explore Discoveries
             </Link>
-            <Link href="/events" style={{
+            <Link href="/submit" style={{
               backgroundColor: "transparent",
               color: "#E8E8E8",
               fontWeight: 600,
@@ -85,104 +82,128 @@ export default function LandingPage() {
               alignItems: "center",
               gap: "8px",
             }}>
-              Explore Events →
+              Submit a Discovery →
             </Link>
           </div>
 
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "13px",
-            marginTop: "20px",
-          }}>
-            Built for organisers, seekers, and communities across Nigeria and beyond.
+          <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "20px" }}>
+            Built for dreamers, builders, and opportunity seekers across Africa.
           </p>
         </div>
       </section>
 
-      {/* Discover More Than Events Section */}
+      {/* Discovery Categories */}
+      <section style={{
+        padding: "80px 24px",
+        borderBottom: "1px solid #2A2A2A",
+      }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+          <h2 style={{
+            fontFamily: "Georgia, serif",
+            fontSize: "clamp(28px, 4vw, 48px)",
+            fontWeight: 900,
+            color: "#E8E8E8",
+            marginBottom: "16px",
+          }}>
+            What Would You Like to
+            <span style={{ color: "#F5A623" }}> Discover?</span>
+          </h2>
+          <p style={{ color: "#6B6B6B", fontSize: "16px", marginBottom: "48px" }}>
+            Every category is a doorway to something that can change your life.
+          </p>
+
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+            gap: "16px",
+          }}>
+            {[
+              { icon: "🎓", label: "Scholarships", color: "#14B8A6" },
+              { icon: "💰", label: "Grants & Funding", color: "#10B981" },
+              { icon: "💼", label: "Jobs", color: "#3B82F6" },
+              { icon: "🏢", label: "Internships", color: "#8B5CF6" },
+              { icon: "🌍", label: "Fellowships", color: "#F59E0B" },
+              { icon: "🎤", label: "Events", color: "#F43F5E" },
+              { icon: "🤝", label: "Communities", color: "#A78BFA" },
+              { icon: "🏆", label: "Competitions", color: "#FB7185" },
+              { icon: "📚", label: "Learning Resources", color: "#22D3EE" },
+              { icon: "🚀", label: "Accelerators", color: "#F97316" },
+            ].map(({ icon, label, color }) => (
+              <Link key={label} href="/events" style={{ textDecoration: "none" }}>
+                <div style={{
+                  backgroundColor: "#1A1A1A",
+                  border: "1px solid #2A2A2A",
+                  borderRadius: "16px",
+                  padding: "24px 16px",
+                  textAlign: "center",
+                  transition: "border-color 0.2s",
+                  cursor: "pointer",
+                }}>
+                  <p style={{ fontSize: "28px", marginBottom: "10px" }}>{icon}</p>
+                  <p style={{ color: color, fontWeight: 700, fontSize: "13px" }}>{label}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Discover by Goal */}
       <section style={{
         padding: "80px 24px",
         borderBottom: "1px solid #2A2A2A",
         background: "radial-gradient(ellipse at top left, rgba(245,166,35,0.05), transparent 60%)",
       }}>
         <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-          <span style={{
-            display: "inline-block",
-            backgroundColor: "#F5A62315",
-            color: "#F5A623",
-            fontSize: "12px",
-            fontWeight: 700,
-            padding: "4px 14px",
-            borderRadius: "999px",
-            marginBottom: "24px",
-            textTransform: "uppercase",
-            letterSpacing: "0.1em",
-          }}>
-            Expanding Beyond Events
-          </span>
-
           <h2 style={{
             fontFamily: "Georgia, serif",
             fontSize: "clamp(28px, 4vw, 48px)",
             fontWeight: 900,
             color: "#E8E8E8",
-            marginBottom: "24px",
+            marginBottom: "16px",
           }}>
-            Discover More Than
-            <span style={{ color: "#F5A623" }}> Events</span>
+            What Would You Like to
+            <span style={{ color: "#F5A623" }}> Achieve?</span>
           </h2>
-
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "16px",
-            lineHeight: 1.8,
-            maxWidth: "640px",
-            margin: "0 auto 48px",
-          }}>
-            Venew is expanding beyond event discovery to help people find
-            opportunities, communities, and experiences that can improve their
-            personal, professional, spiritual, and business lives.
+          <p style={{ color: "#6B6B6B", fontSize: "16px", marginBottom: "48px" }}>
+            Tell us your goal and we will show you the discoveries that can get you there.
           </p>
 
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            gap: "20px",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "16px",
           }}>
             {[
-              { icon: "🎓", title: "Scholarships & Fellowships", text: "Discover funding opportunities, grants, and fellowships that can change your trajectory" },
-              { icon: "💼", title: "Internships & Careers", text: "Find internship programs, job fairs, and career development opportunities near you" },
-              { icon: "🎤", title: "Conferences & Workshops", text: "Attend world-class conferences, seminars, and hands-on workshops in your city" },
-              { icon: "🤝", title: "Communities & Networks", text: "Connect with professional networks, interest groups, and communities that share your vision" },
-              { icon: "🚀", title: "Competitions & Startups", text: "Enter pitch competitions, hackathons, and startup programs designed to accelerate your growth" },
-              { icon: "⛪", title: "Church & Spiritual Programs", text: "Discover revivals, conferences, retreats, and spiritual gatherings across Nigeria" },
-            ].map(({ icon, title, text }) => (
-              <div key={title} style={{
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #2A2A2A",
-                borderRadius: "16px",
-                padding: "28px",
-                textAlign: "left",
-                transition: "border-color 0.2s",
-              }}>
-                <p style={{ fontSize: "32px", marginBottom: "16px" }}>{icon}</p>
-                <h3 style={{
-                  fontFamily: "Georgia, serif",
-                  fontSize: "17px",
-                  fontWeight: 700,
-                  color: "#E8E8E8",
-                  marginBottom: "10px",
+              { icon: "📖", label: "Learn New Skills", desc: "Courses, workshops and learning resources" },
+              { icon: "💰", label: "Get Funding", desc: "Grants, scholarships and investment" },
+              { icon: "🏗️", label: "Build My Career", desc: "Jobs, internships and fellowships" },
+              { icon: "🤝", label: "Meet New People", desc: "Events, communities and networks" },
+              { icon: "📈", label: "Grow My Business", desc: "Accelerators, mentors and markets" },
+              { icon: "✈️", label: "Travel", desc: "Fellowships, exchanges and residencies" },
+              { icon: "🌱", label: "Volunteer", desc: "Community programmes and causes" },
+              { icon: "🏠", label: "Find My Community", desc: "Groups, clubs and networks near you" },
+            ].map(({ icon, label, desc }) => (
+              <Link key={label} href="/events" style={{ textDecoration: "none" }}>
+                <div style={{
+                  backgroundColor: "#1A1A1A",
+                  border: "1px solid #2A2A2A",
+                  borderRadius: "16px",
+                  padding: "24px",
+                  textAlign: "left",
+                  cursor: "pointer",
                 }}>
-                  {title}
-                </h3>
-                <p style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{text}</p>
-              </div>
+                  <p style={{ fontSize: "28px", marginBottom: "10px" }}>{icon}</p>
+                  <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "14px", marginBottom: "6px" }}>{label}</p>
+                  <p style={{ color: "#6B6B6B", fontSize: "12px", lineHeight: 1.5 }}>{desc}</p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Problem Section */}
+      {/* Why Venew Exists */}
       <section style={{ padding: "80px 24px", borderBottom: "1px solid #2A2A2A" }}>
         <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
           <h2 style={{
@@ -192,54 +213,32 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Too many opportunities are
-            <span style={{ color: "#F5A623" }}> hidden in plain sight.</span>
+            Why
+            <span style={{ color: "#F5A623" }}> Venew Exists</span>
           </h2>
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "16px",
-            lineHeight: 1.8,
-            marginBottom: "48px",
-          }}>
-            Every day, life-changing events and opportunities happen across
-            Nigeria — but most people never hear about them in time. They are
-            buried in WhatsApp groups, lost in Instagram posts, poorly
-            communicated on blurry flyers, and almost impossible to discover
-            unless you already know someone. As a result, attendance stays
-            limited and impact stays small — even when the message is powerful.
-          </p>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: "16px",
-          }}>
-            {[
-              { icon: "📱", text: "Shared only in WhatsApp groups" },
-              { icon: "📸", text: "Lost inside Instagram posts" },
-              { icon: "🖼️", text: "Blurry flyers with missing info" },
-              { icon: "📉", text: "Low reach despite great content" },
-            ].map(({ icon, text }) => (
-              <div key={text} style={{
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #2A2A2A",
-                borderRadius: "16px",
-                padding: "24px",
-                textAlign: "center",
-              }}>
-                <p style={{ fontSize: "32px", marginBottom: "12px" }}>{icon}</p>
-                <p style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{text}</p>
-              </div>
-            ))}
-          </div>
+          <p style={{ color: "#6B6B6B", fontSize: "16px", lineHeight: 1.9, marginBottom: "24px" }}>
+            Every day, valuable opportunities are shared across websites, newsletters,
+            WhatsApp groups, social media, and online communities.
+          </p>
+          <p style={{ color: "#6B6B6B", fontSize: "16px", lineHeight: 1.9, marginBottom: "24px" }}>
+            Unfortunately, many people only discover them after the deadline has passed.
+            The scholarship expired. The event sold out. The grant window closed.
+            And another life-changing opportunity was missed — not because the person
+            was unqualified, but because the information never reached them in time.
+          </p>
+          <p style={{ color: "#E8E8E8", fontSize: "18px", lineHeight: 1.9, fontWeight: 600 }}>
+            Venew exists to make discovery easier by bringing valuable opportunities
+            together in one trusted place, so that no opportunity passes you by.
+          </p>
         </div>
       </section>
 
-      {/* Solution Section */}
+      {/* Discovery Badges */}
       <section style={{
         padding: "80px 24px",
         borderBottom: "1px solid #2A2A2A",
-        background: "radial-gradient(ellipse at bottom left, rgba(245,166,35,0.05), transparent 60%)",
+        background: "radial-gradient(ellipse at center, rgba(245,166,35,0.04), transparent 70%)",
       }}>
         <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
           <h2 style={{
@@ -247,103 +246,43 @@ export default function LandingPage() {
             fontSize: "clamp(28px, 4vw, 48px)",
             fontWeight: 900,
             color: "#E8E8E8",
-            marginBottom: "24px",
+            marginBottom: "16px",
           }}>
-            Venew gives every opportunity
-            <span style={{ color: "#F5A623" }}> a home on the internet.</span>
+            Every Discovery is
+            <span style={{ color: "#F5A623" }}> Clearly Labelled</span>
           </h2>
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "16px",
-            lineHeight: 1.8,
-            marginBottom: "48px",
-          }}>
-            Whether you are organising a church program, business conference,
-            youth seminar, or community gathering — Venew helps you create a
-            clean, structured page that communicates everything clearly and
-            makes it easy for the right people to find, share, and attend.
+          <p style={{ color: "#6B6B6B", fontSize: "16px", marginBottom: "48px" }}>
+            We use badges so you can quickly understand what each discovery is and whether it is right for you.
           </p>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: "16px",
-          }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "center" }}>
             {[
-              { icon: "📄", text: "Event title, description and details" },
-              { icon: "📍", text: "Venue and time information" },
-              { icon: "🎤", text: "Speaker and host information" },
-              { icon: "🔗", text: "Registration and attendance links" },
-              { icon: "📱", text: "Shareable link for WhatsApp and Instagram" },
-              { icon: "🖼️", text: "Upload event image or banner" },
-            ].map(({ icon, text }) => (
-              <div key={text} style={{
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #2A2A2A",
-                borderRadius: "16px",
-                padding: "24px",
-                textAlign: "center",
+              { label: "✅ Verified", bg: "#10B98120", color: "#10B981" },
+              { label: "💰 Fully Funded", bg: "#F5A62320", color: "#F5A623" },
+              { label: "🆓 Free", bg: "#14B8A620", color: "#14B8A6" },
+              { label: "💻 Online", bg: "#3B82F620", color: "#3B82F6" },
+              { label: "🏢 In Person", bg: "#8B5CF620", color: "#8B5CF6" },
+              { label: "⏰ Closing Soon", bg: "#F43F5E20", color: "#F43F5E" },
+              { label: "⭐ Featured", bg: "#F59E0B20", color: "#F59E0B" },
+              { label: "🌍 Open to Africans", bg: "#A78BFA20", color: "#A78BFA" },
+            ].map(({ label, bg, color }) => (
+              <span key={label} style={{
+                fontSize: "13px",
+                fontWeight: 700,
+                padding: "8px 16px",
+                borderRadius: "999px",
+                backgroundColor: bg,
+                color: color,
+                border: "1px solid " + color + "30",
               }}>
-                <p style={{ fontSize: "32px", marginBottom: "12px" }}>{icon}</p>
-                <p style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{text}</p>
-              </div>
+                {label}
+              </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Why Venew Section */}
-      <section style={{ padding: "80px 24px", borderBottom: "1px solid #2A2A2A" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "clamp(28px, 4vw, 48px)",
-            fontWeight: 900,
-            color: "#E8E8E8",
-            marginBottom: "48px",
-          }}>
-            Why organisers and seekers
-            <span style={{ color: "#F5A623" }}> choose Venew</span>
-          </h2>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-            gap: "20px",
-          }}>
-            {[
-              { icon: "📣", title: "More Visibility", text: "Your event or opportunity becomes discoverable by people actively looking in your city" },
-              { icon: "🔗", title: "One Shareable Link", text: "No more messy flyers. Share one clean link on WhatsApp, Instagram, and everywhere" },
-              { icon: "🎯", title: "Reach the Right People", text: "Venew recommends events based on interests, location, and activity — so your audience finds you" },
-              { icon: "🧭", title: "Professional Presence", text: "Your event or opportunity looks credible, organised, and worth attending" },
-              { icon: "📊", title: "Track Interest", text: "See how many people viewed, saved, and engaged with your event page" },
-              { icon: "💰", title: "Drive Registrations", text: "Add your registration or payment link directly — and convert interest into attendance" },
-            ].map(({ icon, title, text }) => (
-              <div key={title} style={{
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #2A2A2A",
-                borderRadius: "16px",
-                padding: "28px",
-                textAlign: "left",
-              }}>
-                <p style={{ fontSize: "28px", marginBottom: "12px" }}>{icon}</p>
-                <h3 style={{
-                  fontFamily: "Georgia, serif",
-                  fontSize: "18px",
-                  fontWeight: 700,
-                  color: "#E8E8E8",
-                  marginBottom: "8px",
-                }}>
-                  {title}
-                </h3>
-                <p style={{ color: "#6B6B6B", fontSize: "14px", lineHeight: 1.6 }}>{text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Founding Partner Section */}
+      {/* Founding Organizer */}
       <section style={{
         padding: "80px 24px",
         borderBottom: "1px solid #2A2A2A",
@@ -381,11 +320,9 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "40px",
           }}>
-            We are inviting a select group of early organisers to shape the
-            future of Venew from the very beginning. As a founding organiser,
-            you will not just use the platform — you will help define what it
-            becomes. Your events, your feedback, and your presence will help
-            build Nigeria&apos;s most important discovery platform.
+            We are inviting a select group of early organizers to shape the future of
+            Venew from the very beginning. Your discoveries, your feedback, and your
+            presence will help build Africa&apos;s most important discovery platform.
           </p>
 
           <div style={{
@@ -397,10 +334,10 @@ export default function LandingPage() {
           }}>
             {[
               { icon: "⭐", text: "Priority feature placement on homepage" },
-              { icon: "✅", text: "Founding Organiser verified badge" },
-              { icon: "🆓", text: "Free event listings during launch phase" },
+              { icon: "✅", text: "Founding Organizer verified badge" },
+              { icon: "🆓", text: "Free listings during launch phase" },
               { icon: "🤝", text: "Direct access to Venew founding team" },
-              { icon: "📊", text: "Early access to organiser analytics" },
+              { icon: "📊", text: "Early access to discovery analytics" },
               { icon: "🚀", text: "Shape the future direction of Venew" },
             ].map(({ icon, text }) => (
               <div key={text} style={{
@@ -449,9 +386,9 @@ export default function LandingPage() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {[
-              { step: "01", title: "Create your event or opportunity page", text: "Fill in your details — title, date, venue, speaker, price, image. Takes less than 5 minutes." },
-              { step: "02", title: "Add everything your audience needs", text: "Include all the information people need to understand, register, and attend your event or opportunity." },
-              { step: "03", title: "Share your unique Venew link everywhere", text: "Copy your link and share on WhatsApp groups, Instagram bio, church announcements, flyers, and more." },
+              { step: "01", title: "Create your discovery listing", text: "Fill in the details — title, type, deadline, description, image. Takes less than 5 minutes." },
+              { step: "02", title: "Add everything people need to know", text: "Include all the information people need to understand, apply for, or attend your discovery." },
+              { step: "03", title: "Share your unique Venew link everywhere", text: "Copy your link and share on WhatsApp groups, Instagram bio, announcements, and more." },
             ].map(({ step, title, text }) => (
               <div key={step} style={{
                 backgroundColor: "#1A1A1A",
@@ -501,8 +438,8 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Start sharing your events
-            <span style={{ color: "#F5A623" }}> the right way</span>
+            Start Discovering
+            <span style={{ color: "#F5A623" }}> What Is Next</span>
           </h2>
 
           <p style={{
@@ -511,32 +448,41 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "40px",
           }}>
-            Whether you are hosting a church program, business seminar,
-            career fair, startup competition, or community gathering —
-            Venew helps you present it better, reach more people, and
-            create real impact.
+            Whether you are looking for funding, a scholarship, a conference,
+            an internship, a community, or your next big opportunity —
+            Venew helps you discover what matters.
           </p>
 
-          <Link href="/submit" style={{
-            backgroundColor: "#F5A623",
-            color: "#0D0D0D",
-            fontWeight: 700,
-            fontSize: "16px",
-            padding: "16px 40px",
-            borderRadius: "12px",
-            textDecoration: "none",
-            display: "inline-block",
-            marginBottom: "16px",
-          }}>
-            👉 List Your First Event — Free Early Access
-          </Link>
+          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/events" style={{
+              backgroundColor: "#F5A623",
+              color: "#0D0D0D",
+              fontWeight: 700,
+              fontSize: "16px",
+              padding: "16px 40px",
+              borderRadius: "12px",
+              textDecoration: "none",
+              display: "inline-block",
+            }}>
+              🔍 Explore Discoveries
+            </Link>
+            <Link href="/submit" style={{
+              backgroundColor: "transparent",
+              color: "#E8E8E8",
+              fontWeight: 600,
+              fontSize: "16px",
+              padding: "16px 32px",
+              borderRadius: "12px",
+              textDecoration: "none",
+              border: "1px solid #2A2A2A",
+              display: "inline-block",
+            }}>
+              Submit a Discovery →
+            </Link>
+          </div>
 
-          <p style={{
-            color: "#6B6B6B",
-            fontSize: "13px",
-            marginTop: "16px",
-          }}>
-            Venew — Discover Events. Discover Opportunities.
+          <p style={{ color: "#6B6B6B", fontSize: "13px", marginTop: "16px" }}>
+            Venew — Discover What Can Move You Forward.
           </p>
         </div>
       </section>
@@ -553,8 +499,9 @@ export default function LandingPage() {
         </div>
         <div style={{ display: "flex", justifyContent: "center", gap: "24px", flexWrap: "wrap", marginBottom: "16px" }}>
           {[
-            { label: "Browse Events", href: "/events" },
-            { label: "List Your Event", href: "/submit" },
+            { label: "Explore Discoveries", href: "/events" },
+            { label: "Submit a Discovery", href: "/submit" },
+            { label: "Discovery Hub", href: "/blog" },
             { label: "Log In", href: "/auth/login" },
             { label: "Sign Up", href: "/auth/signup" },
           ].map(({ label, href }) => (
@@ -568,7 +515,7 @@ export default function LandingPage() {
           ))}
         </div>
         <p style={{ color: "#6B6B6B", fontSize: "12px" }}>
-          © 2026 Venew.ng — Nigeria&apos;s Discovery Platform for Events and Opportunities
+          © 2026 Venew.ng — Africa&apos;s Discovery Platform for Opportunities, Events, Communities, and Growth.
         </p>
       </footer>
     </main>
