@@ -1,65 +1,41 @@
 const fs = require('fs');
 
-// Fix Navbar tagline
-let nav = fs.readFileSync('components/Navbar.tsx', 'utf8');
-nav = nav.replace(
-  'Events & Opportunities',
-  'Discovery Platform'
-);
-fs.writeFileSync('components/Navbar.tsx', nav);
-console.log(nav.includes('Discovery Platform') ? 'Navbar updated!' : 'Navbar FAILED');
+let c = fs.readFileSync('app/blog/page.tsx', 'utf8');
 
-// Fix HomeClient stats
-let c = fs.readFileSync('components/HomeClient.tsx', 'utf8');
+// Update blog tagline
 c = c.replace(
-  `          <div style={{ display: "flex", gap: "48px", marginBottom: "32px", flexWrap: "wrap" }}>
-            {[
-              { label: "Discoveries", value: String(events.length) },
-              { label: "Country", value: "🇳🇬" },
-              { label: "Categories", value: String(categories.length) },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <p style={{
-                  fontFamily: "Georgia, serif",
-                  fontSize: "36px",
-                  fontWeight: 900,
-                  color: "#F5A623",
-                  lineHeight: 1,
-                }}>
-                  {value}
-                </p>
-                <p style={{
-                  color: "#9CA3AF",
-                  fontSize: "11px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.2em",
-                  marginTop: "6px",
-                }}>
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>`,
-  `          <div style={{ display: "flex", gap: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
-            {[
-              { icon: "🌍", label: "Africa" },
-              { icon: "🔍", label: "Discovery Platform" },
-              { icon: "🚀", label: categories.length + " Categories" },
-            ].map(({ icon, label }) => (
-              <div key={label} style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                backgroundColor: "#FFF8E7",
-                border: "1px solid #F5A62330",
-                borderRadius: "999px",
-                padding: "8px 16px",
-              }}>
-                <span style={{ fontSize: "16px" }}>{icon}</span>
-                <span style={{ color: "#D97706", fontSize: "13px", fontWeight: 600 }}>{label}</span>
-              </div>
-            ))}
-          </div>`
+  'VENEW Blog',
+  'Discovery Hub'
 );
-fs.writeFileSync('components/HomeClient.tsx', c);
-console.log(c.includes('Discovery Platform') ? 'HomeClient updated!' : 'HomeClient FAILED');
+
+// Update blog headline
+c = c.replace(
+  'Insights on Events,\n            <br />\n            <span style={{ color: "#F5A623" }}>Opportunities & Growth</span>',
+  'Stories, Opportunities\n            <br />\n            <span style={{ color: "#F5A623" }}>& Discoveries That Matter</span>'
+);
+
+// Update blog description
+c = c.replace(
+  'Discover scholarships, opportunities, events and communities that can help you grow personally, professionally and spiritually.',
+  'Real stories, verified opportunities, scholarships, grants, fellowships, events and communities — curated to help you discover what can move your life forward.'
+);
+
+// Update blog CTA button
+c = c.replace(
+  'Browse Events & Opportunities →',
+  'Explore Discoveries →'
+);
+
+// Update empty state
+c = c.replace(
+  'First article coming soon',
+  'First discovery coming soon'
+);
+
+c = c.replace(
+  'We are working on valuable content for you. Check back soon!',
+  'We are curating verified opportunities and discoveries for you. Check back soon!'
+);
+
+fs.writeFileSync('app/blog/page.tsx', c);
+console.log('Done!');

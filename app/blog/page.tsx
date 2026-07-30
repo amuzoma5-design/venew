@@ -41,7 +41,7 @@ export default async function BlogPage() {
             textTransform: "uppercase",
             marginBottom: "16px",
           }}>
-            VENEW Blog
+            Discovery Hub
           </p>
           <h1 style={{
             fontFamily: "Georgia, serif",
@@ -74,7 +74,7 @@ export default async function BlogPage() {
             borderRadius: "12px",
             textDecoration: "none",
           }}>
-            Browse Events & Opportunities →
+            Explore Discoveries →
           </Link>
         </div>
       </section>
@@ -91,10 +91,10 @@ export default async function BlogPage() {
               color: "#111827",
               marginBottom: "8px",
             }}>
-              First article coming soon
+              First discovery coming soon
             </p>
             <p style={{ color: "#9CA3AF", fontSize: "14px" }}>
-              We are working on valuable content for you. Check back soon!
+              We are curating verified opportunities and discoveries for you. Check back soon!
             </p>
           </div>
         ) : (
