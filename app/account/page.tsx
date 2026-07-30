@@ -243,9 +243,9 @@ export default function AccountPage() {
           }}
         >
           {[
-            { label: "Saved Events", value: savedCount, icon: "Saved", link: "/account/saved" },
-            { label: "Events Viewed", value: viewedCount, icon: "Viewed", link: null },
-            { label: "My Events", value: myEvents.length, icon: "Events", link: null },
+            { label: "Saved Discoveries", value: savedCount, icon: "Saved", link: "/account/saved" },
+            { label: "Discoveries Viewed", value: viewedCount, icon: "Viewed", link: null },
+            { label: "My Discoveries", value: myEvents.length, icon: "Events", link: null },
             { label: "Interests", value: profile?.interests?.length || 0, icon: "Interests", link: null },
           ].map(({ label, value, icon, link }) => (
             <div
@@ -343,7 +343,7 @@ export default function AccountPage() {
                   No events yet
                 </p>
                 <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "24px" }}>
-                  Submit your first event and it will appear here
+                  Submit your first discovery and it will appear here
                 </p>
                 <Link
                   href="/submit"
@@ -358,7 +358,7 @@ export default function AccountPage() {
                     textDecoration: "none",
                   }}
                 >
-                  Submit an Event
+                  Submit a Discovery
                 </Link>
               </div>
             ) : (
@@ -821,7 +821,7 @@ export default function AccountPage() {
                 My Interests
               </h2>
               <p style={{ color: "#6B6B6B", fontSize: "13px", marginBottom: "20px" }}>
-                Select your interests to get personalized event recommendations
+                Select your interests to get personalized discovery recommendations
               </p>
 
               <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "20px" }}>
@@ -889,9 +889,9 @@ export default function AccountPage() {
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { label: "My Saved Events", href: "/account/saved" },
-                  { label: "Submit an Event", href: "/submit" },
-                  { label: "Browse Events", href: "/" },
+                  { label: "My Saved Discoveries", href: "/account/saved" },
+                  { label: "Submit a Discovery", href: "/submit" },
+                  { label: "Explore Discoveries", href: "/events" },
                 ].map(({ label, href }) => (
                   <Link
                     key={href}
