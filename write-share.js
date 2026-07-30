@@ -1,52 +1,48 @@
 const fs = require('fs');
 
-let c = fs.readFileSync('app/account/page.tsx', 'utf8');
+let c = fs.readFileSync('app/admin/page.tsx', 'utf8');
 
-// Update stat labels
-c = c.replace('Saved Events', 'Saved Discoveries');
-c = c.replace('Events Viewed', 'Discoveries Viewed');
-c = c.replace('My Events', 'My Discoveries');
+// Update tab labels
+c = c.replace('"📋 Events"', '"📋 Discoveries"');
 
-// Update interests description
+// Update section headers
+c = c.replace('All Submitted Events', 'All Submitted Discoveries');
+c = c.replace('Registered Users', 'Registered Users');
+
+// Update loading text
+c = c.replace('Loading events...', 'Loading discoveries...');
+
+// Update approve button
+c = c.replace('✓ Approve', '✓ Approve');
+
+// Update stats labels
+c = c.replace('"Total Events"', '"Total Discoveries"');
+c = c.replace('"Approved"', '"Live"');
+c = c.replace('"Pending"', '"Pending Review"');
+
+// Update analytics section headers
+c = c.replace('👁️ Most Viewed Events', '👁️ Most Viewed Discoveries');
+c = c.replace('❤️ Most Saved Events', '❤️ Most Saved Discoveries');
+
+// Update admin header
+c = c.replace('All Submitted Events', 'All Submitted Discoveries');
+
+// Update empty discovery messaging
 c = c.replace(
-  'Select your interests to get personalized event recommendations',
-  'Select your interests to get personalized discovery recommendations'
+  'No view data yet.',
+  'No view data yet.'
 );
 
-// Update quick links
-c = c.replace('My Saved Events', 'My Saved Discoveries');
-c = c.replace('Submit an Event', 'Submit a Discovery');
-c = c.replace('Browse Events', 'Explore Discoveries');
+// Update blog tab
+c = c.replace('"✍️ Blog"', '"✍️ Discovery Hub"');
+c = c.replace('✍️ Blog Management', '✍️ Discovery Hub Management');
+c = c.replace('✍️ Write New Post', '✍️ Write New Article');
+c = c.replace('📋 All Posts', '📋 All Articles');
+c = c.replace('Write First Post', 'Write First Article');
+c = c.replace('No blog posts yet.', 'No articles yet.');
+c = c.replace('Publish Blog Post →', 'Publish Article →');
+c = c.replace('Publishing...', 'Publishing...');
+c = c.replace('✅ Published! Redirecting to posts list...', '✅ Published! Redirecting to articles list...');
 
-// Update quick links href
-c = c.replace('href: "/submit"', 'href: "/submit"');
-c = c.replace('href: "/"', 'href: "/events"');
-
-// Update My Events tab label
-c = c.replace('"📋 My Events"', '"📋 My Discoveries"');
-c = c.replace('"👤 Profile"', '"👤 Profile"');
-
-// Update empty state in My Events tab
-c = c.replace(
-  'Submit your first event and it will appear here',
-  'Submit your first discovery and it will appear here'
-);
-c = c.replace(
-  'Submit an Event',
-  'Submit a Discovery'
-);
-
-// Update My Account tagline
-c = c.replace(
-  'My Account',
-  'My Account'
-);
-
-// Update tab label
-c = c.replace(
-  '{ label: "📋 My Events", value: "events" }',
-  '{ label: "📋 My Discoveries", value: "events" }'
-);
-
-fs.writeFileSync('app/account/page.tsx', c);
+fs.writeFileSync('app/admin/page.tsx', c);
 console.log('Done!');

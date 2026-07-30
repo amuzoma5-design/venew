@@ -124,9 +124,9 @@ export default function AdminPage() {
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "16px", marginBottom: "32px" }}>
           {[
-            { label: "Total Events", value: analytics.totalEvents, color: "#E8E8E8" },
-            { label: "Approved", value: analytics.approvedEvents, color: "#10B981" },
-            { label: "Pending", value: analytics.pendingEvents, color: "#F5A623" },
+            { label: "Total Discoveries", value: analytics.totalEvents, color: "#E8E8E8" },
+            { label: "Live", value: analytics.approvedEvents, color: "#10B981" },
+            { label: "Pending Review", value: analytics.pendingEvents, color: "#F5A623" },
             { label: "Registered Users", value: analytics.totalUsers, color: "#3B82F6" },
             { label: "Total Views", value: analytics.totalViews, color: "#A78BFA" },
             { label: "Total Saves", value: analytics.totalSaves, color: "#F43F5E" },
@@ -142,7 +142,7 @@ export default function AdminPage() {
         <div style={{ display: "flex", gap: "8px", marginBottom: "32px", flexWrap: "wrap" }}>
           {(["events", "users", "analytics", "blog"] as Tab[]).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ backgroundColor: activeTab === tab ? "#F5A623" : "#1A1A1A", color: activeTab === tab ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: activeTab === tab ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>
-              {tab === "events" ? "📋 Events" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : "✍️ Blog"}
+              {tab === "events" ? "📋 Discoveries" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : "✍️ Discovery Hub"}
             </button>
           ))}
         </div>
@@ -150,8 +150,8 @@ export default function AdminPage() {
         {/* Events tab */}
         {activeTab === "events" && (
           <div>
-            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>All Submitted Events</h2>
-            {loading ? <p style={{ color: "#6B6B6B" }}>Loading events...</p> : (
+            <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>All Submitted Discoveries</h2>
+            {loading ? <p style={{ color: "#6B6B6B" }}>Loading discoveries...</p> : (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {events.map((event) => (
                   <div key={event.id} style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
@@ -204,7 +204,7 @@ export default function AdminPage() {
         {activeTab === "analytics" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "28px" }}>
-              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>👁️ Most Viewed Events</h2>
+              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>👁️ Most Viewed Discoveries</h2>
               {analytics.topEvents?.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {analytics.topEvents.map((event: any, i: number) => (
@@ -224,7 +224,7 @@ export default function AdminPage() {
             </div>
 
             <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "28px" }}>
-              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>❤️ Most Saved Events</h2>
+              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#E8E8E8", marginBottom: "20px" }}>❤️ Most Saved Discoveries</h2>
               {analytics.topSaved?.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {analytics.topSaved.map((event: any, i: number) => (
@@ -364,10 +364,10 @@ function BlogAdmin() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>✍️ Blog Management</h2>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>✍️ Discovery Hub Management</h2>
         <div style={{ display: "flex", gap: "8px" }}>
-          <button onClick={() => setView("list")} style={{ backgroundColor: view === "list" ? "#F5A623" : "transparent", color: view === "list" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "list" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>📋 All Posts</button>
-          <button onClick={() => setView("write")} style={{ backgroundColor: view === "write" ? "#F5A623" : "transparent", color: view === "write" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "write" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>✍️ Write New Post</button>
+          <button onClick={() => setView("list")} style={{ backgroundColor: view === "list" ? "#F5A623" : "transparent", color: view === "list" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "list" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>📋 All Articles</button>
+          <button onClick={() => setView("write")} style={{ backgroundColor: view === "write" ? "#F5A623" : "transparent", color: view === "write" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "write" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>✍️ Write New Article</button>
         </div>
       </div>
 
@@ -375,8 +375,8 @@ function BlogAdmin() {
         <div>
           {loadingPosts ? <p style={{ color: "#6B6B6B" }}>Loading posts...</p> : posts.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px", backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px" }}>
-              <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "16px" }}>No blog posts yet.</p>
-              <button onClick={() => setView("write")} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "10px 20px", borderRadius: "12px", border: "none", cursor: "pointer" }}>Write First Post</button>
+              <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "16px" }}>No articles yet.</p>
+              <button onClick={() => setView("write")} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "10px 20px", borderRadius: "12px", border: "none", cursor: "pointer" }}>Write First Article</button>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -407,7 +407,7 @@ function BlogAdmin() {
       {view === "write" && (
         <div>
           {error && <div style={{ backgroundColor: "#2A0A0A", border: "1px solid #F43F5E", borderRadius: "10px", padding: "12px 16px", color: "#F43F5E", fontSize: "14px", marginBottom: "20px" }}>{error}</div>}
-          {success && <div style={{ backgroundColor: "#0A2A1A", border: "1px solid #10B981", borderRadius: "10px", padding: "12px 16px", color: "#10B981", fontSize: "14px", marginBottom: "20px" }}>✅ Published! Redirecting to posts list...</div>}
+          {success && <div style={{ backgroundColor: "#0A2A1A", border: "1px solid #10B981", borderRadius: "10px", padding: "12px 16px", color: "#10B981", fontSize: "14px", marginBottom: "20px" }}>✅ Published! Redirecting to articles list...</div>}
           <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "20px", padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
             <div>
               <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Title *</label>
@@ -442,7 +442,7 @@ function BlogAdmin() {
               <textarea name="content" value={form.content} onChange={handleChange} rows={15} placeholder="Write your full article here..." style={{ ...inputStyle, resize: "vertical" }} />
             </div>
             <button onClick={handlePublish} disabled={saving} style={{ backgroundColor: saving ? "#6B6B6B" : "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "none", cursor: saving ? "not-allowed" : "pointer" }}>
-              {saving ? "Saving..." : editingPost ? "Save Changes →" : "Publish Blog Post →"}
+              {saving ? "Saving..." : editingPost ? "Save Changes →" : "Publish Article →"}
             </button>
             {editingPost && (
               <button onClick={() => { setEditingPost(null); setForm({ title: "", slug: "", excerpt: "", content: "", category: "Opportunities", cover_image: "" }); setView("list"); }} style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "1px solid #2A2A2A", cursor: "pointer" }}>Cancel</button>
