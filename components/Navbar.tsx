@@ -35,7 +35,7 @@ export default function Navbar() {
           <span style={{ color: "#F5A623", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>VE</span>
           <span style={{ color: "#111827", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
           <span className="venew-nav-tagline" style={{ color: "#9CA3AF", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", marginLeft: "8px" }}>
-            Events & Opportunities
+            Discovery Platform
           </span>
         </Link>
 
