@@ -121,7 +121,7 @@ export default async function PublicProfilePage({
 
             {events && events.length > 0 && (
               <div style={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: "16px", padding: "24px" }}>
-                <h2 style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 700, color: "#111827", marginBottom: "16px" }}>Events Organised</h2>
+                <h2 style={{ fontFamily: "Georgia, serif", fontSize: "18px", fontWeight: 700, color: "#111827", marginBottom: "16px" }}>Discoveries Organised</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {events.map((event: any) => {
                     const catColor = categoryColors[event.category] ?? "#F5A623";
@@ -171,7 +171,7 @@ export default async function PublicProfilePage({
             <div style={{ backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "20px", textAlign: "center" }}>
               <p style={{ fontFamily: "Georgia, serif", fontSize: "15px", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>Discover Events & Opportunities</p>
               <p style={{ color: "#6B7280", fontSize: "12px", marginBottom: "12px" }}>Find events near you on VENEW</p>
-              <Link href="/events" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "10px 20px", borderRadius: "10px", textDecoration: "none" }}>Browse VENEW →</Link>
+              <Link href="/events" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "10px 20px", borderRadius: "10px", textDecoration: "none" }}>Explore Discoveries →</Link>
             </div>
           </div>
         </div>

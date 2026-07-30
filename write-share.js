@@ -1,48 +1,40 @@
 const fs = require('fs');
 
-let c = fs.readFileSync('app/admin/page.tsx', 'utf8');
+let c = fs.readFileSync('app/profile/[username]/page.tsx', 'utf8');
 
-// Update tab labels
-c = c.replace('"📋 Events"', '"📋 Discoveries"');
-
-// Update section headers
-c = c.replace('All Submitted Events', 'All Submitted Discoveries');
-c = c.replace('Registered Users', 'Registered Users');
-
-// Update loading text
-c = c.replace('Loading events...', 'Loading discoveries...');
-
-// Update approve button
-c = c.replace('✓ Approve', '✓ Approve');
-
-// Update stats labels
-c = c.replace('"Total Events"', '"Total Discoveries"');
-c = c.replace('"Approved"', '"Live"');
-c = c.replace('"Pending"', '"Pending Review"');
-
-// Update analytics section headers
-c = c.replace('👁️ Most Viewed Events', '👁️ Most Viewed Discoveries');
-c = c.replace('❤️ Most Saved Events', '❤️ Most Saved Discoveries');
-
-// Update admin header
-c = c.replace('All Submitted Events', 'All Submitted Discoveries');
-
-// Update empty discovery messaging
+// Update CTA section
 c = c.replace(
-  'No view data yet.',
-  'No view data yet.'
+  'Discover Events & Opportunities on VENEW',
+  'Discover Opportunities on VENEW'
 );
 
-// Update blog tab
-c = c.replace('"✍️ Blog"', '"✍️ Discovery Hub"');
-c = c.replace('✍️ Blog Management', '✍️ Discovery Hub Management');
-c = c.replace('✍️ Write New Post', '✍️ Write New Article');
-c = c.replace('📋 All Posts', '📋 All Articles');
-c = c.replace('Write First Post', 'Write First Article');
-c = c.replace('No blog posts yet.', 'No articles yet.');
-c = c.replace('Publish Blog Post →', 'Publish Article →');
-c = c.replace('Publishing...', 'Publishing...');
-c = c.replace('✅ Published! Redirecting to posts list...', '✅ Published! Redirecting to articles list...');
+c = c.replace(
+  'Find conferences, scholarships, church programs, and more happening near you.',
+  'Find scholarships, grants, fellowships, events, communities and more — all in one place.'
+);
 
-fs.writeFileSync('app/admin/page.tsx', c);
+c = c.replace(
+  'Browse VENEW →',
+  'Explore Discoveries →'
+);
+
+// Update profile completeness label
+c = c.replace(
+  'Profile Completeness',
+  'Profile Completeness'
+);
+
+// Update events organised section
+c = c.replace(
+  'Events Organised',
+  'Discoveries Organised'
+);
+
+// Update share text
+c = c.replace(
+  '"Check out " + name + " on VENEW 👉 " + profileUrl',
+  '"Check out " + name + " on VENEW — Africa\'s Discovery Platform 👉 " + profileUrl'
+);
+
+fs.writeFileSync('app/profile/[username]/page.tsx', c);
 console.log('Done!');
