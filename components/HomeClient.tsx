@@ -60,22 +60,22 @@ export default function HomeClient({ events }: { events: Event[] }) {
       }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <p style={{ color: "#D97706", fontSize: "11px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "16px" }}>
-            Events & Opportunities
+            Africa's Discovery Platform
           </p>
           <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(40px, 8vw, 80px)", fontWeight: 900, color: "#111827", lineHeight: 1, marginBottom: "24px" }}>
             Discover What's
             <br />
-            <span style={{ color: "#F5A623" }}>Happening & Possible.</span>
+            <span style={{ color: "#F5A623" }}>Move You Forward.</span>
           </h1>
           <p style={{ color: "#6B7280", fontSize: "18px", lineHeight: 1.7, maxWidth: "520px", marginBottom: "8px" }}>
-            Explore events, opportunities, communities, workshops, conferences, and experiences designed to help you grow.
+            Discover opportunities, scholarships, grants, fellowships, internships, jobs, events, competitions, communities, and learning resources — all in one trusted place.
           </p>
           <p style={{ color: "#9CA3AF", fontSize: "15px", lineHeight: 1.7, maxWidth: "480px", marginBottom: "40px" }}>
-            Find your next event, opportunity, or meaningful connection.
+            Every discovery on Venew is something that can move your life forward.
           </p>
           <div style={{ display: "flex", gap: "48px", marginBottom: "32px", flexWrap: "wrap" }}>
             {[
-              { label: "Listings", value: String(events.length) },
+              { label: "Discoveries", value: String(events.length) },
               { label: "Country", value: "🇳🇬" },
               { label: "Categories", value: String(categories.length) },
             ].map(({ label, value }) => (
@@ -87,16 +87,16 @@ export default function HomeClient({ events }: { events: Event[] }) {
           </div>
           {user && <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "12px", padding: "12px 20px", marginBottom: "32px", flexWrap: "wrap" }}>
             <span style={{ fontSize: "20px" }}>⭐</span>
-            <p style={{ color: "#374151", fontSize: "14px" }}>Want your event featured at the top?</p>
+            <p style={{ color: "#374151", fontSize: "14px" }}>Want your discovery featured at the top?</p>
             <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "8px 16px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>
-              Feature My Event
+              Feature My Discovery
             </a>
           </div>}
           <div style={{ position: "relative", maxWidth: "600px" }}>
             <span style={{ position: "absolute", left: "18px", top: "50%", transform: "translateY(-50%)", fontSize: "18px", pointerEvents: "none" }}>🔍</span>
             <input
               type="text"
-              placeholder="Search events, opportunities, cities, topics..."
+              placeholder="Search scholarships, grants, events, jobs, communities..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{ width: "100%", backgroundColor: "#FFFFFF", border: "1.5px solid #E5E7EB", borderRadius: "999px", padding: "16px 20px 16px 52px", color: "#111827", fontSize: "15px", outline: "none", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
@@ -123,10 +123,10 @@ export default function HomeClient({ events }: { events: Event[] }) {
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "20px", marginBottom: "36px" }}>
             <div>
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 700, color: "#111827" }}>
-                {search ? `Results for "${search}"` : "Browse Events & Opportunities"}
+                {search ? `Results for "${search}"` : "Latest Discoveries"}
               </h2>
               <p style={{ color: "#9CA3AF", fontSize: "14px", marginTop: "4px" }}>
-                {filtered.length} listing{filtered.length !== 1 ? "s" : ""} found
+                {filtered.length} discover{filtered.length !== 1 ? "ies" : "y"} found
               </p>
             </div>
             <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
