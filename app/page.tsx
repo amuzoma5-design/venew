@@ -128,6 +128,7 @@ export default function LandingPage() {
               { icon: "🏆", label: "Competitions", color: "#FB7185" },
               { icon: "📚", label: "Learning Resources", color: "#22D3EE" },
               { icon: "🚀", label: "Accelerators", color: "#F97316" },
+              { icon: "💊", label: "Health & Wellness", color: "#EC4899" },
             ].map(({ icon, label, color }) => (
               <Link key={label} href="/events" style={{ textDecoration: "none" }}>
                 <div style={{
