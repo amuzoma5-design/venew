@@ -13,6 +13,7 @@ const categoryIcons: Record<Category, string> = {
   "Real Estate": "🏠",
   Education: "🎓",
   Opportunities: "🚀",
+  "Health & Wellness": "💊",
 };
 
 interface CategoryFilterProps {

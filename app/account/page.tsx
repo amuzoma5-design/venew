@@ -17,6 +17,7 @@ const categoryColors: Record<string, string> = {
   "Real Estate": "#8B5CF6",
   Education: "#F97316",
   Opportunities: "#14B8A6",
+  "Health & Wellness": "#EC4899",
 };
 const AVAILABILITY_OPTIONS = [
   { value: "open", label: "🟢 Open to opportunities" },

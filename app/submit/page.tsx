@@ -19,6 +19,7 @@ const DISCOVERY_TYPES = [
   { value: "learning", label: "📚 Learning Resource" },
   { value: "accelerator", label: "🚀 Accelerator Programme" },
   { value: "business", label: "📈 Business Opportunity" },
+  { value: "health", label: "💊 Health & Wellness" },
 ];
 
 export default function SubmitDiscoveryPage() {
