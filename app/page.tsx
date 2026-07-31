@@ -301,7 +301,7 @@ export default function LandingPage() {
             textTransform: "uppercase",
             letterSpacing: "0.1em",
           }}>
-            Limited Spots
+            Limited Founding Cohort
           </span>
 
           <h2 style={{
@@ -311,8 +311,18 @@ export default function LandingPage() {
             color: "#E8E8E8",
             marginBottom: "24px",
           }}>
-            Founding Organizer Program
+            Become a Founding Discovery Partner
           </h2>
+
+          <p style={{
+            color: "#6B6B6B",
+            fontSize: "16px",
+            lineHeight: 1.8,
+            marginBottom: "16px",
+          }}>
+            We are inviting the first 100 organisations, businesses, communities,
+            institutions, and individuals to help shape the future of Venew.
+          </p>
 
           <p style={{
             color: "#6B6B6B",
@@ -320,9 +330,12 @@ export default function LandingPage() {
             lineHeight: 1.8,
             marginBottom: "40px",
           }}>
-            We are inviting a select group of early organizers to shape the future of
-            Venew from the very beginning. Your discoveries, your feedback, and your
-            presence will help build Africa&apos;s most important discovery platform.
+            If you publish opportunities, events, scholarships, grants, fellowships,
+            internships, jobs, competitions, learning resources, or community programmes,
+            this is your opportunity to become one of Venew&apos;s Founding Discovery Partners.
+            Your discoveries, feedback, and early participation will help build
+            Africa&apos;s trusted platform for discovering opportunities that help
+            people learn, grow, and succeed.
           </p>
 
           <div style={{
@@ -333,12 +346,12 @@ export default function LandingPage() {
             textAlign: "left",
           }}>
             {[
-              { icon: "⭐", text: "Priority feature placement on homepage" },
-              { icon: "✅", text: "Founding Organizer verified badge" },
-              { icon: "🆓", text: "Free listings during launch phase" },
-              { icon: "🤝", text: "Direct access to Venew founding team" },
-              { icon: "📊", text: "Early access to discovery analytics" },
-              { icon: "🚀", text: "Shape the future direction of Venew" },
+              { icon: "⭐", text: "Priority visibility across Venew" },
+              { icon: "✅", text: "Official Founding Discovery Partner badge" },
+              { icon: "🆓", text: "Free discovery listings during the launch phase" },
+              { icon: "🤝", text: "Direct access to the Venew founding team" },
+              { icon: "📊", text: "Early access to discovery insights and analytics" },
+              { icon: "🚀", text: "Opportunity to influence the future direction of Venew" },
             ].map(({ icon, text }) => (
               <div key={text} style={{
                 backgroundColor: "#1A1A1A",
@@ -365,7 +378,7 @@ export default function LandingPage() {
             textDecoration: "none",
             display: "inline-block",
           }}>
-            👉 Join the Founding Organizer Program
+            👉 Become a Founding Discovery Partner
           </Link>
         </div>
       </section>
