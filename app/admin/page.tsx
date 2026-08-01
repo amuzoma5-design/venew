@@ -1,10 +1,11 @@
 "use client";
+import * as React from "react";
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
-type Tab = "events" | "users" | "analytics" | "blog";
+type Tab = "events" | "users" | "analytics" | "blog" | "spotlight";
 
 export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([]);
@@ -140,9 +141,9 @@ export default function AdminPage() {
 
         {/* Tabs */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "32px", flexWrap: "wrap" }}>
-          {(["events", "users", "analytics", "blog"] as Tab[]).map((tab) => (
+          {(["events", "users", "analytics", "blog", "spotlight"] as Tab[]).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ backgroundColor: activeTab === tab ? "#F5A623" : "#1A1A1A", color: activeTab === tab ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: activeTab === tab ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>
-              {tab === "events" ? "📋 Discoveries" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : "✍️ Discovery Hub"}
+              {tab === "events" ? "📋 Discoveries" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : tab === "blog" ? "✍️ Discovery Hub" : "✨ Spotlight"}
             </button>
           ))}
         </div>
@@ -275,6 +276,7 @@ export default function AdminPage() {
 
         {/* Blog tab */}
         {activeTab === "blog" && <BlogAdmin />}
+        {activeTab === "spotlight" && <SpotlightAdmin />}
 
       </div>
     </main>
@@ -447,6 +449,155 @@ function BlogAdmin() {
             {editingPost && (
               <button onClick={() => { setEditingPost(null); setForm({ title: "", slug: "", excerpt: "", content: "", category: "Opportunities", cover_image: "" }); setView("list"); }} style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "1px solid #2A2A2A", cursor: "pointer" }}>Cancel</button>
             )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+function SpotlightAdmin() {
+  const [form, setForm] = React.useState({ title: "", slug: "", category: "People", summary: "", story: "", achievements: "", quote: "", cover_image: "", featured: false });
+  const [saving, setSaving] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [spotlights, setSpotlights] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [view, setView] = React.useState<"list" | "write">("list");
+  const [coverImage, setCoverImage] = React.useState<File | null>(null);
+
+  React.useEffect(() => { loadSpotlights(); }, []);
+
+  async function loadSpotlights() {
+    setLoading(true);
+    const { data } = await supabase.from("spotlights").select("*").order("created_at", { ascending: false });
+    setSpotlights(data ?? []);
+    setLoading(false);
+  }
+
+  async function deleteSpotlight(id: string) {
+    if (!confirm("Delete this spotlight permanently?")) return;
+    await supabase.from("spotlights").delete().eq("id", id);
+    setSpotlights(spotlights.filter((s) => s.id !== id));
+  }
+
+  async function togglePublish(id: string, published: boolean) {
+    await supabase.from("spotlights").update({ published: !published }).eq("id", id);
+    setSpotlights(spotlights.map((s) => s.id === id ? { ...s, published: !published } : s));
+  }
+
+  async function toggleFeature(id: string, featured: boolean) {
+    await supabase.from("spotlights").update({ featured: !featured }).eq("id", id);
+    setSpotlights(spotlights.map((s) => s.id === id ? { ...s, featured: !featured } : s));
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const val = e.target.value;
+    const name = e.target.name;
+    setForm((prev) => ({ ...prev, [name]: val, ...(name === "title" ? { slug: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") } : {}) }));
+  }
+
+  async function handlePublish() {
+    if (!form.title || !form.summary) { setError("Title and summary are required."); return; }
+    setSaving(true);
+    setError("");
+    let coverUrl = null;
+    if (coverImage) {
+      const fileExt = coverImage.name.split(".").pop();
+      const fileName = "spotlight-" + Date.now() + "." + fileExt;
+      const { error: uploadError } = await supabase.storage.from("event-images").upload(fileName, coverImage);
+      if (uploadError) { setError("Image upload failed: " + uploadError.message); setSaving(false); return; }
+      const { data: urlData } = supabase.storage.from("event-images").getPublicUrl(fileName);
+      coverUrl = urlData.publicUrl;
+    }
+    const { error: sbError } = await supabase.from("spotlights").insert([{ title: form.title, slug: form.slug, category: form.category, summary: form.summary, story: form.story, achievements: form.achievements, quote: form.quote, cover_image: coverUrl, featured: form.featured, published: true }]);
+    setSaving(false);
+    if (sbError) { setError("Error: " + sbError.message); }
+    else {
+      setSuccess(true);
+      setForm({ title: "", slug: "", category: "People", summary: "", story: "", achievements: "", quote: "", cover_image: "", featured: false });
+      setCoverImage(null);
+      loadSpotlights();
+      setTimeout(() => { setSuccess(false); setView("list"); }, 2000);
+    }
+  }
+
+  const inputStyle = { width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box" as const };
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>✨ Spotlight Management</h2>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button onClick={() => setView("list")} style={{ backgroundColor: view === "list" ? "#F5A623" : "transparent", color: view === "list" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "list" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>📋 All Spotlights</button>
+          <button onClick={() => setView("write")} style={{ backgroundColor: view === "write" ? "#F5A623" : "transparent", color: view === "write" ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: view === "write" ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>✨ Add Spotlight</button>
+        </div>
+      </div>
+
+      {view === "list" && (
+        <div>
+          {loading ? <p style={{ color: "#6B6B6B" }}>Loading spotlights...</p> : spotlights.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "48px", backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px" }}>
+              <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "16px" }}>No spotlights yet.</p>
+              <button onClick={() => setView("write")} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "10px 20px", borderRadius: "12px", border: "none", cursor: "pointer" }}>Add First Spotlight</button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {spotlights.map((s) => (
+                <div key={s.id} style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+                  <div style={{ flex: 1, minWidth: "200px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px", flexWrap: "wrap" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: s.published ? "#10B98120" : "#2A2A2A", color: s.published ? "#10B981" : "#6B6B6B" }}>{s.published ? "✅ Published" : "⏸️ Draft"}</span>
+                      {s.featured && <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: "#F5A62320", color: "#F5A623" }}>⭐ Featured</span>}
+                      <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: "#1A1A1A", color: "#6B6B6B", border: "1px solid #2A2A2A" }}>{s.category}</span>
+                    </div>
+                    <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px", fontFamily: "Georgia, serif" }}>{s.title}</p>
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <a href={"/spotlight/" + s.slug} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "transparent", color: "#6B6B6B", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #2A2A2A", textDecoration: "none" }}>View</a>
+                    <button onClick={() => toggleFeature(s.id, s.featured)} style={{ backgroundColor: "transparent", color: s.featured ? "#F5A623" : "#6B6B6B", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid " + (s.featured ? "#F5A62330" : "#2A2A2A"), cursor: "pointer" }}>{s.featured ? "⭐ Featured" : "Feature"}</button>
+                    <button onClick={() => togglePublish(s.id, s.published)} style={{ backgroundColor: "transparent", color: s.published ? "#F5A623" : "#10B981", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid " + (s.published ? "#F5A62330" : "#10B98130"), cursor: "pointer" }}>{s.published ? "Unpublish" : "Publish"}</button>
+                    <button onClick={() => deleteSpotlight(s.id)} style={{ backgroundColor: "transparent", color: "#F43F5E", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #F43F5E30", cursor: "pointer" }}>Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === "write" && (
+        <div>
+          {error && <div style={{ backgroundColor: "#2A0A0A", border: "1px solid #F43F5E", borderRadius: "10px", padding: "12px 16px", color: "#F43F5E", fontSize: "14px", marginBottom: "20px" }}>{error}</div>}
+          {success && <div style={{ backgroundColor: "#0A2A1A", border: "1px solid #10B981", borderRadius: "10px", padding: "12px 16px", color: "#10B981", fontSize: "14px", marginBottom: "20px" }}>✅ Spotlight published!</div>}
+          <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "20px", padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div>
+              <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Cover Image</label>
+              <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", backgroundColor: "#111", border: "1px dashed #2A2A2A", borderRadius: "10px", padding: "20px", cursor: "pointer", color: "#6B6B6B", fontSize: "14px" }}>
+                📷 {coverImage ? coverImage.name : "Click to upload cover image"}
+                <input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) setCoverImage(f); }} style={{ display: "none" }} />
+              </label>
+            </div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Title *</label><input name="title" value={form.title} onChange={handleChange} placeholder="e.g. How Amaka Built a $1M Business from Lagos" style={inputStyle} /></div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Slug (auto-generated)</label><input name="slug" value={form.slug} onChange={handleChange} style={{ ...inputStyle, color: "#6B6B6B" }} /></div>
+            <div>
+              <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Category</label>
+              <select name="category" value={form.category} onChange={handleChange} style={inputStyle}>
+                {["People", "Businesses", "Startups", "Students", "Communities", "African Legends"].map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Summary * (short introduction)</label><textarea name="summary" value={form.summary} onChange={handleChange} rows={3} placeholder="A short compelling introduction..." style={{ ...inputStyle, resize: "vertical" }} /></div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Inspirational Quote</label><input name="quote" value={form.quote} onChange={handleChange} placeholder='e.g. "The only way to do great work is to love what you do."' style={inputStyle} /></div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Full Story</label><textarea name="story" value={form.story} onChange={handleChange} rows={10} placeholder="Write the full story here..." style={{ ...inputStyle, resize: "vertical" }} /></div>
+            <div><label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>Key Achievements</label><textarea name="achievements" value={form.achievements} onChange={handleChange} rows={5} placeholder="List key achievements here..." style={{ ...inputStyle, resize: "vertical" }} /></div>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} style={{ width: "16px", height: "16px" }} />
+              <label style={{ color: "#E8E8E8", fontSize: "13px", fontWeight: 600 }}>⭐ Feature this spotlight on homepage</label>
+            </div>
+            <button onClick={handlePublish} disabled={saving} style={{ backgroundColor: saving ? "#6B6B6B" : "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "15px", padding: "16px", borderRadius: "12px", border: "none", cursor: saving ? "not-allowed" : "pointer" }}>
+              {saving ? "Publishing..." : "Publish Spotlight →"}
+            </button>
           </div>
         </div>
       )}

@@ -442,6 +442,27 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* This Week Spotlight */}
+      <section style={{ padding: "80px 24px", borderBottom: "1px solid #2A2A2A" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", backgroundColor: "#1A1A1A", border: "1px solid #F5A623", borderRadius: "999px", padding: "6px 16px", marginBottom: "24px" }}>
+            <span style={{ fontSize: "14px" }}>✨</span>
+            <span style={{ color: "#F5A623", fontSize: "12px", fontWeight: 600 }}>Venew Spotlight</span>
+          </div>
+          <h2 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 900, color: "#E8E8E8", marginBottom: "16px" }}>
+            Inspiring People &
+            <span style={{ color: "#F5A623" }}> Remarkable Stories</span>
+          </h2>
+          <p style={{ color: "#6B6B6B", fontSize: "16px", lineHeight: 1.8, marginBottom: "40px" }}>
+            Every week we spotlight inspiring people, businesses, startups, students,
+            communities, and African legends who are building something worth discovering.
+          </p>
+          <Link href="/spotlight" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "16px", padding: "16px 40px", borderRadius: "12px", textDecoration: "none" }}>
+            ✨ View All Spotlights
+          </Link>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section style={{ padding: "80px 24px" }}>
         <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
