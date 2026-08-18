@@ -79,13 +79,13 @@ export default async function BlogPostPage({
 
         <div style={{ marginTop: "48px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "16px", padding: "32px", textAlign: "center" }}>
           <p style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 900, color: "#111827", marginBottom: "8px" }}>
-            Discover Events & Opportunities on VENEW
+            Discover More on VENEW
           </p>
           <p style={{ color: "#6B7280", fontSize: "14px", marginBottom: "20px" }}>
-            Find conferences, scholarships, church programs, and more happening near you.
+            Find scholarships, grants, fellowships, events, communities and opportunities across Africa.
           </p>
           <Link href="/events" style={{ display: "inline-block", backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "15px", padding: "14px 32px", borderRadius: "12px", textDecoration: "none" }}>
-            Browse Events & Opportunities →
+            Explore Discoveries →
           </Link>
         </div>
       </div>

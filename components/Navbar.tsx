@@ -35,7 +35,7 @@ export default function Navbar() {
           <span style={{ color: "#F5A623", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>VE</span>
           <span style={{ color: "#111827", fontSize: "22px", fontWeight: 900, fontFamily: "Georgia, serif" }}>NEW</span>
           <span className="venew-nav-tagline" style={{ color: "#9CA3AF", fontSize: "10px", fontWeight: 500, letterSpacing: "0.2em", textTransform: "uppercase", marginLeft: "8px" }}>
-            Discovery Platform
+            Discover Africa
           </span>
         </Link>
 
@@ -74,7 +74,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div style={{ backgroundColor: "#FFFFFF", borderTop: "1px solid #E5E7EB", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }} className="venew-mobile-menu">
-          <Link href="/events" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Browse Events</Link>
+          <Link href="/events" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Explore</Link>
           <Link href="/blog" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Blog</Link>
           <Link href="/spotlight" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>✨ Spotlight</Link>
           {user ? (

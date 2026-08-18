@@ -3,7 +3,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "VENEW — Discover Events & Opportunities in Nigeria",
+  title: "VENEW — Africa's Discovery Platform",
   description:
     "Find events, opportunities, conferences, church programs, seminars, workshops and more happening near you across Nigeria.",
   manifest: "/manifest.json",
