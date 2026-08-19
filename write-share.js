@@ -1,38 +1,18 @@
 const fs = require('fs');
 
-// Fix blog post CTA
-let b = fs.readFileSync('app/blog/[slug]/page.tsx', 'utf8');
-b = b.replace(
-  'Discover Events & Opportunities on VENEW',
-  'Discover More on VENEW'
-);
-b = b.replace(
-  'Find conferences, scholarships, church programs, and more happening near you.',
-  'Find scholarships, grants, fellowships, events, communities and opportunities across Africa.'
-);
-b = b.replace(
-  'Browse Events & Opportunities →',
-  'Explore Discoveries →'
-);
-fs.writeFileSync('app/blog/[slug]/page.tsx', b);
-console.log(b.includes('Discover More on VENEW') ? 'Blog post CTA fixed!' : 'FAILED - text not found');
-
-// Fix Navbar Browse Events
+// Fix Navbar - Submit Event to Submit Discovery
 let n = fs.readFileSync('components/Navbar.tsx', 'utf8');
-n = n.replace(/Browse Events/g, 'Explore');
-n = n.replace(/Discovery Platform/g, 'Discover Africa');
+n = n.replace(/Submit Event/g, 'Submit Discovery');
 fs.writeFileSync('components/Navbar.tsx', n);
-console.log(n.includes('Explore') ? 'Navbar fixed!' : 'Navbar FAILED');
+console.log(n.includes('Submit Discovery') ? 'Navbar Submit fixed!' : 'Navbar FAILED');
 
-// Fix layout meta
-let l = fs.readFileSync('app/layout.tsx', 'utf8');
-l = l.replace(
-  'VENEW — Discover Events & Opportunities in Nigeria',
-  "VENEW — Africa's Discovery Platform"
-);
-l = l.replace(
-  'Find events, opportunities, conferences, seminars, and workshops happening near you.',
-  'Discover opportunities, scholarships, grants, fellowships, events and communities across Africa.'
-);
-fs.writeFileSync('app/layout.tsx', l);
-console.log(l.includes("Africa's Discovery Platform") ? 'Layout fixed!' : 'Layout FAILED');
+// Fix Dashboard - My Events tab
+let d = fs.readFileSync('app/dashboard/page.tsx', 'utf8');
+d = d.replace(/My Events/g, 'My Discoveries');
+d = d.replace(/Upcoming Events/g, 'Active Discoveries');
+d = d.replace(/Past Events/g, 'Past Discoveries');
+d = d.replace(/upcoming === "upcoming"/g, 'activeTab === "upcoming"');
+d = d.replace('"Upcoming Events"', '"Active Discoveries"');
+d = d.replace('"Past Events"', '"Past Discoveries"');
+fs.writeFileSync('app/dashboard/page.tsx', d);
+console.log(d.includes('My Discoveries') ? 'Dashboard fixed!' : 'Dashboard FAILED');

@@ -328,7 +328,7 @@ export default function DashboardPage() {
                   fontWeight: 700,
                   color: "#E8E8E8",
                 }}>
-                  My Events
+                  My Discoveries
                 </h2>
 
                 {/* Tabs */}

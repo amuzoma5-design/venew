@@ -48,7 +48,7 @@ export default function Navbar() {
             <>
               <Link href="/dashboard" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Dashboard</Link>
               <Link href="/account" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Account</Link>
-              <Link href="/submit" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "8px 18px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>Submit Event</Link>
+              <Link href="/submit" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "8px 18px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>Submit Discovery</Link>
               <button onClick={handleLogout} style={{ backgroundColor: "transparent", border: "1px solid #E5E7EB", color: "#6B7280", fontSize: "13px", padding: "7px 14px", borderRadius: "999px", cursor: "pointer" }}>Log out</button>
             </>
           ) : (
@@ -81,7 +81,7 @@ export default function Navbar() {
             <>
               <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Dashboard</Link>
               <Link href="/account" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>My Account</Link>
-              <Link href="/submit" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Submit Event</Link>
+              <Link href="/submit" onClick={() => setMenuOpen(false)} style={{ color: "#374151", fontSize: "15px", textDecoration: "none", padding: "10px 0", borderBottom: "1px solid #F3F4F6" }}>Submit Discovery</Link>
               <button onClick={handleLogout} style={{ backgroundColor: "transparent", border: "none", color: "#F43F5E", fontSize: "15px", padding: "10px 0", textAlign: "left", cursor: "pointer" }}>Log out</button>
             </>
           ) : (
