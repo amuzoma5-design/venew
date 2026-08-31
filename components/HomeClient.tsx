@@ -6,6 +6,7 @@ import { categories, Category } from "@/lib/events";
 import EventCard from "@/components/EventCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import RecommendedEvents from "@/components/RecommendedEvents";
+import DiscoverySearch from "@/components/DiscoverySearch";
 
 interface Event {
   id: string;
@@ -53,8 +54,9 @@ export default function HomeClient({ events }: { events: Event[] }) {
 
   return (
     <div style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>
+      {/* Lean, search-first hero */}
       <section style={{
-        padding: "80px 24px 60px",
+        padding: "64px 24px 40px",
         background: "linear-gradient(135deg, #FFFBF0 0%, #FFFFFF 60%)",
         borderBottom: "1px solid #F0F0F0",
       }}>
@@ -62,57 +64,38 @@ export default function HomeClient({ events }: { events: Event[] }) {
           <p style={{ color: "#D97706", fontSize: "11px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "16px" }}>
             Africa's Discovery Platform
           </p>
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(40px, 8vw, 80px)", fontWeight: 900, color: "#111827", lineHeight: 1, marginBottom: "24px" }}>
-            Discover What's
-            <br />
-            <span style={{ color: "#F5A623" }}>Move You Forward.</span>
+          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: "#111827", lineHeight: 1.1, marginBottom: "32px" }}>
+            Discover what's <span style={{ color: "#F5A623" }}>next.</span>
           </h1>
-          <p style={{ color: "#6B7280", fontSize: "18px", lineHeight: 1.7, maxWidth: "520px", marginBottom: "8px" }}>
-            Discover opportunities, scholarships, grants, fellowships, internships, jobs, events, competitions, communities, and learning resources — all in one trusted place.
+
+          <DiscoverySearch value={search} onChange={setSearch} />
+
+          <p style={{ color: "#9CA3AF", fontSize: "14px", lineHeight: 1.6, maxWidth: "520px", marginTop: "24px" }}>
+            Opportunities, scholarships, grants, fellowships, internships, jobs, events, competitions, and communities — all in one trusted place.
           </p>
-          <p style={{ color: "#9CA3AF", fontSize: "15px", lineHeight: 1.7, maxWidth: "480px", marginBottom: "40px" }}>
-            Every discovery on Venew is something that can move your life forward.
-          </p>
-          <div style={{ display: "flex", gap: "48px", marginBottom: "32px", flexWrap: "wrap" }}>
-            {[
-              { label: "Discoveries", value: String(events.length) },
-              { label: "Country", value: "🇳🇬" },
-              { label: "Categories", value: String(categories.length) },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <p style={{ fontFamily: "Georgia, serif", fontSize: "36px", fontWeight: 900, color: "#F5A623", lineHeight: 1 }}>{value}</p>
-                <p style={{ color: "#9CA3AF", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.2em", marginTop: "6px" }}>{label}</p>
-              </div>
-            ))}
-          </div>
-          {user && <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "12px", padding: "12px 20px", marginBottom: "32px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "20px" }}>⭐</span>
-            <p style={{ color: "#374151", fontSize: "14px" }}>Want your discovery featured at the top?</p>
-            <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "13px", padding: "8px 16px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>
-              Feature My Discovery
-            </a>
-          </div>}
-          <div style={{ position: "relative", maxWidth: "600px" }}>
-            <span style={{ position: "absolute", left: "18px", top: "50%", transform: "translateY(-50%)", fontSize: "18px", pointerEvents: "none" }}>🔍</span>
-            <input
-              type="text"
-              placeholder="Search scholarships, grants, events, jobs, communities..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: "100%", backgroundColor: "#FFFFFF", border: "1.5px solid #E5E7EB", borderRadius: "999px", padding: "16px 20px 16px 52px", color: "#111827", fontSize: "15px", outline: "none", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
-              onFocus={(e) => { e.target.style.borderColor = "#F5A623"; e.target.style.boxShadow = "0 0 0 3px rgba(245,166,35,0.12)"; }}
-              onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"; }}
-            />
-            {search && (
-              <button onClick={() => setSearch("")} style={{ position: "absolute", right: "16px", top: "50%", transform: "translateY(-50%)", backgroundColor: "#F3F4F6", border: "none", borderRadius: "50%", width: "24px", height: "24px", color: "#6B7280", cursor: "pointer", fontSize: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                ✕
-              </button>
-            )}
-          </div>
         </div>
       </section>
 
-      <div style={{ height: "1px", backgroundColor: "#F0F0F0", margin: "0 24px" }} />
+      {/* Quiet secondary strip — stats + feature CTA, no longer competing with search */}
+      <section style={{ padding: "20px 24px", backgroundColor: "#FFFFFF", borderBottom: "1px solid #F0F0F0" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
+          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", color: "#9CA3AF", fontSize: "13px" }}>
+            <span><strong style={{ color: "#F5A623" }}>{events.length}</strong> discoveries</span>
+            <span><strong style={{ color: "#F5A623" }}>{categories.length}</strong> categories</span>
+            <span>🇳🇬 Nigeria</span>
+          </div>
+
+          {user && (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "999px", padding: "8px 16px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: "16px" }}>⭐</span>
+              <span style={{ color: "#374151", fontSize: "13px" }}>Want your discovery featured?</span>
+              <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "12px", padding: "6px 14px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>
+                Feature My Discovery
+              </a>
+            </div>
+          )}
+        </div>
+      </section>
 
       <div style={{ paddingTop: "48px", backgroundColor: "#FFFFFF" }}>
         <RecommendedEvents events={events} />
