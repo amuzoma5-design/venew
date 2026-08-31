@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { categories, Category } from "@/lib/events";
+import { getGroupForType, PrimaryGroup } from "@/lib/discoveryTypes";
 import EventCard from "@/components/EventCard";
 import CategoryFilter from "@/components/CategoryFilter";
+import PrimaryTypeFilter from "@/components/PrimaryTypeFilter";
 import RecommendedEvents from "@/components/RecommendedEvents";
 import DiscoverySearch from "@/components/DiscoverySearch";
 
@@ -14,6 +16,7 @@ interface Event {
   location: string;
   venue: string;
   category: string;
+  type?: string;
   date: string;
   time: string;
   description: string;
@@ -27,6 +30,7 @@ interface Event {
 }
 
 export default function HomeClient({ events }: { events: Event[] }) {
+  const [activeGroup, setActiveGroup] = useState<PrimaryGroup>("All");
   const [activeCategory, setActiveCategory] = useState<Category | "All">("All");
   const [search, setSearch] = useState("");
 
@@ -40,13 +44,14 @@ export default function HomeClient({ events }: { events: Event[] }) {
   }, []);
 
   const filtered = events.filter((e) => {
+    const matchesGroup = activeGroup === "All" || getGroupForType(e.type) === activeGroup;
     const matchesCategory = activeCategory === "All" || e.category === activeCategory;
     const matchesSearch =
       search === "" ||
       e.title.toLowerCase().includes(search.toLowerCase()) ||
       e.location.toLowerCase().includes(search.toLowerCase()) ||
       e.description?.toLowerCase().includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesGroup && matchesCategory && matchesSearch;
   });
 
   const featuredEvents = filtered.filter((e) => e.featured);
@@ -54,7 +59,6 @@ export default function HomeClient({ events }: { events: Event[] }) {
 
   return (
     <div style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>
-      {/* Lean, search-first hero */}
       <section style={{
         padding: "64px 24px 40px",
         background: "linear-gradient(135deg, #FFFBF0 0%, #FFFFFF 60%)",
@@ -70,13 +74,14 @@ export default function HomeClient({ events }: { events: Event[] }) {
 
           <DiscoverySearch value={search} onChange={setSearch} />
 
-          <p style={{ color: "#9CA3AF", fontSize: "14px", lineHeight: 1.6, maxWidth: "520px", marginTop: "24px" }}>
+          <p style={{ color: "#9CA3AF", fontSize: "14px", lineHeight: 1.6, maxWidth: "520px", marginTop: "24px", marginBottom: "28px" }}>
             Opportunities, scholarships, grants, fellowships, internships, jobs, events, competitions, and communities — all in one trusted place.
           </p>
+
+          <PrimaryTypeFilter active={activeGroup} onChange={setActiveGroup} />
         </div>
       </section>
 
-      {/* Quiet secondary strip — stats + feature CTA, no longer competing with search */}
       <section style={{ padding: "20px 24px", backgroundColor: "#FFFFFF", borderBottom: "1px solid #F0F0F0" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
           <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", color: "#9CA3AF", fontSize: "13px" }}>
@@ -141,7 +146,7 @@ export default function HomeClient({ events }: { events: Event[] }) {
               <p style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</p>
               <p style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>No listings found</p>
               <p style={{ color: "#9CA3AF", fontSize: "14px", marginBottom: "24px" }}>Try a different search or category</p>
-              <button onClick={() => { setSearch(""); setActiveCategory("All"); }} style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}>
+              <button onClick={() => { setSearch(""); setActiveCategory("All"); setActiveGroup("All"); }} style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}>
                 Clear filters
               </button>
             </div>
