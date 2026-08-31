@@ -4,23 +4,9 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { categories } from "@/lib/events";
+import { DISCOVERY_TYPES } from "@/lib/discoveryTypes";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-
-const DISCOVERY_TYPES = [
-  { value: "event", label: "🎤 Event" },
-  { value: "scholarship", label: "🎓 Scholarship" },
-  { value: "grant", label: "💰 Grant & Funding" },
-  { value: "fellowship", label: "🌍 Fellowship" },
-  { value: "internship", label: "🏢 Internship" },
-  { value: "job", label: "💼 Job" },
-  { value: "competition", label: "🏆 Competition" },
-  { value: "community", label: "🤝 Community" },
-  { value: "learning", label: "📚 Learning Resource" },
-  { value: "accelerator", label: "🚀 Accelerator Programme" },
-  { value: "business", label: "📈 Business Opportunity" },
-  { value: "health", label: "💊 Health & Wellness" },
-];
 
 export default function SubmitDiscoveryPage() {
   const router = useRouter();
