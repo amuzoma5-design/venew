@@ -95,12 +95,12 @@ export default function RecommendedEvents({ events }: { events: any[] }) {
               fontFamily: "Georgia, serif",
               fontSize: "22px",
               fontWeight: 700,
-              color: "#E8E8E8",
+              color: "#111827",
             }}>
               Recommended For You
             </h2>
           </div>
-          <p style={{ color: "#6B6B6B", fontSize: "13px" }}>
+          <p style={{ color: "#9CA3AF", fontSize: "13px" }}>
             Based on your interests and activity
           </p>
         </div>
@@ -118,7 +118,7 @@ export default function RecommendedEvents({ events }: { events: any[] }) {
         </div>
 
         {/* Divider */}
-        <div style={{ height: "1px", backgroundColor: "#2A2A2A", marginBottom: "40px" }} />
+        <div style={{ height: "1px", backgroundColor: "#F0F0F0", marginBottom: "40px" }} />
       </div>
     </section>
   );
