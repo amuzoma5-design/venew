@@ -1,14 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
-import { categories, Category } from "@/lib/events";
+import { Category } from "@/lib/events";
 import { getGroupForType, PrimaryGroup } from "@/lib/discoveryTypes";
-import EventCard from "@/components/EventCard";
-import CategoryFilter from "@/components/CategoryFilter";
-import PrimaryTypeFilter from "@/components/PrimaryTypeFilter";
-import RecommendedEvents from "@/components/RecommendedEvents";
-import DiscoverySearch from "@/components/DiscoverySearch";
+import { rankDiscoveries } from "@/lib/rankDiscoveries";
+import DiscoveryFullCard from "@/components/DiscoveryFullCard";
+import DiscoveryFilterPanel from "@/components/DiscoveryFilterPanel";
 
 interface Event {
   id: string;
@@ -29,130 +27,277 @@ interface Event {
   featured?: boolean;
 }
 
+const NAVBAR_HEIGHT = 72; // adjust if this doesn't match your actual Navbar height
+
 export default function HomeClient({ events }: { events: Event[] }) {
   const [activeGroup, setActiveGroup] = useState<PrimaryGroup>("All");
   const [activeCategory, setActiveCategory] = useState<Category | "All">("All");
   const [search, setSearch] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<"next" | "prev">("next");
 
-  const waLink = "https://wa.me/2349044209650?text=Hi, I want to feature my event on VENEW";
-  const [user, setUser] = useState<any>(null);
+  const [interests, setInterests] = useState<string[]>([]);
+  const [city, setCity] = useState("");
+  const [viewedCategories, setViewedCategories] = useState<string[]>([]);
+
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    async function loadSignals() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("interests, city")
+        .eq("id", session.user.id)
+        .single();
+
+      const { data: activity } = await supabase
+        .from("user_activity")
+        .select("event_id")
+        .eq("user_id", session.user.id)
+        .eq("action_type", "viewed");
+
+      const viewedEventIds = activity?.map((a) => a.event_id) ?? [];
+      let viewedCats: string[] = [];
+      if (viewedEventIds.length > 0) {
+        const { data: viewedEvents } = await supabase
+          .from("events")
+          .select("category")
+          .in("id", viewedEventIds);
+        viewedCats = viewedEvents?.map((e) => e.category) ?? [];
+      }
+
+      setInterests(profile?.interests ?? []);
+      setCity(profile?.city ?? "");
+      setViewedCategories(viewedCats);
+    }
+
+    loadSignals();
   }, []);
 
-  const filtered = events.filter((e) => {
-    const matchesGroup = activeGroup === "All" || getGroupForType(e.type) === activeGroup;
-    const matchesCategory = activeCategory === "All" || e.category === activeCategory;
-    const matchesSearch =
-      search === "" ||
-      e.title.toLowerCase().includes(search.toLowerCase()) ||
-      e.location.toLowerCase().includes(search.toLowerCase()) ||
-      e.description?.toLowerCase().includes(search.toLowerCase());
-    return matchesGroup && matchesCategory && matchesSearch;
-  });
+  const filtered = useMemo(() => {
+    return events.filter((e) => {
+      const matchesGroup = activeGroup === "All" || getGroupForType(e.type) === activeGroup;
+      const matchesCategory = activeCategory === "All" || e.category === activeCategory;
+      const matchesSearch =
+        search === "" ||
+        e.title.toLowerCase().includes(search.toLowerCase()) ||
+        e.location.toLowerCase().includes(search.toLowerCase()) ||
+        e.description?.toLowerCase().includes(search.toLowerCase());
+      return matchesGroup && matchesCategory && matchesSearch;
+    });
+  }, [events, activeGroup, activeCategory, search]);
 
-  const featuredEvents = filtered.filter((e) => e.featured);
-  const regularEvents = filtered.filter((e) => !e.featured);
+  const ranked = useMemo(
+    () => rankDiscoveries(filtered, { interests, city, viewedCategories }),
+    [filtered, interests, city, viewedCategories]
+  );
+
+  useEffect(() => {
+    setIndex(0);
+  }, [activeGroup, activeCategory, search]);
+
+  const goNext = useCallback(() => {
+    setDirection("next");
+    setIndex((i) => Math.min(i + 1, ranked.length - 1));
+  }, [ranked.length]);
+
+  const goPrev = useCallback(() => {
+    setDirection("prev");
+    setIndex((i) => Math.max(i - 1, 0));
+  }, []);
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [goNext, goPrev]);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    if (touchStartX.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const SWIPE_THRESHOLD = 50;
+
+    if (deltaX < -SWIPE_THRESHOLD) goNext();
+    else if (deltaX > SWIPE_THRESHOLD) goPrev();
+
+    touchStartX.current = null;
+  }
+
+  const current = ranked[index];
 
   return (
-    <div style={{ backgroundColor: "#FFFFFF", minHeight: "100vh" }}>
-      <section style={{
-        padding: "64px 24px 40px",
-        background: "linear-gradient(135deg, #FFFBF0 0%, #FFFFFF 60%)",
-        borderBottom: "1px solid #F0F0F0",
-      }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <p style={{ color: "#D97706", fontSize: "11px", fontWeight: 600, letterSpacing: "0.3em", textTransform: "uppercase", marginBottom: "16px" }}>
-            Africa's Discovery Platform
-          </p>
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: "#111827", lineHeight: 1.1, marginBottom: "32px" }}>
-            Discover what's <span style={{ color: "#F5A623" }}>next.</span>
-          </h1>
+    <div style={{ backgroundColor: "#0D0D0D" }}>
+      <style>{`
+        @keyframes discoverySlideInNext {
+          from { opacity: 0; transform: translateX(24px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes discoverySlideInPrev {
+          from { opacity: 0; transform: translateX(-24px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @media (max-width: 767px) {
+          .discovery-desktop-nav { display: none; }
+        }
+      `}</style>
 
-          <DiscoverySearch value={search} onChange={setSearch} />
-
-          <p style={{ color: "#9CA3AF", fontSize: "14px", lineHeight: 1.6, maxWidth: "520px", marginTop: "24px", marginBottom: "28px" }}>
-            Opportunities, scholarships, grants, fellowships, internships, jobs, events, competitions, and communities — all in one trusted place.
-          </p>
-
-          <PrimaryTypeFilter active={activeGroup} onChange={setActiveGroup} />
-        </div>
-      </section>
-
-      <section style={{ padding: "20px 24px", backgroundColor: "#FFFFFF", borderBottom: "1px solid #F0F0F0" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
-          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", color: "#9CA3AF", fontSize: "13px" }}>
-            <span><strong style={{ color: "#F5A623" }}>{events.length}</strong> discoveries</span>
-            <span><strong style={{ color: "#F5A623" }}>{categories.length}</strong> categories</span>
-            <span>🇳🇬 Nigeria</span>
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: `calc(100dvh - ${NAVBAR_HEIGHT}px)`,
+          overflow: "hidden",
+        }}
+      >
+        {ranked.length === 0 ? (
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            textAlign: "center",
+            padding: "0 24px",
+          }}>
+            <p style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</p>
+            <p style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 700, color: "#E8E8E8", marginBottom: "8px" }}>
+              Your discovery journey starts here
+            </p>
+            <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "24px" }}>
+              Try a different search or category
+            </p>
+            <button
+              onClick={() => { setSearch(""); setActiveCategory("All"); setActiveGroup("All"); }}
+              style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}
+            >
+              Clear filters
+            </button>
           </div>
+        ) : (
+          <div
+            key={current.id}
+            style={{
+              width: "100%",
+              height: "100%",
+              animation: `${direction === "next" ? "discoverySlideInNext" : "discoverySlideInPrev"} 0.25s ease-out`,
+            }}
+          >
+            <DiscoveryFullCard event={current} />
+          </div>
+        )}
 
-          {user && (
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", backgroundColor: "#FFF8E7", border: "1px solid #F5A623", borderRadius: "999px", padding: "8px 16px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "16px" }}>⭐</span>
-              <span style={{ color: "#374151", fontSize: "13px" }}>Want your discovery featured?</span>
-              <a href={waLink} target="_blank" rel="noopener noreferrer" style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "12px", padding: "6px 14px", borderRadius: "999px", textDecoration: "none", whiteSpace: "nowrap" }}>
-                Feature My Discovery
-              </a>
-            </div>
-          )}
+        <div style={{
+          position: "absolute",
+          top: "16px",
+          left: "16px",
+          right: "16px",
+          zIndex: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <span style={{
+            color: "#FFFFFF",
+            fontSize: "12px",
+            fontWeight: 600,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            padding: "6px 12px",
+            borderRadius: "999px",
+          }}>
+            {ranked.length > 0 ? `${index + 1} / ${ranked.length}` : "0 / 0"}
+          </span>
+
+          <button
+            onClick={() => setFilterOpen(true)}
+            style={{
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: "none",
+              borderRadius: "999px",
+              width: "36px",
+              height: "36px",
+              color: "#FFFFFF",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            🔍
+          </button>
         </div>
-      </section>
 
-      <div style={{ paddingTop: "48px", backgroundColor: "#FFFFFF" }}>
-        <RecommendedEvents events={events} />
+        <div className="discovery-desktop-nav">
+          <button
+            onClick={goPrev}
+            disabled={index === 0}
+            aria-label="Previous discovery"
+            style={{
+              position: "absolute",
+              left: "16px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 2,
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: "none",
+              borderRadius: "50%",
+              width: "44px",
+              height: "44px",
+              color: "#FFFFFF",
+              fontSize: "20px",
+              cursor: index === 0 ? "default" : "pointer",
+              opacity: index === 0 ? 0.3 : 1,
+            }}
+          >
+            ‹
+          </button>
+          <button
+            onClick={goNext}
+            disabled={index >= ranked.length - 1}
+            aria-label="Next discovery"
+            style={{
+              position: "absolute",
+              right: "16px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 2,
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: "none",
+              borderRadius: "50%",
+              width: "44px",
+              height: "44px",
+              color: "#FFFFFF",
+              fontSize: "20px",
+              cursor: index >= ranked.length - 1 ? "default" : "pointer",
+              opacity: index >= ranked.length - 1 ? 0.3 : 1,
+            }}
+          >
+            ›
+          </button>
+        </div>
       </div>
 
-      <section style={{ padding: "48px 24px 80px", backgroundColor: "#FFFFFF" }}>
-        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "20px", marginBottom: "36px" }}>
-            <div>
-              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 700, color: "#111827" }}>
-                {search ? `Results for "${search}"` : "Latest Discoveries"}
-              </h2>
-              <p style={{ color: "#9CA3AF", fontSize: "14px", marginTop: "4px" }}>
-                {filtered.length} discover{filtered.length !== 1 ? "ies" : "y"} found
-              </p>
-            </div>
-            <CategoryFilter active={activeCategory} onChange={setActiveCategory} />
-          </div>
-
-          {featuredEvents.length > 0 && (
-            <div style={{ marginBottom: "40px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-                <span style={{ fontSize: "18px" }}>⭐</span>
-                <h3 style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#D97706" }}>Featured Events & Opportunities</h3>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
-                {featuredEvents.map((event, i) => (
-                  <EventCard key={event.id} event={event as any} index={i} />
-                ))}
-              </div>
-              <div style={{ height: "1px", backgroundColor: "#F0F0F0", margin: "40px 0" }} />
-            </div>
-          )}
-
-          {regularEvents.length > 0 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
-              {regularEvents.map((event, i) => (
-                <EventCard key={event.id} event={event as any} index={i} />
-              ))}
-            </div>
-          ) : filtered.length === 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "96px 0", textAlign: "center" }}>
-              <p style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</p>
-              <p style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#111827", marginBottom: "8px" }}>No listings found</p>
-              <p style={{ color: "#9CA3AF", fontSize: "14px", marginBottom: "24px" }}>Try a different search or category</p>
-              <button onClick={() => { setSearch(""); setActiveCategory("All"); setActiveGroup("All"); }} style={{ backgroundColor: "#F5A623", color: "#FFFFFF", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}>
-                Clear filters
-              </button>
-            </div>
-          ) : null}
-        </div>
-      </section>
+      <DiscoveryFilterPanel
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        search={search}
+        onSearchChange={setSearch}
+        activeGroup={activeGroup}
+        onGroupChange={setActiveGroup}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
+        resultCount={ranked.length}
+      />
     </div>
   );
 }
