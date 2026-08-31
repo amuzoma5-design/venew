@@ -44,8 +44,29 @@ export default async function EventDetailPage({
 
   return (
     <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
-      <Navbar />
+           <Navbar />
       <ActivityTracker eventId={event.id} />
+
+      <style>{`
+        .event-detail-grid {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 24px;
+          align-items: start;
+        }
+        .event-detail-sidebar {
+          position: sticky;
+          top: 88px;
+        }
+        @media (max-width: 768px) {
+          .event-detail-grid {
+            grid-template-columns: 1fr;
+          }
+          .event-detail-sidebar {
+            position: static;
+          }
+        }
+      `}</style>
 
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "40px 24px 80px" }}>
 
@@ -197,12 +218,7 @@ export default async function EventDetailPage({
           </div>
         </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 320px",
-          gap: "24px",
-          alignItems: "start",
-        }}>
+                <div className="event-detail-grid">
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
             <div style={{
@@ -298,13 +314,11 @@ export default async function EventDetailPage({
             )}
           </div>
 
-          <div style={{
+                    <div className="event-detail-sidebar" style={{
             backgroundColor: "#1A1A1A",
             border: "1px solid #2A2A2A",
             borderRadius: "16px",
             padding: "28px",
-            position: "sticky",
-            top: "88px",
           }}>
             <div style={{ textAlign: "center", marginBottom: "24px" }}>
               <p style={{ color: "#6B6B6B", fontSize: "13px", marginBottom: "4px" }}>Price</p>
