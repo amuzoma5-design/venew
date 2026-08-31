@@ -34,14 +34,14 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
       <div style={{
         position: "absolute",
         inset: 0,
-        background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.35) 100%)",
+        background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%)",
       }} />
 
-      <div style={{ position: "absolute", top: "24px", left: "20px", zIndex: 1 }}>
+      <div style={{ position: "absolute", top: "16px", left: "16px", zIndex: 1 }}>
         <span style={{
-          fontSize: "12px",
+          fontSize: "11px",
           fontWeight: 700,
-          padding: "6px 14px",
+          padding: "5px 12px",
           borderRadius: "999px",
           color: "#0D0D0D",
           backgroundColor: catColor,
@@ -50,50 +50,49 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
         </span>
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, padding: "24px 24px 100px" }}>
+      <div style={{ position: "relative", zIndex: 1, padding: "20px" }}>
         <p style={{
           color: "#F5A623",
-          fontSize: "12px",
+          fontSize: "11px",
           fontWeight: 700,
           textTransform: "uppercase",
-          letterSpacing: "0.15em",
-          marginBottom: "10px",
+          letterSpacing: "0.12em",
+          marginBottom: "8px",
         }}>
           {formatDate(event.date)}
         </p>
 
         <h2 style={{
           fontFamily: "Georgia, serif",
-          fontSize: "clamp(28px, 6vw, 40px)",
+          fontSize: "clamp(20px, 5vw, 26px)",
           fontWeight: 900,
           color: "#FFFFFF",
-          lineHeight: 1.15,
-          marginBottom: "14px",
+          lineHeight: 1.2,
+          marginBottom: "10px",
         }}>
           {event.title}
         </h2>
 
         <p style={{
           color: "#D1D5DB",
-          fontSize: "15px",
-          lineHeight: 1.6,
-          marginBottom: "20px",
+          fontSize: "13px",
+          lineHeight: 1.55,
+          marginBottom: "16px",
           display: "-webkit-box",
           WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
-          maxWidth: "520px",
         }}>
           {event.description}
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px", flexWrap: "wrap" }}>
-          <span style={{ color: "#E5E7EB", fontSize: "13px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "18px", flexWrap: "wrap" }}>
+          <span style={{ color: "#E5E7EB", fontSize: "12px" }}>
             📍 {event.venue?.split(",")[0] ?? event.location}
           </span>
           <span style={{
             color: event.price === "FREE" ? "#34D399" : "#F5A623",
-            fontSize: "15px",
+            fontSize: "13px",
             fontWeight: 700,
           }}>
             {event.price}
@@ -105,8 +104,8 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
           backgroundColor: "#F5A623",
           color: "#0D0D0D",
           fontWeight: 700,
-          fontSize: "15px",
-          padding: "14px 32px",
+          fontSize: "13px",
+          padding: "11px 24px",
           borderRadius: "999px",
           textDecoration: "none",
         }}>

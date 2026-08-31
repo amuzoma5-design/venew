@@ -152,84 +152,38 @@ export default function HomeClient({ events }: { events: Event[] }) {
         }
       `}</style>
 
-      <div
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        style={{
-          position: "relative",
-          width: "100%",
-          height: `calc(100dvh - ${NAVBAR_HEIGHT}px)`,
-          overflow: "hidden",
-        }}
-      >
-        {ranked.length === 0 ? (
-          <div style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100%",
-            textAlign: "center",
-            padding: "0 24px",
-          }}>
-            <p style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</p>
-            <p style={{ fontFamily: "Georgia, serif", fontSize: "22px", fontWeight: 700, color: "#E8E8E8", marginBottom: "8px" }}>
-              Your discovery journey starts here
-            </p>
-            <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "24px" }}>
-              Try a different search or category
-            </p>
-            <button
-              onClick={() => { setSearch(""); setActiveCategory("All"); setActiveGroup("All"); }}
-              style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}
-            >
-              Clear filters
-            </button>
-          </div>
-        ) : (
-          <div
-            key={current.id}
-            style={{
-              width: "100%",
-              height: "100%",
-              animation: `${direction === "next" ? "discoverySlideInNext" : "discoverySlideInPrev"} 0.25s ease-out`,
-            }}
-          >
-            <DiscoveryFullCard event={current} />
-          </div>
-        )}
-
+      <div style={{
+        height: `calc(100dvh - ${NAVBAR_HEIGHT}px)`,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
+      }}>
+        {/* Header strip — counter left, search right, separate from the card */}
         <div style={{
-          position: "absolute",
-          top: "16px",
-          left: "16px",
-          right: "16px",
-          zIndex: 2,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          padding: "16px 20px",
+          flexShrink: 0,
         }}>
           <span style={{
-            color: "#FFFFFF",
-            fontSize: "12px",
+            color: "#6B6B6B",
+            fontSize: "13px",
             fontWeight: 600,
-            backgroundColor: "rgba(0,0,0,0.4)",
-            padding: "6px 12px",
-            borderRadius: "999px",
           }}>
-            {ranked.length > 0 ? `${index + 1} / ${ranked.length}` : "0 / 0"}
+            {ranked.length > 0 ? `${index + 1} of ${ranked.length}` : "0 of 0"}
           </span>
 
           <button
             onClick={() => setFilterOpen(true)}
             style={{
-              backgroundColor: "rgba(0,0,0,0.4)",
-              border: "none",
+              backgroundColor: "#1A1A1A",
+              border: "1px solid #2A2A2A",
               borderRadius: "999px",
               width: "36px",
               height: "36px",
-              color: "#FFFFFF",
-              fontSize: "16px",
+              color: "#E8E8E8",
+              fontSize: "15px",
               cursor: "pointer",
             }}
           >
@@ -237,53 +191,109 @@ export default function HomeClient({ events }: { events: Event[] }) {
           </button>
         </div>
 
-        <div className="discovery-desktop-nav">
-          <button
-            onClick={goPrev}
-            disabled={index === 0}
-            aria-label="Previous discovery"
-            style={{
-              position: "absolute",
-              left: "16px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              backgroundColor: "rgba(0,0,0,0.4)",
-              border: "none",
-              borderRadius: "50%",
-              width: "44px",
-              height: "44px",
-              color: "#FFFFFF",
-              fontSize: "20px",
-              cursor: index === 0 ? "default" : "pointer",
-              opacity: index === 0 ? 0.3 : 1,
-            }}
-          >
-            ‹
-          </button>
-          <button
-            onClick={goNext}
-            disabled={index >= ranked.length - 1}
-            aria-label="Next discovery"
-            style={{
-              position: "absolute",
-              right: "16px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 2,
-              backgroundColor: "rgba(0,0,0,0.4)",
-              border: "none",
-              borderRadius: "50%",
-              width: "44px",
-              height: "44px",
-              color: "#FFFFFF",
-              fontSize: "20px",
-              cursor: index >= ranked.length - 1 ? "default" : "pointer",
-              opacity: index >= ranked.length - 1 ? 0.3 : 1,
-            }}
-          >
-            ›
-          </button>
+        {/* Stage — card sits centered here, with visible margin all around */}
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 16px 24px",
+          }}
+        >
+          {ranked.length === 0 ? (
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+              padding: "0 24px",
+            }}>
+              <p style={{ fontSize: "40px", marginBottom: "14px" }}>🔍</p>
+              <p style={{ fontFamily: "Georgia, serif", fontSize: "20px", fontWeight: 700, color: "#E8E8E8", marginBottom: "8px" }}>
+                Your discovery journey starts here
+              </p>
+              <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "20px" }}>
+                Try a different search or category
+              </p>
+              <button
+                onClick={() => { setSearch(""); setActiveCategory("All"); setActiveGroup("All"); }}
+                style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", border: "none", cursor: "pointer" }}
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <>
+              <div
+                key={current.id}
+                style={{
+                  width: "100%",
+                  maxWidth: "420px",
+                  height: "100%",
+                  maxHeight: "640px",
+                  borderRadius: "24px",
+                  overflow: "hidden",
+                  boxShadow: "0 24px 60px rgba(0,0,0,0.55)",
+                  animation: `${direction === "next" ? "discoverySlideInNext" : "discoverySlideInPrev"} 0.25s ease-out`,
+                }}
+              >
+                <DiscoveryFullCard event={current} />
+              </div>
+
+              <button
+                className="discovery-desktop-nav"
+                onClick={goPrev}
+                disabled={index === 0}
+                aria-label="Previous discovery"
+                style={{
+                  position: "absolute",
+                  left: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "#1A1A1A",
+                  border: "1px solid #2A2A2A",
+                  borderRadius: "50%",
+                  width: "40px",
+                  height: "40px",
+                  color: "#E8E8E8",
+                  fontSize: "18px",
+                  cursor: index === 0 ? "default" : "pointer",
+                  opacity: index === 0 ? 0.3 : 1,
+                }}
+              >
+                ‹
+              </button>
+              <button
+                className="discovery-desktop-nav"
+                onClick={goNext}
+                disabled={index >= ranked.length - 1}
+                aria-label="Next discovery"
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  backgroundColor: "#1A1A1A",
+                  border: "1px solid #2A2A2A",
+                  borderRadius: "50%",
+                  width: "40px",
+                  height: "40px",
+                  color: "#E8E8E8",
+                  fontSize: "18px",
+                  cursor: index >= ranked.length - 1 ? "default" : "pointer",
+                  opacity: index >= ranked.length - 1 ? 0.3 : 1,
+                }}
+              >
+                ›
+              </button>
+            </>
+          )}
         </div>
       </div>
 
