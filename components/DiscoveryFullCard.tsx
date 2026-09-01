@@ -15,56 +15,89 @@ const categoryColors: Record<string, string> = {
   "Health & Wellness": "#EC4899",
 };
 
+const tagColors: Record<string, { bg: string; color: string }> = {
+  FEATURED: { bg: "#F5A623", color: "#0D0D0D" },
+  FREE:     { bg: "#10B981", color: "#ffffff" },
+  NEW:      { bg: "#06B6D4", color: "#ffffff" },
+  HOT:      { bg: "#F43F5E", color: "#ffffff" },
+};
+
 export default function DiscoveryFullCard({ event }: { event: any }) {
   const catColor = categoryColors[event.category] ?? "#F5A623";
+  const tagStyle = event.tag ? tagColors[event.tag] : null;
+  const dateLabel = !event.type || event.type === "event" ? "Date" : "Deadline";
 
   return (
     <div style={{
-      position: "relative",
       width: "100%",
       height: "100%",
-      backgroundColor: "#0D0D0D",
-      background: event.image_url
-        ? `url(${event.image_url}) center/cover no-repeat`
-        : `linear-gradient(135deg, ${catColor}dd 0%, #0D0D0D 100%)`,
       display: "flex",
       flexDirection: "column",
-      justifyContent: "flex-end",
+      backgroundColor: "#0D0D0D",
     }}>
+      {/* Image section — clean, no text overlaid on it */}
       <div style={{
-        position: "absolute",
-        inset: 0,
-        background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.3) 100%)",
-      }} />
+        position: "relative",
+        flex: "0 0 45%",
+        minHeight: 0,
+        background: event.image_url
+          ? `url(${event.image_url}) center/cover no-repeat`
+          : `linear-gradient(135deg, ${catColor}dd 0%, #0D0D0D 100%)`,
+      }}>
+        <div style={{ position: "absolute", top: "14px", left: "14px" }}>
+          <span style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            padding: "5px 12px",
+            borderRadius: "999px",
+            color: "#0D0D0D",
+            backgroundColor: catColor,
+          }}>
+            {event.category}
+          </span>
+        </div>
 
-      <div style={{ position: "absolute", top: "16px", left: "16px", zIndex: 1 }}>
-        <span style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          padding: "5px 12px",
-          borderRadius: "999px",
-          color: "#0D0D0D",
-          backgroundColor: catColor,
-        }}>
-          {event.category}
-        </span>
+        {event.tag && tagStyle && (
+          <div style={{ position: "absolute", top: "14px", right: "14px" }}>
+            <span style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              padding: "5px 12px",
+              borderRadius: "999px",
+              backgroundColor: tagStyle.bg,
+              color: tagStyle.color,
+            }}>
+              {event.tag}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div style={{ position: "relative", zIndex: 1, padding: "20px" }}>
-        <p style={{
-          color: "#F5A623",
-          fontSize: "11px",
-          fontWeight: 700,
-          textTransform: "uppercase",
-          letterSpacing: "0.12em",
-          marginBottom: "8px",
-        }}>
-          {formatDate(event.date)}
-        </p>
+      {/* Solid content panel — legible regardless of what's in the image */}
+      <div style={{
+        flex: 1,
+        minHeight: 0,
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}>
+        {event.date && (
+          <p style={{
+            color: "#F5A623",
+            fontSize: "11px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+            marginBottom: "8px",
+          }}>
+            {dateLabel} · {formatDate(event.date)}
+          </p>
+        )}
 
         <h2 style={{
           fontFamily: "Georgia, serif",
-          fontSize: "clamp(20px, 5vw, 26px)",
+          fontSize: "clamp(18px, 4.5vw, 23px)",
           fontWeight: 900,
           color: "#FFFFFF",
           lineHeight: 1.2,
@@ -74,10 +107,12 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
         </h2>
 
         <p style={{
-          color: "#D1D5DB",
+          color: "#9CA3AF",
           fontSize: "13px",
           lineHeight: 1.55,
           marginBottom: "16px",
+          flex: 1,
+          minHeight: 0,
           display: "-webkit-box",
           WebkitLineClamp: 2,
           WebkitBoxOrient: "vertical",
@@ -86,8 +121,8 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
           {event.description}
         </p>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "18px", flexWrap: "wrap" }}>
-          <span style={{ color: "#E5E7EB", fontSize: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px", flexWrap: "wrap" }}>
+          <span style={{ color: "#D1D5DB", fontSize: "12px" }}>
             📍 {event.venue?.split(",")[0] ?? event.location}
           </span>
           <span style={{
@@ -108,6 +143,7 @@ export default function DiscoveryFullCard({ event }: { event: any }) {
           padding: "11px 24px",
           borderRadius: "999px",
           textDecoration: "none",
+          textAlign: "center",
         }}>
           View Discovery →
         </Link>
