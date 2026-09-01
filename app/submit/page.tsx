@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { categories } from "@/lib/events";
-import { DISCOVERY_TYPES } from "@/lib/discoveryTypes";
+import { DISCOVERY_TYPES, getFieldConfig } from "@/lib/discoveryTypes";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +16,7 @@ export default function SubmitDiscoveryPage() {
   const [error, setError] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [form, setForm] = useState({
+    const [form, setForm] = useState({
     title: "",
     type: "event",
     category: "",
@@ -30,6 +30,8 @@ export default function SubmitDiscoveryPage() {
     speakerTitle: "",
     registrationUrl: "",
   });
+
+  const fieldConfig = getFieldConfig(form.type);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -320,20 +322,22 @@ export default function SubmitDiscoveryPage() {
             />
           </div>
 
-          {/* Time */}
-          <div>
-            <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
-              Time (if applicable)
-            </label>
-            <input
-              type="text"
-              name="time"
-              placeholder="e.g. 9:00 AM – 5:00 PM"
-              value={form.time}
-              onChange={handleChange}
-              style={inputStyle}
-            />
-          </div>
+                    {/* Time — only shown for events */}
+          {fieldConfig.showTime && (
+            <div>
+              <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
+                Time (if applicable)
+              </label>
+              <input
+                type="text"
+                name="time"
+                placeholder="e.g. 9:00 AM – 5:00 PM"
+                value={form.time}
+                onChange={handleChange}
+                style={inputStyle}
+              />
+            </div>
+          )}
 
           {/* Price */}
           <div>
@@ -350,10 +354,10 @@ export default function SubmitDiscoveryPage() {
             />
           </div>
 
-          {/* Speaker */}
+                    {/* Speaker / Organiser — label adapts to the selected discovery type */}
           <div>
             <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
-              Speaker / Host / Organiser Name
+              {fieldConfig.speakerLabel}
             </label>
             <input
               type="text"
@@ -365,10 +369,10 @@ export default function SubmitDiscoveryPage() {
             />
           </div>
 
-          {/* Speaker Title */}
+          {/* Speaker / Contact title — label adapts to the selected discovery type */}
           <div>
             <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "8px" }}>
-              Speaker / Host Title or Role
+              {fieldConfig.speakerTitleLabel}
             </label>
             <input
               type="text"

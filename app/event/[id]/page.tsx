@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { formatDate } from "@/lib/events";
+import { getFieldConfig } from "@/lib/discoveryTypes";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -36,8 +37,9 @@ export default async function EventDetailPage({
 
   if (error || !event) notFound();
 
-  const isArchived = event.status === "archived";
+    const isArchived = event.status === "archived";
   const catColor = categoryColors[event.category] ?? "#F5A623";
+  const fieldConfig = getFieldConfig(event.type);
   const registerButton = event.registration_url
     ? { type: "link", href: event.registration_url }
     : { type: "button" };
@@ -211,8 +213,8 @@ export default async function EventDetailPage({
               color: "rgba(255,255,255,0.75)",
               fontSize: "14px",
             }}>
-              <span>📅 {formatDate(event.date)}</span>
-              <span>🕐 {event.time}</span>
+                           {event.date && <span>📅 {fieldConfig.dateLabel}: {formatDate(event.date)}</span>}
+              {fieldConfig.showTime && event.time && <span>🕐 {event.time}</span>}
               <span>📍 {event.location}</span>
             </div>
           </div>
@@ -275,14 +277,14 @@ export default async function EventDetailPage({
                 borderRadius: "16px",
                 padding: "28px",
               }}>
-                <h2 style={{
+                                <h2 style={{
                   fontFamily: "Georgia, serif",
                   fontSize: "20px",
                   fontWeight: 700,
                   color: "#E8E8E8",
                   marginBottom: "16px",
                 }}>
-                  Featured Speaker
+                  {fieldConfig.showTime ? "Featured Speaker" : "About the Organiser"}
                 </h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                   <div style={{
@@ -397,9 +399,9 @@ export default async function EventDetailPage({
               flexDirection: "column",
               gap: "16px",
             }}>
-              {[
-                { icon: "📅", label: "Date", value: formatDate(event.date) },
-                { icon: "🕐", label: "Time", value: event.time || "TBC" },
+                           {[
+                ...(event.date ? [{ icon: "📅", label: fieldConfig.dateLabel, value: formatDate(event.date) }] : []),
+                ...(fieldConfig.showTime ? [{ icon: "🕐", label: "Time", value: event.time || "TBC" }] : []),
                 { icon: "📍", label: "Venue", value: event.venue || "TBC" },
                 { icon: "🏙️", label: "City", value: event.location },
               ].map(({ icon, label, value }) => (

@@ -46,3 +46,26 @@ export function getGroupForType(type: string | null | undefined): PrimaryGroup {
   if (!type) return "Events"; // matches submit form's default
   return TYPE_TO_GROUP[type as DiscoveryType] ?? "Events";
 }
+export interface DiscoveryFieldConfig {
+  dateLabel: string;
+  showTime: boolean;
+  speakerLabel: string;
+  speakerTitleLabel: string;
+}
+
+export function getFieldConfig(type: string | null | undefined): DiscoveryFieldConfig {
+  if (!type || type === "event") {
+    return {
+      dateLabel: "Date",
+      showTime: true,
+      speakerLabel: "Speaker / Host Name",
+      speakerTitleLabel: "Speaker / Host Title or Role",
+    };
+  }
+  return {
+    dateLabel: "Deadline",
+    showTime: false,
+    speakerLabel: "Organiser / Provider Name",
+    speakerTitleLabel: "Contact Person (optional)",
+  };
+}

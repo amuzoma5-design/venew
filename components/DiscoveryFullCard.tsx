@@ -22,10 +22,12 @@ const tagColors: Record<string, { bg: string; color: string }> = {
   HOT:      { bg: "#F43F5E", color: "#ffffff" },
 };
 
+import { getFieldConfig } from "@/lib/discoveryTypes";
+
 export default function DiscoveryFullCard({ event }: { event: any }) {
   const catColor = categoryColors[event.category] ?? "#F5A623";
   const tagStyle = event.tag ? tagColors[event.tag] : null;
-  const dateLabel = !event.type || event.type === "event" ? "Date" : "Deadline";
+  const { dateLabel } = getFieldConfig(event.type);
 
   return (
     <div style={{
