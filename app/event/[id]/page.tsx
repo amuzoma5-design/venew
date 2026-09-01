@@ -121,43 +121,39 @@ export default async function EventDetailPage({
           </div>
         )}
 
-        <div style={{
-          background: event.image_url
-            ? `url(${event.image_url}) center/cover no-repeat`
-            : `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
+                <div style={{
           borderRadius: "20px",
-          padding: "48px",
           marginBottom: "32px",
-          position: "relative",
           overflow: "hidden",
-          minHeight: "420px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
         }}>
+          {/* Image strip — badges only, no text overlaid on the photo itself */}
           <div style={{
-            position: "absolute",
-            inset: 0,
+            position: "relative",
+            height: "240px",
             background: event.image_url
-              ? "linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3))"
-              : "none",
-            borderRadius: "20px",
-          }} />
+              ? `url(${event.image_url}) center/cover no-repeat`
+              : `linear-gradient(135deg, ${catColor}cc 0%, #111 100%)`,
+          }}>
+            {!event.image_url && (
+              <div style={{
+                position: "absolute",
+                top: "-40px",
+                right: "-40px",
+                width: "220px",
+                height: "220px",
+                borderRadius: "50%",
+                backgroundColor: "rgba(255,255,255,0.05)",
+              }} />
+            )}
 
-          {!event.image_url && (
             <div style={{
               position: "absolute",
-              top: "-40px",
-              right: "-40px",
-              width: "220px",
-              height: "220px",
-              borderRadius: "50%",
-              backgroundColor: "rgba(255,255,255,0.05)",
-            }} />
-          )}
-
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+              bottom: "16px",
+              left: "20px",
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}>
               <span style={{
                 fontSize: "12px",
                 fontWeight: 600,
@@ -165,7 +161,7 @@ export default async function EventDetailPage({
                 borderRadius: "999px",
                 color: catColor,
                 border: `1px solid ${catColor}50`,
-                backgroundColor: `${catColor}20`,
+                backgroundColor: "rgba(13,13,13,0.85)",
               }}>
                 {event.category}
               </span>
@@ -175,7 +171,7 @@ export default async function EventDetailPage({
                   fontWeight: 700,
                   padding: "6px 14px",
                   borderRadius: "999px",
-                  backgroundColor: "rgba(255,255,255,0.2)",
+                  backgroundColor: "rgba(13,13,13,0.85)",
                   color: "white",
                 }}>
                   {event.tag}
@@ -187,21 +183,29 @@ export default async function EventDetailPage({
                   fontWeight: 700,
                   padding: "6px 14px",
                   borderRadius: "999px",
-                  backgroundColor: "rgba(255,255,255,0.15)",
+                  backgroundColor: "rgba(13,13,13,0.85)",
                   color: "rgba(255,255,255,0.7)",
                 }}>
                   ENDED
                 </span>
               )}
             </div>
+          </div>
 
+          {/* Solid content panel — legible regardless of what's in the image */}
+          <div style={{
+            backgroundColor: "#1A1A1A",
+            border: "1px solid #2A2A2A",
+            borderTop: "none",
+            padding: "32px",
+          }}>
             <h1 style={{
               fontFamily: "Georgia, serif",
-              fontSize: "clamp(28px, 5vw, 48px)",
+              fontSize: "clamp(24px, 4.5vw, 40px)",
               fontWeight: 900,
               color: "white",
               lineHeight: 1.2,
-              marginBottom: "20px",
+              marginBottom: "16px",
             }}>
               {event.title}
             </h1>
@@ -213,7 +217,7 @@ export default async function EventDetailPage({
               color: "rgba(255,255,255,0.75)",
               fontSize: "14px",
             }}>
-                           {event.date && <span>📅 {fieldConfig.dateLabel}: {formatDate(event.date)}</span>}
+              {event.date && <span>📅 {fieldConfig.dateLabel}: {formatDate(event.date)}</span>}
               {fieldConfig.showTime && event.time && <span>🕐 {event.time}</span>}
               <span>📍 {event.location}</span>
             </div>
