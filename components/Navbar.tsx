@@ -41,7 +41,7 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }} className="venew-desktop-nav">
-                  <Link href="/events" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Browse</Link>
+                           <Link href="/events" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Explore</Link>
           <Link href="/discover" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>🔍 Discover</Link>
           <Link href="/blog" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>Blog</Link>
           <Link href="/spotlight" style={{ color: "#6B7280", fontSize: "14px", textDecoration: "none" }}>✨ Spotlight</Link>
