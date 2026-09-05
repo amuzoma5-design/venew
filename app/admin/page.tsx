@@ -4,28 +4,72 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
+import { hasPermission } from "@/lib/permissions";
 
-type Tab = "events" | "users" | "analytics" | "blog" | "spotlight";
+type Tab = "events" | "users" | "analytics" | "blog" | "spotlight" | "editors";
 
 export default function AdminPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<Tab>("events");
+  const [activeTab, setActiveTab] = useState<Tab | null>(null);
 
-  const ADMIN_PASSWORD = "venew2026";
+  useEffect(() => {
+    checkExistingSession();
+  }, []);
 
-  function handleLogin() {
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true);
+  async function checkExistingSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await loadRoleAndEnter(session.user.id);
+    }
+    setCheckingSession(false);
+  }
+
+  async function loadRoleAndEnter(userId: string) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", userId).single();
+    const userRole = profile?.role ?? "user";
+    if (userRole === "user") {
+      setError("This account does not have admin access.");
+      await supabase.auth.signOut();
+      return;
+    }
+    setRole(userRole);
+    setAuthed(true);
+    if (hasPermission(userRole, "manage_discoveries") || hasPermission(userRole, "manage_users") || hasPermission(userRole, "view_analytics")) {
       loadAll();
     } else {
-      setError("Wrong password.");
+      setLoading(false);
     }
+    if (hasPermission(userRole, "manage_discoveries")) setActiveTab("events");
+    else if (hasPermission(userRole, "manage_blog")) setActiveTab("blog");
+    else if (hasPermission(userRole, "manage_spotlight")) setActiveTab("spotlight");
+    else if (hasPermission(userRole, "manage_finance")) setActiveTab("editors");
+  }
+
+  async function handleLogin() {
+    setError("");
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError || !data.user) {
+      setError("Incorrect email or password.");
+      return;
+    }
+    await loadRoleAndEnter(data.user.id);
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setAuthed(false);
+    setRole(null);
+    setEmail("");
+    setPassword("");
   }
 
   async function loadAll() {
@@ -84,6 +128,14 @@ export default function AdminPage() {
     setEvents(events.filter(e => e.id !== id));
   }
 
+   if (checkingSession) {
+    return (
+      <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#6B6B6B", fontSize: "16px" }}>Checking session...</p>
+      </main>
+    );
+  }
+
   if (!authed) {
     return (
       <main style={{ backgroundColor: "#0D0D0D", minHeight: "100vh" }}>
@@ -97,10 +149,11 @@ export default function AdminPage() {
           <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "20px", padding: "36px", textAlign: "center" }}>
             <p style={{ fontSize: "40px", marginBottom: "16px" }}>👑</p>
             <h1 style={{ fontFamily: "Georgia, serif", fontSize: "28px", fontWeight: 900, color: "#E8E8E8", marginBottom: "8px" }}>Admin Panel</h1>
-            <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "28px" }}>Enter your admin password to continue</p>
+            <p style={{ color: "#6B6B6B", fontSize: "14px", marginBottom: "28px" }}>Sign in with your VENEW account to continue</p>
             {error && <div style={{ backgroundColor: "#2A0A0A", border: "1px solid #F43F5E", borderRadius: "10px", padding: "12px", color: "#F43F5E", fontSize: "14px", marginBottom: "20px" }}>{error}</div>}
-            <input type="password" placeholder="Admin password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box", marginBottom: "16px" }} />
-            <button onClick={handleLogin} style={{ width: "100%", backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "15px", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer" }}>Enter Admin Panel →</button>
+            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box", marginBottom: "12px" }} />
+            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} style={{ width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box", marginBottom: "16px" }} />
+            <button onClick={handleLogin} style={{ width: "100%", backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "15px", padding: "14px", borderRadius: "12px", border: "none", cursor: "pointer" }}>Sign In →</button>
           </div>
         </div>
       </main>
@@ -117,7 +170,11 @@ export default function AdminPage() {
           </Link>
           <span style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontSize: "11px", fontWeight: 700, padding: "3px 10px", borderRadius: "999px" }}>ADMIN</span>
         </div>
-        <Link href="/" style={{ color: "#6B6B6B", fontSize: "14px", textDecoration: "none" }}>← Back to site</Link>
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <span style={{ color: "#6B6B6B", fontSize: "13px" }}>Role: {role}</span>
+          <button onClick={handleLogout} style={{ backgroundColor: "transparent", border: "1px solid #2A2A2A", color: "#6B6B6B", fontSize: "13px", padding: "6px 14px", borderRadius: "999px", cursor: "pointer" }}>Log out</button>
+          <Link href="/" style={{ color: "#6B6B6B", fontSize: "14px", textDecoration: "none" }}>← Back to site</Link>
+        </div>
       </div>
 
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
@@ -139,11 +196,18 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {/* Tabs */}
+                {/* Tabs — only show tabs this role actually has access to */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "32px", flexWrap: "wrap" }}>
-          {(["events", "users", "analytics", "blog", "spotlight"] as Tab[]).map((tab) => (
+          {([
+            { tab: "events" as Tab, permission: "manage_discoveries" as const, label: "📋 Discoveries" },
+            { tab: "users" as Tab, permission: "manage_users" as const, label: "👥 Users" },
+            { tab: "analytics" as Tab, permission: "view_analytics" as const, label: "📊 Analytics" },
+            { tab: "blog" as Tab, permission: "manage_blog" as const, label: "✍️ Discovery Hub" },
+            { tab: "spotlight" as Tab, permission: "manage_spotlight" as const, label: "✨ Spotlight" },
+            { tab: "editors" as Tab, permission: "manage_editors" as const, label: "🔑 Editors" },
+          ]).filter(({ permission }) => hasPermission(role, permission)).map(({ tab, label }) => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ backgroundColor: activeTab === tab ? "#F5A623" : "#1A1A1A", color: activeTab === tab ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: activeTab === tab ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>
-              {tab === "events" ? "📋 Discoveries" : tab === "users" ? "👥 Users" : tab === "analytics" ? "📊 Analytics" : tab === "blog" ? "✍️ Discovery Hub" : "✨ Spotlight"}
+              {label}
             </button>
           ))}
         </div>
@@ -160,7 +224,8 @@ export default function AdminPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px", flexWrap: "wrap" }}>
                         <h3 style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "16px", fontFamily: "Georgia, serif" }}>{event.title}</h3>
                         <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: event.approved ? "#10B98120" : "#F5A62320", color: event.approved ? "#10B981" : "#F5A623" }}>{event.approved ? "Approved" : "Pending"}</span>
-                        {event.featured && <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: "#F5A62320", color: "#F5A623" }}>⭐ Featured</span>}
+                                                {event.featured && <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: "#F5A62320", color: "#F5A623" }}>⭐ Featured</span>}
+                        {event.source === "ai_agent" && <span style={{ fontSize: "11px", fontWeight: 600, padding: "2px 8px", borderRadius: "999px", backgroundColor: "#3B82F620", color: "#3B82F6" }}>🤖 AI-sourced</span>}
                       </div>
                       <p style={{ color: "#6B6B6B", fontSize: "13px" }}>{event.category} · {event.location} · {event.date}</p>
                     </div>
@@ -274,12 +339,162 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Blog tab */}
+               {/* Blog tab */}
         {activeTab === "blog" && <BlogAdmin />}
         {activeTab === "spotlight" && <SpotlightAdmin />}
+        {activeTab === "editors" && <EditorsAdmin />}
 
       </div>
     </main>
+  );
+}
+
+function EditorsAdmin() {
+  const [editors, setEditors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newName, setNewName] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [passwordEditId, setPasswordEditId] = useState<string | null>(null);
+  const [passwordEditValue, setPasswordEditValue] = useState("");
+
+  useEffect(() => { loadEditors(); }, []);
+
+  async function getAuthHeader() {
+    const { data: { session } } = await supabase.auth.getSession();
+    return { Authorization: `Bearer ${session?.access_token}` };
+  }
+
+  async function loadEditors() {
+    setLoading(true);
+    const headers = await getAuthHeader();
+    const res = await fetch("/api/admin/editors", { headers });
+    const data = await res.json();
+    setEditors(data.editors ?? []);
+    setLoading(false);
+  }
+
+  async function createEditor() {
+    if (!newEmail || !newPassword || newPassword.length < 8) {
+      setError("Email and a password of at least 8 characters are required.");
+      return;
+    }
+    setSaving(true);
+    setError("");
+    const headers = await getAuthHeader();
+    const res = await fetch("/api/admin/editors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify({ email: newEmail, password: newPassword, displayName: newName }),
+    });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) {
+      setError(data.error || "Could not create editor.");
+    } else {
+      setSuccess("Editor created. Share their email and password with them directly.");
+      setNewEmail(""); setNewPassword(""); setNewName(""); setShowCreate(false);
+      loadEditors();
+      setTimeout(() => setSuccess(""), 4000);
+    }
+  }
+
+  async function updatePassword(id: string) {
+    if (!passwordEditValue || passwordEditValue.length < 8) {
+      setError("New password must be at least 8 characters.");
+      return;
+    }
+    const headers = await getAuthHeader();
+    const res = await fetch(`/api/admin/editors/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify({ newPassword: passwordEditValue }),
+    });
+    if (res.ok) {
+      setSuccess("Password updated.");
+      setPasswordEditId(null);
+      setPasswordEditValue("");
+      setTimeout(() => setSuccess(""), 3000);
+    } else {
+      const data = await res.json();
+      setError(data.error || "Could not update password.");
+    }
+  }
+
+  async function revokeEditor(id: string) {
+    if (!confirm("Revoke this editor's access? They will keep their login but lose editor permissions.")) return;
+    const headers = await getAuthHeader();
+    const res = await fetch(`/api/admin/editors/${id}`, { method: "DELETE", headers });
+    if (res.ok) {
+      setEditors(editors.filter((e) => e.id !== id));
+    }
+  }
+
+  const inputStyle = { width: "100%", backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "10px", padding: "12px 16px", color: "#E8E8E8", fontSize: "14px", outline: "none", boxSizing: "border-box" as const };
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>🔑 Editor Accounts</h2>
+        <button onClick={() => setShowCreate(!showCreate)} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: "none", cursor: "pointer" }}>
+          {showCreate ? "Cancel" : "+ Add Editor"}
+        </button>
+      </div>
+
+      {error && <div style={{ backgroundColor: "#2A0A0A", border: "1px solid #F43F5E", borderRadius: "10px", padding: "12px 16px", color: "#F43F5E", fontSize: "14px", marginBottom: "20px" }}>{error}</div>}
+      {success && <div style={{ backgroundColor: "#0A2A1A", border: "1px solid #10B981", borderRadius: "10px", padding: "12px 16px", color: "#10B981", fontSize: "14px", marginBottom: "20px" }}>{success}</div>}
+
+      {showCreate && (
+        <div style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "24px", marginBottom: "24px", display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Editor's Name</label>
+            <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Chidinma Okafor" style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Email</label>
+            <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="editor@example.com" style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Set Their Password</label>
+            <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="At least 8 characters" style={inputStyle} />
+          </div>
+          <button onClick={createEditor} disabled={saving} style={{ backgroundColor: saving ? "#6B6B6B" : "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "12px", borderRadius: "10px", border: "none", cursor: saving ? "not-allowed" : "pointer" }}>
+            {saving ? "Creating..." : "Create Editor Account"}
+          </button>
+        </div>
+      )}
+
+      {loading ? <p style={{ color: "#6B6B6B" }}>Loading editors...</p> : editors.length === 0 ? (
+        <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No editors yet. Add one above.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {editors.map((ed) => (
+            <div key={ed.id} style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "20px 24px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+                <div>
+                  <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px" }}>{ed.display_name}</p>
+                  <p style={{ color: "#6B6B6B", fontSize: "12px", marginTop: "2px" }}>Editor since {new Date(ed.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</p>
+                </div>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <button onClick={() => { setPasswordEditId(passwordEditId === ed.id ? null : ed.id); setPasswordEditValue(""); }} style={{ backgroundColor: "transparent", color: "#3B82F6", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #3B82F630", cursor: "pointer" }}>Change Password</button>
+                  <button onClick={() => revokeEditor(ed.id)} style={{ backgroundColor: "transparent", color: "#F43F5E", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #F43F5E30", cursor: "pointer" }}>Revoke Access</button>
+                </div>
+              </div>
+              {passwordEditId === ed.id && (
+                <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+                  <input type="text" value={passwordEditValue} onChange={(e) => setPasswordEditValue(e.target.value)} placeholder="New password (min 8 characters)" style={{ ...inputStyle, flex: 1 }} />
+                  <button onClick={() => updatePassword(ed.id)} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "13px", padding: "0 20px", borderRadius: "10px", border: "none", cursor: "pointer" }}>Save</button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
