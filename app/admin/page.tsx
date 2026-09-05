@@ -204,7 +204,7 @@ export default function AdminPage() {
             { tab: "analytics" as Tab, permission: "view_analytics" as const, label: "📊 Analytics" },
             { tab: "blog" as Tab, permission: "manage_blog" as const, label: "✍️ Discovery Hub" },
             { tab: "spotlight" as Tab, permission: "manage_spotlight" as const, label: "✨ Spotlight" },
-            { tab: "editors" as Tab, permission: "manage_editors" as const, label: "🔑 Editors" },
+                       { tab: "editors" as Tab, permission: "manage_editors" as const, label: "👥 Team" },
           ]).filter(({ permission }) => hasPermission(role, permission)).map(({ tab, label }) => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{ backgroundColor: activeTab === tab ? "#F5A623" : "#1A1A1A", color: activeTab === tab ? "#0D0D0D" : "#6B6B6B", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: activeTab === tab ? "none" : "1px solid #2A2A2A", cursor: "pointer" }}>
               {label}
@@ -352,10 +352,11 @@ export default function AdminPage() {
 function EditorsAdmin() {
   const [editors, setEditors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreate, setShowCreate] = useState(false);
+   const [showCreate, setShowCreate] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newName, setNewName] = useState("");
+  const [newRole, setNewRole] = useState("editor");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [saving, setSaving] = useState(false);
@@ -386,10 +387,10 @@ function EditorsAdmin() {
     setSaving(true);
     setError("");
     const headers = await getAuthHeader();
-    const res = await fetch("/api/admin/editors", {
+        const res = await fetch("/api/admin/editors", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify({ email: newEmail, password: newPassword, displayName: newName }),
+      body: JSON.stringify({ email: newEmail, password: newPassword, displayName: newName, role: newRole }),
     });
     const data = await res.json();
     setSaving(false);
@@ -397,7 +398,7 @@ function EditorsAdmin() {
       setError(data.error || "Could not create editor.");
     } else {
       setSuccess("Editor created. Share their email and password with them directly.");
-      setNewEmail(""); setNewPassword(""); setNewName(""); setShowCreate(false);
+           setNewEmail(""); setNewPassword(""); setNewName(""); setNewRole("editor"); setShowCreate(false);
       loadEditors();
       setTimeout(() => setSuccess(""), 4000);
     }
@@ -425,6 +426,23 @@ function EditorsAdmin() {
     }
   }
 
+   async function updateRole(id: string, role: string) {
+    const headers = await getAuthHeader();
+    const res = await fetch(`/api/admin/editors/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify({ role }),
+    });
+    if (res.ok) {
+      setEditors(editors.map((e) => e.id === id ? { ...e, role } : e));
+      setSuccess("Role updated.");
+      setTimeout(() => setSuccess(""), 3000);
+    } else {
+      const data = await res.json();
+      setError(data.error || "Could not update role.");
+    }
+  }
+
   async function revokeEditor(id: string) {
     if (!confirm("Revoke this editor's access? They will keep their login but lose editor permissions.")) return;
     const headers = await getAuthHeader();
@@ -439,7 +457,7 @@ function EditorsAdmin() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-        <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>🔑 Editor Accounts</h2>
+                <h2 style={{ fontFamily: "Georgia, serif", fontSize: "24px", fontWeight: 700, color: "#E8E8E8" }}>👥 Team Accounts</h2>
         <button onClick={() => setShowCreate(!showCreate)} style={{ backgroundColor: "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "13px", padding: "8px 20px", borderRadius: "999px", border: "none", cursor: "pointer" }}>
           {showCreate ? "Cancel" : "+ Add Editor"}
         </button>
@@ -458,28 +476,48 @@ function EditorsAdmin() {
             <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Email</label>
             <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="editor@example.com" style={inputStyle} />
           </div>
-          <div>
+                    <div>
             <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Set Their Password</label>
             <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="At least 8 characters" style={inputStyle} />
           </div>
+          <div>
+            <label style={{ display: "block", color: "#E8E8E8", fontSize: "13px", fontWeight: 600, marginBottom: "6px" }}>Role</label>
+            <select value={newRole} onChange={(e) => setNewRole(e.target.value)} style={inputStyle}>
+              <option value="editor">Editor — Blog & Spotlight only</option>
+              <option value="moderator">Moderator — can submit discoveries for review</option>
+              <option value="finance">Finance — view finance & analytics only</option>
+            </select>
+          </div>
           <button onClick={createEditor} disabled={saving} style={{ backgroundColor: saving ? "#6B6B6B" : "#F5A623", color: "#0D0D0D", fontWeight: 700, fontSize: "14px", padding: "12px", borderRadius: "10px", border: "none", cursor: saving ? "not-allowed" : "pointer" }}>
-            {saving ? "Creating..." : "Create Editor Account"}
+            {saving ? "Creating..." : "Create Team Member"}
           </button>
         </div>
       )}
 
       {loading ? <p style={{ color: "#6B6B6B" }}>Loading editors...</p> : editors.length === 0 ? (
-        <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No editors yet. Add one above.</p>
+                <p style={{ color: "#6B6B6B", fontSize: "14px" }}>No team members yet. Add one above.</p>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {editors.map((ed) => (
             <div key={ed.id} style={{ backgroundColor: "#1A1A1A", border: "1px solid #2A2A2A", borderRadius: "16px", padding: "20px 24px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
                 <div>
-                  <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px" }}>{ed.display_name}</p>
-                  <p style={{ color: "#6B6B6B", fontSize: "12px", marginTop: "2px" }}>Editor since {new Date(ed.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                    <p style={{ color: "#E8E8E8", fontWeight: 700, fontSize: "15px" }}>{ed.display_name}</p>
+                    <span style={{ fontSize: "11px", fontWeight: 700, padding: "2px 10px", borderRadius: "999px", backgroundColor: "#F5A62320", color: "#F5A623", textTransform: "capitalize" }}>{ed.role}</span>
+                  </div>
+                  <p style={{ color: "#6B6B6B", fontSize: "12px", marginTop: "2px" }}>Team member since {new Date(ed.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</p>
                 </div>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  <select
+                    value={ed.role}
+                    onChange={(e) => updateRole(ed.id, e.target.value)}
+                    style={{ backgroundColor: "#111", border: "1px solid #2A2A2A", borderRadius: "999px", padding: "8px 14px", color: "#E8E8E8", fontSize: "12px", cursor: "pointer" }}
+                  >
+                    <option value="editor">Editor</option>
+                    <option value="moderator">Moderator</option>
+                    <option value="finance">Finance</option>
+                  </select>
                   <button onClick={() => { setPasswordEditId(passwordEditId === ed.id ? null : ed.id); setPasswordEditValue(""); }} style={{ backgroundColor: "transparent", color: "#3B82F6", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #3B82F630", cursor: "pointer" }}>Change Password</button>
                   <button onClick={() => revokeEditor(ed.id)} style={{ backgroundColor: "transparent", color: "#F43F5E", fontWeight: 600, fontSize: "12px", padding: "8px 14px", borderRadius: "999px", border: "1px solid #F43F5E30", cursor: "pointer" }}>Revoke Access</button>
                 </div>
