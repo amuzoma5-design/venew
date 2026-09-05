@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { hasPermission } from "@/lib/permissions";
 
 interface AgentDiscovery {
   title: string;
@@ -21,6 +23,46 @@ export default function DiscoveryAgentSearch() {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<AgentDiscovery[] | null>(null);
   const [error, setError] = useState("");
+  const [role, setRole] = useState<string | null>(null);
+  const [savedIndices, setSavedIndices] = useState<Set<number>>(new Set());
+  const [savingIndex, setSavingIndex] = useState<number | null>(null);
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    async function loadRole() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const { data: profile } = await supabase.from("profiles").select("role").eq("id", session.user.id).single();
+      setRole(profile?.role ?? null);
+    }
+    loadRole();
+  }, []);
+
+  async function saveDiscovery(d: AgentDiscovery, index: number) {
+    setSavingIndex(index);
+    setSaveError("");
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch("/api/discover/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify(d),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSaveError(data.error || "Could not save this discovery.");
+      } else {
+        setSavedIndices((prev) => new Set(prev).add(index));
+      }
+    } catch (err) {
+      setSaveError("Could not reach VENEW to save this discovery.");
+    } finally {
+      setSavingIndex(null);
+    }
+  }
 
   async function handleSearch() {
     if (!query.trim()) return;
@@ -155,10 +197,46 @@ export default function DiscoveryAgentSearch() {
                   <span style={{ color: d.price === "FREE" ? "#34D399" : "#F5A623", fontWeight: 700 }}>{d.price}</span>
                 </div>
 
-                {d.whyThis && (
+                                {d.whyThis && (
                   <p style={{ color: "#6B7280", fontSize: "12px", fontStyle: "italic", marginBottom: "16px" }}>
                     Why this: {d.whyThis}
                   </p>
+                )}
+
+                {hasPermission(role, "manage_discoveries") && (
+                  <div style={{ marginBottom: "12px" }}>
+                    {savedIndices.has(i) ? (
+                      <span style={{ display: "inline-block", backgroundColor: "#10B98120", color: "#10B981", fontWeight: 700, fontSize: "12px", padding: "8px 16px", borderRadius: "999px" }}>
+                        ✓ Saved to VENEW — pending review
+                      </span>
+                    ) : !d.date ? (
+                      <span style={{ display: "inline-block", color: "#6B7280", fontSize: "12px", fontStyle: "italic" }}>
+                        No date found — can't save without one
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => saveDiscovery(d, i)}
+                        disabled={savingIndex === i}
+                        style={{
+                          backgroundColor: savingIndex === i ? "#2A2A2A" : "#3B82F6",
+                          color: savingIndex === i ? "#6B6B6B" : "#FFFFFF",
+                          fontWeight: 700,
+                          fontSize: "12px",
+                          padding: "8px 16px",
+                          borderRadius: "999px",
+                          border: "none",
+                          cursor: savingIndex === i ? "default" : "pointer",
+                          marginRight: "8px",
+                        }}
+                      >
+                        {savingIndex === i ? "Saving..." : "💾 Save to VENEW"}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {saveError && (
+                  <p style={{ color: "#F43F5E", fontSize: "12px", marginBottom: "12px" }}>{saveError}</p>
                 )}
 
                                 <a

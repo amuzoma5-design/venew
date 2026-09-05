@@ -7,8 +7,12 @@ export async function POST(req: Request) {
 
   const discovery = await req.json();
 
-  if (!discovery.title || !discovery.category) {
+    if (!discovery.title || !discovery.category) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+  }
+
+  if (!discovery.date) {
+    return NextResponse.json({ error: "This discovery has no date, so it can't be saved yet. VENEW requires a date or deadline for every listing." }, { status: 400 });
   }
 
   const id = discovery.title
